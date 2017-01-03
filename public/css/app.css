@@ -1,0 +1,183 @@
+body {
+    padding-top: 70px;
+}
+
+#logo-home {
+    margin-top: 60px;
+}
+
+.panel {
+    margin-bottom: 100px;
+}
+
+
+#login-form > button[type="submit"] {
+   margin-top: 20px;
+}
+
+.edit_pass {
+    margin-top: 60px;
+}
+
+.day-content {
+    border: 1px solid lightgray;
+    border-top: 0;
+    padding: 10px 15px 30px;
+}
+
+.day-content > .row {
+    padding: 0 30px;
+}
+
+.day-content > .row > .col-xs-12 {
+    margin-top: 20px;
+}
+
+.hour {
+    margin-bottom: 6px;
+    padding: 0 3px;
+    height: 50px;
+}
+
+.hour-label {
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    color: white;
+    font-size: 14px;
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none;
+}
+
+.hour > .hour-box,
+.hour > .hour-box-editable {
+    width: 100%;
+    min-height: 30px;
+    border: 0px solid;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+    -webkit-transition: background-color 0.2s ease;
+    -moz-transition: background-color 0.2s ease;
+    -ms-transition: background-color 0.2s ease;
+    -o-transition: background-color 0.2s ease;
+}
+
+.on {
+    background-color: #5cb85c;
+}
+
+.off {
+    background-color: #d9534f;
+}
+
+.hour-box > input[type="checkbox"],
+.hour-box-editable > input[type="checkbox"] {
+    display: none;
+}
+
+#events_list, #users_list, #clients_list, #availabilities_list {
+    margin-top: 60px;
+}
+
+
+#create-form > .checkbox > label {
+    padding-left: 0;
+}
+
+
+#create-form > div > p {
+    font-weight: bold;
+}
+
+#create-form > button[type="submit"] {
+    margin-left: 15px;
+}
+
+#calendar {
+    margin-top: 60px;
+    margin-bottom: 80px;
+}
+
+.empty_event {
+    margin-top: 60px;
+    text-align: center;
+}
+
+.empty_user {
+    margin-left: 20px;
+    font-size: 11px;
+    color: red;
+}
+
+.event_detail {
+    margin-top: 20px;
+}
+
+.event_detail > .panel-body > p {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+ul > li > span  {
+    float: right;
+}
+
+.list-group {
+    margin-bottom: 10px;
+}
+
+.assign_delete {
+    float: left;
+    margin-right: 8px;
+}
+
+.assign_delete > .glyphicon {
+    top: 2px;
+}
+
+.assign_add {
+    margin-left: 10px;
+}
+
+.back_btn {
+    margin-top: 30px;
+}
+
+.assignments span {
+    margin-top: 2px;
+}
+
+.services > .checkbox {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.br-widget > a {
+    font-size: 32px !important;
+}
+
+/* EVENT FORM */
+#time.input-group {
+    margin-bottom: 15px;
+}
+
+/* EVENT TIMESHEET */
+#staff_timesheet li > div {
+    display: inline-block;
+    width: 83%;
+}
+
+#staff_timesheet li > input {
+    display: inline;
+    width: 15%;
+    height: 25px;
+}
+
+/* ASSIGNMENTS DATE FORM */
+#date.input-group {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+

@@ -1,0 +1,12 @@
+[16-Oct-2015 10:43:31 UTC] PHP Parse error:  syntax error, unexpected 'class' (T_CLASS), expecting identifier (T_STRING) or variable (T_VARIABLE) or '{' or '$' in /home/excusemyfrench/staff/app/Http/Controllers/EventController.php on line 111
+[17-Oct-2015 09:53:52 UTC] PHP Fatal error:  Call to a member function delete() on a non-object in /home/excusemyfrench/staff/app/Http/Controllers/UserController.php on line 146
+[17-Oct-2015 09:58:05 UTC] PHP Fatal error:  Class 'GuzzleHttp\Client' not found in /home/excusemyfrench/staff/vendor/laravel/framework/src/Illuminate/Mail/Transport/MailgunTransport.php on line 121
+[13-Apr-2016 06:14:04 UTC] PHP Fatal error:  Call to a member function delete() on a non-object in /home/excusemyfrench/staff/app/Http/Controllers/AssignmentController.php on line 53
+[03-Jul-2016 01:46:35 UTC] PHP Warning:  require(/home/excusemyfrench/staff/vendor/hamcrest/hamcrest-php/hamcrest/Hamcrest.php): failed to open stream: No such file or directory in /home/excusemyfrench/staff/vendor/composer/autoload_real.php on line 54
+[03-Jul-2016 01:46:35 UTC] PHP Fatal error:  require(): Failed opening required '/home/excusemyfrench/staff/vendor/hamcrest/hamcrest-php/hamcrest/Hamcrest.php' (include_path='.:/opt/alt/php55/usr/share/pear:/opt/alt/php55/usr/share/php') in /home/excusemyfrench/staff/vendor/composer/autoload_real.php on line 54
+[03-Aug-2016 06:10:04 UTC] PHP Fatal error:  Call to a member function delete() on a non-object in /home/excusemyfrench/staff/app/Http/Controllers/AvailabilityController.php on line 58
+[03-Aug-2016 06:10:08 UTC] PHP Fatal error:  Call to a member function delete() on a non-object in /home/excusemyfrench/staff/app/Http/Controllers/AvailabilityController.php on line 58
+[03-Aug-2016 06:10:11 UTC] PHP Fatal error:  Call to a member function delete() on a non-object in /home/excusemyfrench/staff/app/Http/Controllers/AvailabilityController.php on line 58
+[29-Nov-2016 23:25:38 UTC] PHP Fatal error:  Call to a member function delete() on a non-object in /home/excusemyfrench/staff/app/Http/Controllers/AvailabilityController.php on line 58
+[29-Nov-2016 23:25:55 UTC] PHP Fatal error:  Call to a member function delete() on a non-object in /home/excusemyfrench/staff/app/Http/Controllers/AvailabilityController.php on line 58
+[29-Nov-2016 23:26:03 UTC] PHP Fatal error:  Call to a member function delete() on a non-object in /home/excusemyfrench/staff/app/Http/Controllers/AvailabilityController.php on line 58

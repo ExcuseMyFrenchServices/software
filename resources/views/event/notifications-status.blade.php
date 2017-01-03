@@ -1,0 +1,1 @@
+<span class="label label-{{ $event->client_notification ? 'success' : 'warning' }}">{{ $event->client_notification ? 'Sent' : 'Pending' }}</span>
