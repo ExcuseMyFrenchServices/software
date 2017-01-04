@@ -50,8 +50,9 @@ class EventController extends Controller
     public function create()
     {
         $clients = Client::all()->sortBy('name');
+        $roles = Role::all();
 
-        return view('event.create')->with(compact('clients'));
+        return view('event.create')->with(compact('clients', 'roles'));
     }
 
     public function store(CreateEventRequest $request)

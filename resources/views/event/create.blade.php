@@ -135,9 +135,28 @@
                                 </div>
                             </div>
 
-                            <div class="col-xs-12 col-md-6 form-group {{ $errors->has('number_staff') ? 'has-error' : '' }}">
+                            
+                            <div class="col-xs-12 form-group {{ $errors->has('number_staff') ? 'has-error' : '' }}">
                                 <label for="number_staff">Staff required</label>
-                                <input type="number" name="number_staff" id="number_staff" class="form-control" value="{{ $event->number_staff or old('number_staff') }}">
+                                <div class="staff-added">
+                                    
+                                </div>
+
+                            </div>
+
+                            <div class="col-xs-12 form-group {{ $errors->has('number_staff') ? 'has-error' : '' }}">
+                                <label for="number_staff">Add staff role</label>
+                                <div class="row">
+                                    @foreach($roles as $role)
+                                        <div class="staffing col-md-6" style="margin-bottom: 5px;">
+                                            <a style="text-align: left;word-spacing: -10px;" class="btn btn-info btn-block staff-adding">
+                                                <span class="glyphicon glyphicon-plus"> 
+                                                    {{ $role->name }}
+                                                </span>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
 
                             <div class="col-xs-12 form-group">
@@ -196,7 +215,7 @@
                             </div>
 
                             <div class="col-xs-12">
-                                <button class="btn btn-primary btn-sm" type="submit">{{ isset($event) && !is_null($event->id) ? 'Update' : 'Create' }}</button>
+                                <button class="create-event btn btn-primary btn-sm" type="submit">{{ isset($event) && !is_null($event->id) ? 'Update' : 'Create' }}</button>
                                 <a href="/event" class="btn btn-info btn-sm" role="button">Back</a>
                             </div>
                         </form>
@@ -205,7 +224,23 @@
             </div>
         </div>
     </div>
+@stop
 
+@section('scripts')
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var tempStaff;
+            $('.staff-adding').on('click', function(){
+                var value = $(this).text().trim().split(' ').join('-');
+                tempStaff = $('.staff-added').append('<div class="staff input-group col-md-6"><span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span><input class="form-control input-success" value='+value+'></div>');
+            });
+            $('.create-event').on('click', function(){
+                var numberOfStaff = $('.staff').length;
+                $('.staff-added').append('<input type="hidden" name="number_staff" id="number_staff" class="form-control" value="'+numberOfStaff+'">');
+            });
+        });   
+    </script>
 @stop
 
 
