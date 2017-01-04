@@ -8,6 +8,7 @@ use App\Http\Requests\User\UpdateUserRequest;
 use App\Profile;
 use App\Role;
 use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -31,6 +32,16 @@ class UserController extends Controller
         $users = User::all();
 
         return view('user.index')->with(compact('users'));
+    }
+
+    public function search(Request $search)
+    {
+        $users = User::join('profiles', 'profiles.user_id', '=', 'users.id')
+                ->where('last_name','=',$search->search)
+                ->orWhere('first_name','=',$search->search)
+                ->orWhere('email','=',$search->search)
+                ->get();
+        return view('user.search', compact('users', 'search'));
     }
 
     public function create()

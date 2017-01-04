@@ -4,6 +4,7 @@ use App\Client;
 use App\Http\Requests\Client\CreateClientRequest;
 use App\Http\Requests\Client\UpdateClientRequest;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
@@ -18,6 +19,15 @@ class ClientController extends Controller
         $clients = Client::all()->sortBy('name');
 
         return view('client.index')->with(compact('clients'));
+    }
+
+    public function search(Request $search)
+    {
+        $clients = Client::where('name','=',$search->search)
+                        ->orWhere('email', '=', $search->search)
+                        ->orWhere('phone_number', '=', $search->search)
+                        ->get();
+        return view('client.search', compact('clients', 'search'));        
     }
 
     public function create()

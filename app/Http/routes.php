@@ -20,6 +20,9 @@ Route::get('reset/{hash}', 'UserController@passwordEdit');
 Route::post('user/{user}/credentials/edit', 'UserController@editCredentials');
 Route::post('user/{user}/password', 'UserController@passwordUpdate');
 
+	//Search functionnality
+Route::post('user/search', 'UserController@search');
+
 // EVENTS
 
 Route::resource('event', 'EventController');
@@ -59,3 +62,6 @@ Route::get('availability/create/dates', 'AvailabilityController@dates');
 // CLIENTS
 
 Route::resource('client', 'ClientController');
+
+	//Search functionnality
+Route::post('client/search', 'ClientController@search');

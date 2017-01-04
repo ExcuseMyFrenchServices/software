@@ -3,6 +3,17 @@
 @section('content')
 
     <div id="clients_container" class="container">
+        <div class="row" style="position: fixed;margin-top: 100px;">
+            <form action="/client/search/" method="post" class="col-xs-12 col-md-2 col-md-offset-9">
+                {{ csrf_field() }}
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search a client..." name="search">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                    </span>                        
+                </div>
+            </form>
+        </div>        
         <div class="row">
             <div class="col-xs-12 col-md-8 col-md-offset-2">
                 @if(count($clients) >= 1)
