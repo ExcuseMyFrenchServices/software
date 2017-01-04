@@ -8,6 +8,8 @@ use App\Http\Requests\User\UpdateUserRequest;
 use App\Profile;
 use App\Role;
 use App\User;
+use App\Assignment;
+use App\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -99,8 +101,10 @@ class UserController extends Controller
         $user = User::find($userId);
 
         $profile = $user->profile;
+        $assignments = Assignment::where('user_id','=',$user);
+        
 
-        return view('user.create')->with(compact('roles', 'user', 'profile'));
+        return view('user.create')->with(compact('roles', 'user', 'profile', 'assignments'));
     }
 
     public function update(UpdateUserRequest $request, $userId)
