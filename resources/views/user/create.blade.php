@@ -69,10 +69,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12 col-md-4">
-                <div style="margin-top: 70px;" class="panel panel-default""></div>
+
+            <div class="col-xs-12 col-md-5">
+                <div style="margin-top: 70px;" class="panel panel-default"">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Relationship and roles of <b>{{ $user->username }}</b></h3>
+                        <h3 class="panel-title">Number of time working for</h3>
                     </div>
                     <div class="panel-body">
                         <div class="col-xs-12">
@@ -93,21 +94,22 @@
                             @endif
                         </div>
                         <div class="col-xs-12">
-                            <table>
-                                <th><td>Time</td></th>
-                                @foreach($assignments as $assignment)
-                                    <tr>
-                                        <td>{{ $assignment->time }}</td>
-                                        <td>{{ $assignment->status }}</td>
-                                    </tr>
-                                @endforeach
-                            </table>
+                        <table class="col-xs-12">
+                            <tr><th>Client</th><th></th></tr>
+                            @foreach($events as $event)
+                            <tr><td>{{ $event->name }}</td><td style="text-align: right">{{ $event->time_worked_for }}</td></tr>
+                            @endforeach
+                        </table>
                         </div>
                     </div>
-                </div>
+                    <div class="panel-footer">
+                        <p>TOTAL MISSIONS : <span style="float:right">{{ $total }}</span></p>
+                    </div>
+                </div>    
             </div>
         </div>
     </div>
+
 @stop
 
 

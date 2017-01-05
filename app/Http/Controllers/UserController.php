@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -101,10 +102,24 @@ class UserController extends Controller
         $user = User::find($userId);
 
         $profile = $user->profile;
-        $assignments = Assignment::where('user_id','=',$user);
         
+        $events = DB::table('assignments')
+                    ->select('clients.name', DB::raw('count(clients.name) as time_worked_for'))
+                    ->join('events', 'events.id', '=', 'assignments.event_id')
+                    ->join('clients', 'clients.id', '=', 'events.client_id')
+                    ->where('user_id', $userId)
+                    ->groupBy('clients.name')
+                    ->orderBy('time_worked_for', 'DESC')
+                    ->get();
 
-        return view('user.create')->with(compact('roles', 'user', 'profile', 'assignments'));
+        $total = DB::table('assignments')
+                    ->select('clients.name')
+                    ->join('events', 'events.id', '=', 'assignments.event_id')
+                    ->join('clients', 'clients.id', '=', 'events.client_id')
+                    ->where('user_id', $userId)
+                    ->count();
+
+        return view('user.create')->with(compact('roles', 'user', 'profile', 'events', 'total'));
     }
 
     public function update(UpdateUserRequest $request, $userId)
