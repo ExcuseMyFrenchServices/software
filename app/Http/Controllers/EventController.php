@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use DateTime;
 
 class EventController extends Controller
@@ -153,6 +154,10 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
 
+        $client = Client::join('events', 'events.client_id','=','clients.id')
+                            ->where('events.id','=', $eventId)
+                            ->first();
+
         $availableService = new AvailableUsers;
 
         $available = $availableService->get($event, $time);
@@ -161,7 +166,18 @@ class EventController extends Controller
 
         $roles = Role::all();
 
-        return view('event.staff')->with(compact('event', 'time', 'available', 'unavailable', 'roles'));
+        $events = DB::table('assignments')
+                    ->select('users.id as user_id','profiles.first_name as first_name', 'profiles.last_name as last_name', DB::raw('count(clients.name) as time_worked_for'))
+                    ->join('users', 'users.id', '=', 'assignments.user_id')
+                    ->join('profiles', 'profiles.user_id', '=', 'users.id')
+                    ->join('events', 'events.id', '=', 'assignments.event_id')
+                    ->join('clients', 'clients.id', '=', 'events.client_id')
+                    ->where('clients.name', $client->name)
+                    ->groupBy('users.username')
+                    ->orderBy('time_worked_for', 'DESC')
+                    ->get();
+
+        return view('event.staff')->with(compact('event', 'events','time', 'available', 'unavailable', 'roles', 'client'));
     }
 
     public function assign(Request $request, $eventId)

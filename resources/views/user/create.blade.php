@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </div>
-
+            @if(isset($profile))
             <div class="col-xs-12 col-md-5">
                 <div style="margin-top: 70px;" class="panel panel-default">
                     <div class="panel-heading">
@@ -96,9 +96,13 @@
                         <div class="col-xs-12">
                         <table class="col-xs-12">
                             <tr><th>Client</th><th></th></tr>
-                            @foreach($events as $event)
-                            <tr><td>{{ $event->name }}</td><td style="text-align: right">{{ $event->time_worked_for }}</td></tr>
-                            @endforeach
+                            @if(!empty($events))
+                                @foreach($events as $event)
+                                <tr><td>{{ $event->name }}</td><td style="text-align: right">{{ $event->time_worked_for }}</td></tr>
+                                @endforeach
+                            @else
+                                <tr><td>No missions yet</td></tr>
+                            @endif
                         </table>
                         </div>
                     </div>
@@ -106,6 +110,7 @@
                         <p><b>TOTAL MISSIONS : <span style="float:right">{{ $total }}</span></b></p>
                     </div>
                 </div> 
+                @if(!empty($best_client))
                 <div style="margin-top: 70px;" class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Best Client</h3>
@@ -114,7 +119,9 @@
                         <p>{{ $best_client->name }} <span style="float:right"><b>{{ $best_client->time_worked_for }}</b></span></p>
                     </div>
                 </div>
+                @endif
             </div>
+            @endif
         </div>
     </div>
 
