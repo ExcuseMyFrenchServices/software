@@ -71,7 +71,7 @@
             </div>
 
             <div class="col-xs-12 col-md-5">
-                <div style="margin-top: 70px;" class="panel panel-default"">
+                <div style="margin-top: 70px;" class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Number of time working for</h3>
                     </div>
@@ -103,9 +103,17 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <p>TOTAL MISSIONS : <span style="float:right">{{ $total }}</span></p>
+                        <p><b>TOTAL MISSIONS : <span style="float:right">{{ $total }}</span></b></p>
                     </div>
-                </div>    
+                </div> 
+                <div style="margin-top: 70px;" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Best Client</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>{{ $best_client->name }} <span style="float:right"><b>{{ $best_client->time_worked_for }}</b></span></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

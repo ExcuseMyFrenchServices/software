@@ -118,8 +118,16 @@ class UserController extends Controller
                     ->join('clients', 'clients.id', '=', 'events.client_id')
                     ->where('user_id', $userId)
                     ->count();
+        $best_client = DB::table('assignments')
+                    ->select('clients.name', DB::raw('count(clients.name) as time_worked_for'))
+                    ->join('events', 'events.id', '=', 'assignments.event_id')
+                    ->join('clients', 'clients.id', '=', 'events.client_id')
+                    ->where('user_id', $userId)
+                    ->groupBy('clients.name')
+                    ->orderBy('time_worked_for', 'DESC')
+                    ->first();
 
-        return view('user.create')->with(compact('roles', 'user', 'profile', 'events', 'total'));
+        return view('user.create')->with(compact('roles', 'user', 'profile', 'events', 'total', 'best_client'));
     }
 
     public function update(UpdateUserRequest $request, $userId)
