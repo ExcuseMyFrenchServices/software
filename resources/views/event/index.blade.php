@@ -7,7 +7,7 @@
     <div id="users_container" class="container">
         @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 11)
         <div class="col-xs-4 col-xs-offset-8">
-            <form action="event/changeUserRole" method="post">
+            <form action="/event/changeUserRole" method="post">
             {{ csrf_field() }}
                 @if(Auth::user()->role_id == 1)    
                     <button type="submit" class="btn btn-warning"><span class="glyphicon glyphicon-eye-close"></span></button>Switch to basic User view 

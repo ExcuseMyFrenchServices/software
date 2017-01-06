@@ -292,7 +292,7 @@ class EventController extends Controller
             $user = User::find(Auth::user()->id);
             $user->role_id = 11;
             $user->save();
-            return back();
+            return redirect('/events/101');
             
         }
 
@@ -301,7 +301,7 @@ class EventController extends Controller
             $user = User::find(Auth::user()->id);
             $user->role_id = 1;
             $user->save();
-            return back();
+            return redirect('/event/');
         }
     }
 }
