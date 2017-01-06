@@ -6,6 +6,7 @@ use App\Availability;
 use App\Event;
 use App\User;
 use DateTime;
+use App\Services\UsersMissions;
 
 class AvailableUsers {
 
@@ -43,7 +44,7 @@ class AvailableUsers {
             }
         }
 
-        return User::whereIn('id', $available_users)->get();
+        return $availableUsers = User::whereIn('id', $available_users)->get();
     }
 
     /**

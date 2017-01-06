@@ -144,6 +144,7 @@
 
                             </div>
 
+                            @if(isset($roles))
                             <div class="col-xs-12 form-group {{ $errors->has('number_staff') ? 'has-error' : '' }}">
                                 <label for="number_staff">Add staff role</label>
                                 <div class="row">
@@ -158,7 +159,8 @@
                                     @endforeach
                                 </div>
                             </div>
-
+                            @endif
+                            
                             <div class="col-xs-12 form-group">
                                 <label for="address">Address</label>
                                 <textarea rows="2"  name="address" id="address" class="form-control">{{ $event->address or old('address') }}</textarea>

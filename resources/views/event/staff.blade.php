@@ -7,29 +7,12 @@
             <div class="col-xs-12 col-md-8 col-md-offset-2">
                 <div style="margin-top: 70px;" class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Select Staff</h3>
+                        <h3 class="panel-title">Select Staff for {{ $client->name }}'s event </h3>
                     </div>
                     <div class="panel-body">
                         <form id="assign_staff" action="{{ url('event/' . $event->id . '/staff') }}" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="time" value="{{ $time }}">
-                            <h4>Already worked with {{ $client->name }}</h4>
-                            <ul class="list-group">
-                            @foreach($events as $event)
-                                @foreach($available as $user)
-                                    @if($event->user_id == $user->id)
-                                    <li class="list-group-item">
-                                        <div class="checkbox" style="margin: 0;">
-                                            <label>
-                                                <input type="checkbox" id="user-{{ $user->id }}" name={{ $event->user_id }}>
-                                                {{ $event->first_name}} {{ $event->last_name }} <span><b>( {{ $event->time_worked_for }} times )</b></span>
-                                            </label>
-                                            <label style="margin-top:-5px" for="user-{{ $event->user_id }}" class="btn btn-success btn-sm pull-right">Available</label>
-                                    @endif
-                                @endforeach
-                                    </li>
-                            @endforeach
-                            </ul>
                             <h6>Available</h6>
                             @if(!$available->isEmpty())
                                 <ul class="list-group">
@@ -37,7 +20,7 @@
                                         <li class="list-group-item">
                                             <div class="checkbox" style="margin: 0;">
                                                 <label>
-                                                    <input type="checkbox" id="user-{{ $user->id }}" name={{ $user->id }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name }}{{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
+                                                    <input type="checkbox" id="user-{{ $user->id }}" name={{ $user->id }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name . ' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)' }}{{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
                                                 </label>
                                             </div>
                                         </li>
@@ -55,7 +38,7 @@
                                         <li class="list-group-item">
                                             <div class="checkbox" style="margin: 0;">
                                                 <label>
-                                                    <input type="checkbox" name={{ $user->id }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name }}{{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
+                                                    <input type="checkbox" name={{ $user->id }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name .' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)'}}{{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
                                                 </label>
                                             </div>
                                         </li>

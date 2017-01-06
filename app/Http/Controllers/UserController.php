@@ -10,6 +10,7 @@ use App\Role;
 use App\User;
 use App\Assignment;
 use App\Event;
+use App\Services\UsersMissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -103,31 +104,14 @@ class UserController extends Controller
 
         $profile = $user->profile;
         
-        $events = DB::table('assignments')
-                    ->select('clients.name', DB::raw('count(clients.name) as time_worked_for'))
-                    ->join('events', 'events.id', '=', 'assignments.event_id')
-                    ->join('clients', 'clients.id', '=', 'events.client_id')
-                    ->where('user_id', $userId)
-                    ->groupBy('clients.name')
-                    ->orderBy('time_worked_for', 'DESC')
-                    ->get();
+        $userMissions = new UsersMissions;
+        $userClientMission = $userMissions->getUserMissions($userId);
 
-        $total = DB::table('assignments')
-                    ->select('clients.name')
-                    ->join('events', 'events.id', '=', 'assignments.event_id')
-                    ->join('clients', 'clients.id', '=', 'events.client_id')
-                    ->where('user_id', $userId)
-                    ->count();
-        $best_client = DB::table('assignments')
-                    ->select('clients.name', DB::raw('count(clients.name) as time_worked_for'))
-                    ->join('events', 'events.id', '=', 'assignments.event_id')
-                    ->join('clients', 'clients.id', '=', 'events.client_id')
-                    ->where('user_id', $userId)
-                    ->groupBy('clients.name')
-                    ->orderBy('time_worked_for', 'DESC')
-                    ->first();
+        $userTotalMissions = $userMissions->getUserTotalMissions($userId);
 
-        return view('user.create')->with(compact('roles', 'user', 'profile', 'events', 'total', 'best_client'));
+        $userBestClient = $userMissions->getUserBestClient($userId);
+
+        return view('user.create')->with(compact('roles', 'user', 'profile', 'userClientMission', 'userTotalMissions', 'userBestClient'));
     }
 
     public function update(UpdateUserRequest $request, $userId)

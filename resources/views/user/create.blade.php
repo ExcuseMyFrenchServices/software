@@ -96,9 +96,9 @@
                         <div class="col-xs-12">
                         <table class="col-xs-12">
                             <tr><th>Client</th><th></th></tr>
-                            @if(!empty($events))
-                                @foreach($events as $event)
-                                <tr><td>{{ $event->name }}</td><td style="text-align: right">{{ $event->time_worked_for }}</td></tr>
+                            @if(!empty($userClientMission))
+                                @foreach($userClientMission as $userMission)
+                                <tr><td>{{ $userMission->name }}</td><td style="text-align: right">{{ $userMission->time_worked_for }}</td></tr>
                                 @endforeach
                             @else
                                 <tr><td>No missions yet</td></tr>
@@ -107,16 +107,16 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <p><b>TOTAL MISSIONS : <span style="float:right">{{ $total }}</span></b></p>
+                        <p><b>TOTAL MISSIONS : <span style="float:right">{{ $userTotalMissions }}</span></b></p>
                     </div>
                 </div> 
-                @if(!empty($best_client))
+                @if(!empty($userBestClient))
                 <div style="margin-top: 70px;" class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Best Client</h3>
                     </div>
                     <div class="panel-body">
-                        <p>{{ $best_client->name }} <span style="float:right"><b>{{ $best_client->time_worked_for }}</b></span></p>
+                        <p>{{ $userBestClient->name }} <span style="float:right"><b>{{ $userBestClient->time_worked_for }}</b></span></p>
                     </div>
                 </div>
                 @endif
