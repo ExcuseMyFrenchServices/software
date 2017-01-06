@@ -284,4 +284,24 @@ class EventController extends Controller
 
         return redirect('event/' . $eventId);
     }
+
+    public function changeUserRole()
+    {
+        if(Auth::user()->role_id == 1)
+        {
+            $user = User::find(Auth::user()->id);
+            $user->role_id = 11;
+            $user->save();
+            return back();
+            
+        }
+
+        if(Auth::user()->role_id == 11)
+        {
+            $user = User::find(Auth::user()->id);
+            $user->role_id = 1;
+            $user->save();
+            return back();
+        }
+    }
 }

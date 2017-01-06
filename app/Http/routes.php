@@ -27,6 +27,8 @@ Route::post('user/search', 'UserController@search');
 
 Route::resource('event', 'EventController');
 
+Route::post('event/changeUserRole', 'EventController@changeUserRole');
+
 Route::get('events/{user}', 'EventController@events');
 Route::get('past/events', 'EventController@indexPast');
 Route::get('assignment/add/{event}/{time}', 'EventController@staff');

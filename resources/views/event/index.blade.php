@@ -5,6 +5,18 @@
     <?php $pastEvents = str_contains(Route::getCurrentRoute()->getPath(), 'past/events'); ?>
 
     <div id="users_container" class="container">
+        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 11)
+        <div class="col-xs-4 col-xs-offset-8">
+            <form action="event/changeUserRole" method="post">
+            {{ csrf_field() }}
+                @if(Auth::user()->role_id == 1)    
+                    <button type="submit" class="btn btn-warning"><span class="glyphicon glyphicon-eye-close"></span></button>Switch to basic User view 
+                @else
+                    <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-eye-open"></span></button> Switch to Admin view
+                @endif
+            </form>
+        </div>
+        @endif
         <div class="row">
 
             @if ($pastEvents)
@@ -30,6 +42,7 @@
                     </button>
                 </div>
             @endif
+
             <div class="col-xs-12 col-md-10 col-md-offset-1">
                 @if(count($events) >= 1)
                     <table id="events_list" class="table table-striped">

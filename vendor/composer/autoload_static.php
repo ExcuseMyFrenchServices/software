@@ -299,6 +299,7 @@ class ComposerStaticInit30850f05a4420f36ece7f181e979755f
         'AddNotificationStatusToEvents' => __DIR__ . '/../..' . '/database/migrations/2016_02_24_123211_add_notification_status_to_events.php',
         'AddNotificationToAssignment' => __DIR__ . '/../..' . '/database/migrations/2016_08_17_124137_add_notification_to_assignment.php',
         'AddServicesToEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_01_06_030851_add_services_to_events_table.php',
+        'AddTempAdminToRoles' => __DIR__ . '/../..' . '/database/migrations/2017_01_06_074409_add_temp_admin_to_roles.php',
         'AddTimeToAssignments' => __DIR__ . '/../..' . '/database/migrations/2016_07_01_071842_add_time_to_assignments.php',
         'ChangeTimesFormat' => __DIR__ . '/../..' . '/database/migrations/2016_06_30_063604_change_times_format.php',
         'CreateAssignmentsTable' => __DIR__ . '/../..' . '/database/migrations/2015_09_16_085437_create_assignments_table.php',
