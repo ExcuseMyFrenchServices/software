@@ -65,5 +65,10 @@ Route::get('availability/create/dates', 'AvailabilityController@dates');
 
 Route::resource('client', 'ClientController');
 
-	//Search functionnality
-Route::post('client/search', 'ClientController@search');
+// REPORTS
+
+Route::get('/reports', function(){
+	return view('reports.index');
+});
+
+Route::get('reports/month-report/{year}/{month}', 'EventController@monthReport');

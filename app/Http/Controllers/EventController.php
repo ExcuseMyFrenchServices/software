@@ -304,4 +304,36 @@ class EventController extends Controller
             return redirect('/event/');
         }
     }
+
+    public function monthReport($year, $month)
+    {
+        $date = $year.'.'.$month.'.01';
+        $written_date = $month.'.'.$year;
+
+        $next_month = $month+1;
+        $last_month = $month-1;
+
+        $next_year = $year+1;
+        $last_year = $year-1;
+
+        $next_report_month = $year.'.'.$next_month.'.01';
+        
+
+        $events = DB::table('events')
+                    ->select('clients.name',DB::raw('count(events.event_name) as events_number'))
+                    ->join('clients','clients.id','=','events.client_id')
+                    ->where('events.event_date','>=',$date)
+                    ->where('events.event_date','<',$next_report_month)
+                    ->groupBy('clients.name')
+                    ->orderBy('events_number', 'DESC')
+                    ->get();
+
+        $total_events = DB::table('events')
+                    ->select('events.event_name')
+                    ->where('events.event_date','>=',$date)
+                    ->where('events.event_date','<',$next_report_month)
+                    ->count();            
+
+        return view('reports.month-report')->with(compact('events','total_events','written_date','year','month', 'last_month', 'next_month', 'last_year', 'next_year'));
+    }
 }
