@@ -21,6 +21,7 @@
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
+                        <th>Level</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -32,6 +33,7 @@
                             <td>{{ $user->profile->first_name }}</td>
                             <td>{{ $user->profile->last_name }}</td>
                             <td>{{ $user->profile->email }}</td>
+                            <td>{{ $user->level }}</td>
                             <td><a href="/user/{{ $user->id }}/edit" class="btn btn-info btn-xs" role="button">Profile</a> </td>
                             <td><a href="/user/{{ $user->id }}/credentials/edit" class="btn btn-primary btn-xs" role="button">Credentials</a> </td>
                             <td>

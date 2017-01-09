@@ -120,6 +120,7 @@ class UserController extends Controller
         $profile = $user->profile;
 
         $user->role_id = $request->input('role');
+        $user->level = $request->input('level');
         $user->save();
 
         $profile->email             = $request->input('email');

@@ -41,11 +41,18 @@ class MultipleStartTimes extends Migration
             return '';
         }
 
-        list($time, $meridian) = explode(' ', $time);
+        if(isset($meridian))
+        {
+            list($time, $meridian) = explode(' ', $time);
+        }
+        else
+        {
+            list($time) = explode(' ', $time);
+        }
 
         list($hours, $minutes) = explode(':', $time);
 
-        if ($meridian == 'PM') {
+        if (isset($meridian) && $meridian == 'PM') {
             $hours = $hours + 12;
         }
 

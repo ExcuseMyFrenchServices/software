@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddHoursToAssigments extends Migration
+class AddLvlColumnToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,8 @@ class AddHoursToAssigments extends Migration
      */
     public function up()
     {
-        Schema::table('assignments', function(Blueprint $table) {
-            $table->float('hours')->nullable();
+        Schema::table('users', function (Blueprint $table) {
+            $table->integer('level')->after('username')->default(1);
         });
     }
 
@@ -24,8 +24,8 @@ class AddHoursToAssigments extends Migration
      */
     public function down()
     {
-        Schema::table('assignments', function(Blueprint $table) {
-            $table->dropColumn('hours');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('level');
         });
     }
 }
