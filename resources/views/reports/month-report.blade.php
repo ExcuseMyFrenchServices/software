@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('content')
 	<div class="col-xs-12 col-sm-4" style="position: fixed">
-		<a href="{{ url('reports')}}" class="btn btn-primary">
+		<a href="{{ url('reports/month-report')}}" class="btn btn-primary">
 			<span class="glyphicon glyphicon-backward"></span> Back to reports section
 		</a>
 	</div>

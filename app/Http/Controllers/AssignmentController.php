@@ -4,6 +4,7 @@ use App\Assignment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class AssignmentController extends Controller
 {
@@ -46,5 +47,24 @@ class AssignmentController extends Controller
         Session::flash('success', 'The notification was sent successfully');
 
         return redirect()->back();
+    }
+
+    public function weekReport()
+    {
+        $day = date('w');
+        $week_start = date('Y-m-d', strtotime('-'.$day.' days'));
+        $week_end = date('Y-m-d', strtotime('+'.($day-10).' days'));
+
+        $assignments = DB::table('assignments')
+                        ->select('events.id as event_id','events.event_date','events.event_name','users.id as user_id','profiles.last_name','profiles.first_name','users.level', 'events.start_time', 'events.finish_time')
+                        ->join('events','events.id','=','assignments.event_id')
+                        ->join('users','users.id', '=', 'assignments.user_id')
+                        ->join('profiles','profiles.user_id','=','users.id')
+                        ->where('events.event_date', '>=', $week_end)
+                        ->where('events.event_date', '<', $week_start)
+                        ->orderBy('events.event_date','ASC')
+                        ->get();
+
+        return view('reports.week-report')->with(compact('assignments','week_start','week_end'));
     }
 }

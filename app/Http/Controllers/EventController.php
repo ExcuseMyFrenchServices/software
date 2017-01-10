@@ -305,6 +305,63 @@ class EventController extends Controller
         }
     }
 
+    public function briefMonthReport()
+    {
+        $year = date('Y');
+        $last_year = $year-1;
+        $last_last_year = $last_year-1;
+
+        $month = date('m');
+
+        $this_year_report = [];
+        for($i = 1; $i <= 12; $i++)
+        {
+            $last_month_date = date($year.'.'.$i.'.01');
+            $i++;
+            $this_month_date = date($year.'.'.$i.'.01');
+            $i--;   
+
+            $this_year_report[$i] = $year_events = DB::table('events')
+                                            ->select('events.event_name')
+                                            ->where('events.event_date','>=',$last_month_date)
+                                            ->where('events.event_date','<',$this_month_date)
+                                            ->count();    
+        }
+
+        $last_year_report = [];
+        for($i = 1; $i <= 12; $i++)
+        {
+            $last_month_date = date($last_year.'.'.$i.'.01');
+            $i++;
+            $this_month_date = date($last_year.'.'.$i.'.01');
+            $i--; 
+
+            $last_year_report[$i] = $year_events = DB::table('events')
+                                            ->select('events.event_name')
+                                            ->where('events.event_date','>=',$last_month_date)
+                                            ->where('events.event_date','<',$this_month_date)
+                                            ->count();                                  
+        }   
+
+        $last_last_year_report = [];
+        for($i = 1; $i <= 12; $i++)
+        {
+            $last_month_date = date($last_last_year.'.'.$i.'.01');
+            $i++;
+            $this_month_date = date($last_last_year.'.'.$i.'.01');
+            $i--; 
+
+            $last_last_year_report[$i] = $year_events = DB::table('events')
+                                            ->select('events.event_name')
+                                            ->where('events.event_date','>=',$last_month_date)
+                                            ->where('events.event_date','<',$this_month_date)
+                                            ->count();                                  
+        }              
+
+        return view('reports.monthOverview')->with(compact('last_last_year_report','last_year_report', 'this_year_report','month','year','last_year','last_last_year'));
+
+    }
+
     public function monthReport($year, $month)
     {
         $date = $year.'.'.$month.'.01';

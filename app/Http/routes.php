@@ -67,8 +67,11 @@ Route::resource('client', 'ClientController');
 
 // REPORTS
 
-Route::get('/reports', function(){
+Route::get('reports', function(){
 	return view('reports.index');
 });
 
+Route::get('reports/month-report', 'EventController@briefMonthReport');
 Route::get('reports/month-report/{year}/{month}', 'EventController@monthReport');
+
+Route::get('reports/week-report', 'AssignmentController@weekReport');
