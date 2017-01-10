@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Assignment;
+use App\Services\FinancialReportCalculation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -55,6 +56,8 @@ class AssignmentController extends Controller
         $week_start = date('Y-m-d', strtotime('-'.$day.' days'));
         $week_end = date('Y-m-d', strtotime('+'.($day-10).' days'));
 
+        $calculator = new FinancialReportCalculation;
+
         $assignments = DB::table('assignments')
                         ->select('events.id as event_id','events.event_date','events.event_name','users.id as user_id','profiles.last_name','profiles.first_name','users.level', 'events.start_time', 'events.finish_time')
                         ->join('events','events.id','=','assignments.event_id')
@@ -64,7 +67,14 @@ class AssignmentController extends Controller
                         ->where('events.event_date', '<', $week_start)
                         ->orderBy('events.event_date','ASC')
                         ->get();
+        $hours = [];
+        $cost = [];                
+        foreach ($assignments as $assignment) 
+        {
+            $hours[$assignment->event_id.'-'.$assignment->user_id] = $calculator->hourSpent($assignment->start_time,$assignment->finish_time,$assignment->event_date);
+            $cost[$assignment->event_id.'-'.$assignment->user_id] = $calculator->staffCost($assignment->start_time,$assignment->finish_time,$assignment->event_date,$assignment->level);
+        }
 
-        return view('reports.week-report')->with(compact('assignments','week_start','week_end'));
+        return view('reports.week-report')->with(compact('assignments','week_start','week_end','hours','cost'));
     }
 }

@@ -28,7 +28,7 @@
 							@for($i=1;$i<=12;$i++)
 								@if($i > $month)
 									<li class="list-group-item list-group-item-info">
-										Objectif :
+										Goal :
 										{{ $last_year_report[$i] - $this_year_report[$i] }}
 									</li>									
 								@else		
