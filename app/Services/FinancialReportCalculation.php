@@ -18,109 +18,56 @@ class FinancialReportCalculation {
 
     public function staffCost($start_time, $finish_time, $event_date, $user_level)
     {
-        $event_date = date('d/m/Y',strtotime($event_date));
-        $year = date('Y',strtotime($event_date));
         $hours = $this->hourSpent($start_time, $finish_time, $event_date);
+        switch ($user_level) 
+        {
+            case 1:
+                $low_wage = 23;
+                $high_wage = 25;
+                $very_high_wage = 26;
+                $saturday_wage = 27.50;
+                $sunday_wage = 32;
+                $public_holiday_wage = 50.50;
+                break;
+            
+            case 2:
+                $low_wage = 24;
+                $high_wage = 26;
+                $very_high_wage = 27;
+                $saturday_wage = 28.50;
+                $sunday_wage = 33.50;
+                $public_holiday_wage = 52;
+                break;
 
-        $event_day = date('l',strtotime($event_date));
+            case 3:
+                $low_wage = 25;
+                $high_wage = 27;
+                $very_high_wage = 28;
+                $saturday_wage = 29.50;
+                $sunday_wage = 34.50;
+                $public_holiday_wage = 54;
+                break;
 
-        if($event_day == 'Saturday')
-        {
-            switch ($user_level) 
-            {
-                case 1:
-                    $wage = 27.50;
-                    break;
-                case 2:
-                    $wage = 28.50;
-                    break;
-                case 3:
-                    $wage = 29.50;
-                    break;
-                case 4:
-                    $wage = 33;               
-                    break;
-            }
-            return $staffCost = $hours['low_cost_hours'] * $wage;
+            case 4:
+                $low_wage = 27.50;
+                $high_wage = 29.50;
+                $very_high_wage = 30.50;
+                $saturday_wage = 33;
+                $sunday_wage = 38.50;
+                $public_holiday_wage = 60.50;
+                break;    
         }
-        elseif($event_day == 'Sunday')
-        {
-            switch ($user_level) 
-            {
-                case 1:
-                    $wage = 32;
-                    break;
-                case 2:
-                    $wage = 33.50;
-                    break;
-                case 3:
-                    $wage = 34.50;
-                    break;
-                case 4:
-                    $wage = 38.50;               
-                    break;
-            }
-            return $staffCost = $hours['low_cost_hours'] * $wage;
-        }
-        else
-        {
-            $publicHolidays = $this->publicHolidays($year);
-            $publicHolidaysNumber = count($publicHolidays);
-            for ($i=0; $i < $publicHolidaysNumber; $i++) 
-            { 
-                if($event_date == $publicHolidays[$i])
-                {
-                    switch ($user_level) 
-                    {
-                        case 1:
-                            $wage = 50.50;
-                            break;
-                        case 2:
-                            $wage = 52;
-                            break;
-                        case 3:
-                            $wage = 54;
-                            break;
-                        case 4:
-                            $wage = 60.50;               
-                            break;
-                    }
-                    return $staffCost = $hours['low_cost_hours'] * $wage;
-                }
-                else
-                {
-                    switch ($user_level) 
-                    {
-                        case 1:
-                            $low_wage = 23;
-                            $high_wage = 25;
-                            $very_high_wage = 26;
-                            break;
-                        case 2:
-                            $low_wage = 24;
-                            $high_wage = 26;
-                            $very_high_wage = 27;
-                            break;
-                        case 3:
-                            $low_wage = 25;
-                            $high_wage = 27;
-                            $very_high_wage = 28;
-                            break;
-                        case 4:
-                            $low_wage = 27.5;
-                            $high_wage = 29.5;
-                            $very_high_wage = 30.50;               
-                            break;
-                    }
-                    return $staffCost = $hours['low_cost_hours'] * $low_wage + $hours['high_cost_hours']*$high_wage + $hours['very_high_hours']*$very_high_wage;  
-                }
-            }        
-        }
+
+        return $staffCost = $hours['low_cost_hours'] * $low_wage + $hours['high_cost_hours'] * $high_wage + $hours['very_high_hours'] * $very_high_wage + $hours['saturday_hours'] * $saturday_wage + $hours['sunday_hours'] * $sunday_wage + $hours['public_holiday_hours'] * $public_holiday_wage;
     }
 
     public function hourSpent($start_time, $finish_time, $event_date)
     {
         $event_day = date('l',strtotime($event_date));
+        
+        $next_day = date('d/m/Y', strtotime($event_date.'+1 day'));
+        $next_event_day = date('l', strtotime($event_date.'+1 day'));
+
         $start_time = str_replace('["','',str_replace('"]','',$start_time));
         
         $start_time = $this->convertHourToFloat($start_time);
@@ -128,64 +75,451 @@ class FinancialReportCalculation {
 
         $hours_spent = [];
 
-        if($event_day != 'Saturday' && $event_day != 'Sunday')
+        if($event_day != 'Saturday' && $event_day != 'Sunday' && !$this->is_public_holiday($event_date))
         {
-            if($start_time < 19 && $finish_time < 19)
+            if(7 <= $start_time && $start_time < 19)
             {
-                $hours_spent['low_cost_hours'] = $finish_time - $start_time;
+                if(7 < $finish_time && $finish_time <= 19)
+                {
+                    $hours_spent['low_cost_hours'] = $finish_time - $start_time;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent;                    
+                }
+                elseif(19 < $finish_time && $finish_time < 24)
+                {
+                    $low_cost_hours = 19 - $start_time;                    
+                    $high_cost_hours = 24 - $finish_time;
+                    $hours_spent['low_cost_hours'] = $low_cost_hours;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent;                    
+                }
+                elseif($finish_time == 0)
+                {
+                    $low_cost_hours = 19 - $start_time;                    
+                    $high_cost_hours = 24 - 19;
+                    $hours_spent['low_cost_hours'] = $low_cost_hours;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent;                       
+                }
+                elseif(0 < $finish_time && $finish_time <= 7)
+                {
+                    if($this->is_public_holiday($next_day))
+                    {
+                        $low_cost_hours = 19 - $start_time;                    
+                        $high_cost_hours = 24 - 19;
+                        $public_holiday_hours = $finish_time;
+                        $hours_spent['low_cost_hours'] = $low_cost_hours;
+                        $hours_spent['high_cost_hours'] = $high_cost_hours;
+                        $hours_spent['very_high_hours'] = 0;
+                        $hours_spent['saturday_hours'] = 0;
+                        $hours_spent['sunday_hours'] = 0;
+                        $hours_spent['public_holiday_hours'] = $public_holiday_hours;
+                        return $hours_spent;    
+                    }
+                    else
+                    {
+                        if($event_day != 'Friday')
+                        {
+                            $low_cost_hours = 19 - $start_time;                    
+                            $high_cost_hours = 24 - 19;
+                            $very_high_hours = $finish_time;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['very_high_hours'] = $very_high_hours;
+                            $hours_spent['saturday_hours'] = 0;
+                            $hours_spent['sunday_hours'] = 0;
+                            $hours_spent['public_holiday_hours'] = 0;
+                            return $hours_spent;  
+                        }
+                        elseif($event_day == 'Friday')
+                        {
+                            $low_cost_hours = 19 - $start_time;                    
+                            $high_cost_hours = 24 - 19;
+                            $saturday_hours = $finish_time;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['very_high_hours'] = 0;
+                            $hours_spent['saturday_hours'] = $saturday_hours;
+                            $hours_spent['sunday_hours'] = 0;
+                            $hours_spent['public_holiday_hours'] = 0;
+                            return $hours_spent;
+                        }
+                    }
+                    
+                }
+                elseif(7 < $finish_time && $finish_time <= 19)
+                {
+                    if($this->is_public_holiday($next_day))
+                    {
+                        $low_cost_hours = 19 - $start_time;                    
+                        $high_cost_hours = 24 - 19;
+                        $public_holiday_hours = $finish_time;
+                        $hours_spent['low_cost_hours'] = $low_cost_hours;
+                        $hours_spent['high_cost_hours'] = $high_cost_hours;
+                        $hours_spent['very_high_hours'] = 0;
+                        $hours_spent['saturday_hours'] = 0;
+                        $hours_spent['sunday_hours'] = 0;
+                        $hours_spent['public_holiday_hours'] = $public_holiday_hours;
+                        return $hours_spent;    
+                    }
+                    else
+                    {                    
+                        if($event_day != 'Friday')
+                        {
+                            $low_cost_hours = 19 - $start_time + $finish_time - 7;                    
+                            $high_cost_hours = 24 - 19;
+                            $very_high_hours = 7;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['very_high_hours'] = $very_high_hours;
+                            $hours_spent['saturday_hours'] = 0;
+                            $hours_spent['sunday_hours'] = 0;
+                            $hours_spent['public_holiday_hours'] = 0;
+                            return $hours_spent;        
+                        }
+                        else
+                        {
+                            $low_cost_hours = 19 - $start_time;                     
+                            $high_cost_hours = 24 - 19;
+                            $very_high_hours = 7;
+                            $saturday_hours = $finish_time - 7;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['very_high_hours'] = $very_high_hours;
+                            $hours_spent['saturday_hours'] = $saturday_hours;
+                            $hours_spent['sunday_hours'] = 0;
+                            $hours_spent['public_holiday_hours'] = 0;
+                            return $hours_spent; 
+                        }
+                    }                 
+                }
+            }
+            elseif(19 <= $start_time && $start_time < 24)
+            {
+                if(19 < $finish_time && $finish_time < 24)
+                {                   
+                    $high_cost_hours = $finish_time - $start_time;
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent;                    
+                }
+                elseif($finish_time == 0)
+                {                   
+                    $high_cost_hours = 24 - $start_time;
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent;                       
+                }
+                elseif(0 < $finish_time && $finish_time < 7)
+                {
+                    if($this->is_public_holiday($next_day))
+                    {                   
+                        $high_cost_hours = 24 - $start_time;
+                        $public_holiday_hours = $finish_time;
+                        $hours_spent['low_cost_hours'] = 0;
+                        $hours_spent['high_cost_hours'] = $high_cost_hours;
+                        $hours_spent['very_high_hours'] = 0;
+                        $hours_spent['saturday_hours'] = 0;
+                        $hours_spent['sunday_hours'] = 0;
+                        $hours_spent['public_holiday_hours'] = $public_holiday_hours;
+                        return $hours_spent;    
+                    }
+                    else
+                    {                    
+                        if($event_day != 'Friday')
+                        {                   
+                            $high_cost_hours = 24 - $start_time;
+                            $very_high_hours = $finish_time;
+                            $hours_spent['low_cost_hours'] = 0;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['very_high_hours'] = $very_high_hours;
+                            $hours_spent['saturday_hours'] = 0;
+                            $hours_spent['sunday_hours'] = 0;
+                            $hours_spent['public_holiday_hours'] = 0;
+                            return $hours_spent;  
+                        }
+                        else
+                        {
+                            $high_cost_hours = 24 - $start_time;
+                            $saturday_hours = $finish_time;
+                            $hours_spent['low_cost_hours'] = 0;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['very_high_hours'] = 0;
+                            $hours_spent['saturday_hours'] = $saturday_hours;
+                            $hours_spent['sunday_hours'] = 0;
+                            $hours_spent['public_holiday_hours'] = 0;
+                            return $hours_spent;   
+                        }
+                    }
+                }
+                elseif (7 < $finish_time && $finish_time <= 19) 
+                {
+                    if($this->is_public_holiday($next_day))
+                    {                   
+                        $high_cost_hours = 24 - $start_time;
+                        $public_holiday_hours = $finish_time;
+                        $hours_spent['low_cost_hours'] = 0;
+                        $hours_spent['high_cost_hours'] = $high_cost_hours;
+                        $hours_spent['very_high_hours'] = 0;
+                        $hours_spent['saturday_hours'] = 0;
+                        $hours_spent['sunday_hours'] = 0;
+                        $hours_spent['public_holiday_hours'] = $public_holiday_hours;
+                        return $hours_spent;    
+                    }
+                    else
+                    {                    
+                        if($event_day != 'Friday')
+                        {
+                            $low_cost_hours = $finish_time - 7;
+                            $high_cost_hours = 24 - $start_time;
+                            $very_high_hours = 7;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['very_high_hours'] = $very_high_hours;
+                            $hours_spent['saturday_hours'] = 0;
+                            $hours_spent['sunday_hours'] = 0;
+                            $hours_spent['public_holiday_hours'] = 0;
+                            return $hours_spent;  
+                        }
+                        else
+                        {
+                            $saturday_hours = $finish_time - 7;
+                            $high_cost_hours = 24 - $start_time;
+                            $very_high_hours = 7;
+                            $hours_spent['low_cost_hours'] = 0;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['very_high_hours'] = $very_high_hours;
+                            $hours_spent['saturday_hours'] = $saturday_hours;
+                            $hours_spent['sunday_hours'] = 0;
+                            $hours_spent['public_holiday_hours'] = 0;
+                            return $hours_spent;  
+                        }  
+                    }                 
+                }
+            }
+            elseif ($start_time == 0) 
+            {
+                if(0 < $finish_time && $finish_time <= 7)
+                {                   
+                    $very_high_hours = $finish_time;
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = $very_high_hours;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent;  
+                }    
+                elseif(7 < $finish_time)
+                {
+                    $low_cost_hours = $finish_time - 7;
+                    $very_high_hours = 7;
+                    $hours_spent['low_cost_hours'] = $low_cost_hours;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = $very_high_hours;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent; 
+                }         
+            }
+            elseif(0 < $start_time && $start_time < 7)
+            {
+                if($finish_time <= 7)
+                {                   
+                    $very_high_hours = $finish_time - $start_time;
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = $very_high_hours;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent;  
+                }    
+                elseif(7 < $finish_time && $finish_time < 19)
+                {
+                    $low_cost_hours = $finish_time - 7;
+                    $very_high_hours = 7 - $start_time;
+                    $hours_spent['low_cost_hours'] = $low_cost_hours;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = $very_high_hours;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent; 
+                } 
+            }
+        }
+        elseif($event_day == 'Saturday' && !$this->is_public_holiday($event_date))
+        {
+            if(7 <= $start_time && $start_time < 24)
+            {
+                if($start_time < $finish_time && $finish_time < 24)
+                {
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = $finish_time - $start_time;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent; 
+                }
+                elseif($finish_time == 0)
+                {
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 24 - $start_time;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent; 
+                }      
+                elseif (0 < $finish_time && $finish_time < $start_time) 
+                {
+                    if($this->is_public_holiday($next_day))
+                    {
+                        $hours_spent['low_cost_hours'] = 0;
+                        $hours_spent['high_cost_hours'] = 0;
+                        $hours_spent['very_high_hours'] = 0;
+                        $hours_spent['saturday_hours'] = 24 - $start_time;
+                        $hours_spent['sunday_hours'] = 0;
+                        $hours_spent['public_holiday_hours'] = $finish_time;
+                        return $hours_spent; 
+                    }
+                    else
+                    {
+                        $hours_spent['low_cost_hours'] = 0;
+                        $hours_spent['high_cost_hours'] = 0;
+                        $hours_spent['very_high_hours'] = 0;
+                        $hours_spent['saturday_hours'] = 24 - $start_time;
+                        $hours_spent['sunday_hours'] = $finish_time;
+                        $hours_spent['public_holiday_hours'] = 0;
+                        return $hours_spent;                         
+                    }
+                }         
+            }
+        }
+        elseif($event_day == 'Sunday' && !$this->is_public_holiday($event_date))
+        {
+            if( 7 < $finish_time && $finish_time < 24)
+            {
+                $hours_spent['low_cost_hours'] = 0;
                 $hours_spent['high_cost_hours'] = 0;
                 $hours_spent['very_high_hours'] = 0;
-                return $hours_spent;
+                $hours_spent['saturday_hours'] = 0;
+                $hours_spent['sunday_hours'] = $finish_time - $start_time;
+                $hours_spent['public_holiday_hours'] = 0;
+                return $hours_spent;                 
             }
-            elseif($start_time < 19 && 19 < $finish_time && $finish_time < 24)
-            {
-                $high_cost_hours = $finish_time - 19;
-                $low_cost_hours = 19 - $start_time;
-                $hours_spent['low_cost_hours'] = $low_cost_hours;
-                $hours_spent['high_cost_hours'] = $high_cost_hours;
-                $hours_spent['very_high_hours'] = 0;
-                return $hours_spent;
-            }
-            elseif(19 < $start_time && $start_time < 24 && $finish_time < 24)
-            {
-                $hours_spent['low_cost_hours'] = 0;
-                $hours_spent['high_cost_hours'] = $finish_time - $start_time;
-                $hours_spent['very_high_hours'] = 0;
-                return $hours_spent;
-            }
-            elseif(19 < $start_time && $start_time < 24 && 00 <= $finish_time && $finish_time <= 07)
-            {
-                $high_cost_hours = 24 - $start_time;
-                $very_high_hours = 07 - $finish_time;
-                $hours_spent['low_cost_hours'] = 0;
-                $hours_spent['high_cost_hours'] = $high_cost_hours;
-                $hours_spent['very_high_hours'] = $very_high_hours;
-                return $hours_spent;                
-            }
-            elseif(00 <= $start_time && $start_time < 07 && 00 < $finish_time && $finish_time <= 07)
+            elseif($finish_time == 0)
             {
                 $hours_spent['low_cost_hours'] = 0;
                 $hours_spent['high_cost_hours'] = 0;
-                $hours_spent['very_high_hours'] = $finish_time - $start_time;
-                return $hours_spent;                
+                $hours_spent['very_high_hours'] = 0;
+                $hours_spent['saturday_hours'] = 0;
+                $hours_spent['sunday_hours'] = 24 - $start_time;
+                $hours_spent['public_holiday_hours'] = 0;
+                return $hours_spent;                    
             }
-            elseif($start_time < 19 && 00 <= $finish_time && $finish_time <= 07)
+            elseif(0 < $finish_time && $finish_time <= 7)
             {
-                $low_cost_hours = 19 - $start_time;
-                $high_cost_hours = 24 - 19;
-                $very_high_hours = 00 - $finish_time;
-                $hours_spent['low_cost_hours'] = $low_cost_hours;
-                $hours_spent['high_cost_hours'] = $high_cost_hours;
-                $hours_spent['very_high_hours'] = $very_high_hours;
-                return $hours_spent;                  
+                if($this->is_public_holiday($next_day))
+                {
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 24 - $start_time;
+                    $hours_spent['public_holiday_hours'] = $finish_time;
+                    return $hours_spent;                        
+                }
+                else
+                {
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = $finish_time;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 24 - $start_time;
+                    $hours_spent['public_holiday_hours'] = 0;
+                    return $hours_spent;                       
+                }
             }
-        } 
-        else
+        }
+        elseif($this->is_public_holiday($event_date))
         {
-            $hours_spent['low_cost_hours'] = $finish_time - $start_time;
-            $hours_spent['high_cost_hours'] = 0;
-            $hours_spent['very_high_hours'] = 0;
-            return $hours_spent;   
+            if($start_time < $finish_time && $finish_time < 24)
+            {
+                $hours_spent['low_cost_hours'] = 0;
+                $hours_spent['high_cost_hours'] = 0;
+                $hours_spent['very_high_hours'] = 0;
+                $hours_spent['saturday_hours'] = 0;
+                $hours_spent['sunday_hours'] = 0;
+                $hours_spent['public_holiday_hours'] = $finish_time - $start_time;
+                return $hours_spent;                   
+            }
+            elseif ($finish_time == 0) 
+            {
+                $hours_spent['low_cost_hours'] = 0;
+                $hours_spent['high_cost_hours'] = 0;
+                $hours_spent['very_high_hours'] = 0;
+                $hours_spent['saturday_hours'] = 0;
+                $hours_spent['sunday_hours'] = 0;
+                $hours_spent['public_holiday_hours'] = 24 - $start_time;
+                return $hours_spent;                   
+            }
+            elseif($finish_time < $start_time)
+            {
+                if($next_event_day == 'Saturday')
+                {
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = $finish_time;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 24 - $start_time;
+                    return $hours_spent;
+                }
+                elseif($next_event_day == 'Sunday')
+                {
+                    $hours_spent['low_cost_hours'] = 0;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = $finish_time;
+                    $hours_spent['public_holiday_hours'] = 24 - $start_time;
+                    return $hours_spent;        
+                }
+                else
+                {
+                    $hours_spent['low_cost_hours'] = $finish_time;
+                    $hours_spent['high_cost_hours'] = 0;
+                    $hours_spent['very_high_hours'] = 0;
+                    $hours_spent['saturday_hours'] = 0;
+                    $hours_spent['sunday_hours'] = 0;
+                    $hours_spent['public_holiday_hours'] = 24 - $start_time;
+                    return $hours_spent;    
+                }
+            }    
         }
     }
 
@@ -217,5 +551,22 @@ class FinancialReportCalculation {
         }
         
         return $publicHolidays;
+    }
+
+    public function is_public_holiday($date)
+    {
+        $date = date('d/m/Y', strtotime($date));
+        $year = date('Y', strtotime($date));
+
+        $publicHolidays = $this->publicHolidays($year);
+        $publiHolidaysNumber = count($publicHolidays);
+
+        for ($i=0; $i < $publiHolidaysNumber; $i++) 
+        { 
+            if($date == $publicHolidays[$i])
+            {
+                return true;
+            }
+        }
     }
 }

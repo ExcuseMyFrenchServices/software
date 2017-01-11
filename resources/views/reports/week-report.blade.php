@@ -38,7 +38,7 @@
 						<td>{{ $assignment->level }}</td>
 						<td>{{ $start_time = str_replace('["','',str_replace('"]','',$assignment->start_time)) }}</td>
 						<td>{{ $finish_time = $assignment->finish_time }}</td>
-						<td>{{ $hours_spent = $hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['very_high_hours'] }}</td>
+						<td>{{ $hours_spent = $hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['very_high_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['saturday_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['sunday_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['public_holiday_hours'] }}</td>
 						<td>${{ $event_cost = $cost[$assignment->event_id.'-'.$assignment->user_id] }}</td>
 						<?php $total_cost += $event_cost ?>
 					</tr>

@@ -5,7 +5,7 @@
 			<div class="col-xs-12 col-sm-5">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3>Number of events by months - {{ $last_year }}</h3>
+						<h3>Number of staff on duty by months - {{ $last_year }}</h3>
 					</div>
 					<div class="panel-body">
 						<div class="list-group">
@@ -21,7 +21,7 @@
 			<div class="col-xs-12 col-sm-2">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3>Differences</h3>
+						<h3>Differences <br> {{ $year }} / {{ $last_year }}</h3>
 					</div>
 					<div class="panel-body">
 						<ul class="list-group">
@@ -57,7 +57,7 @@
 			<div class="col-xs-12 col-sm-5">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3>Number of events by months - {{ $year }}</h3>
+						<h3>Number of staff on duty by months - {{ $year }}</h3>
 					</div>
 					<div class="panel-body">
 						<div class="list-group">
@@ -78,7 +78,7 @@
 			<div class="col-xs-12 col-sm-5">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3>Number of events by months - {{ $last_last_year }}</h3>
+						<h3>Number of staff on duty by months - {{ $last_last_year }}</h3>
 					</div>
 					<div class="panel-body">
 						<div class="list-group">
@@ -94,7 +94,7 @@
 			<div class="col-xs-12 col-sm-2">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3>Differences</h3>
+						<h3>Differences<br>{{ $last_year }} / {{ $last_last_year }}</h3>
 					</div>
 					<div class="panel-body">
 						<ul class="list-group">
@@ -123,7 +123,7 @@
 			<div class="col-xs-12 col-sm-5">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3>Number of events by months - {{ $last_year }}</h3>
+						<h3>Number of staff on duty by months - {{ $last_year }}</h3>
 					</div>
 					<div class="panel-body">
 						<div class="list-group">

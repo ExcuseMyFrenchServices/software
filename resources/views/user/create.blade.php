@@ -56,10 +56,16 @@
                                     @endforeach
                                 </select>
                             </div>
+                            
                             <div class="col-xs-12 col-sm-6 col-md-6 form-group">
                                 <label for="role">User Level</label>
-                                <input type="number" name="level" value="{{ $user->level }}" class="form-control">
+                                @if(isset($user))
+                                    <input type="number" name="level" value="{{ $user->level }}" class="form-control">
+                                @else
+                                    <input type="number" name="level" class="form-control">                           
+                                @endif
                             </div>
+                            
                             <div class="col-xs-12">
                                 <br>
                                 @if(isset($profile))

@@ -53,8 +53,8 @@ class AssignmentController extends Controller
     public function weekReport()
     {
         $day = date('w');
-        $week_start = date('Y-m-d', strtotime('-'.$day.' days'));
-        $week_end = date('Y-m-d', strtotime('+'.($day-10).' days'));
+        $week_start = date('Y-m-d', strtotime('-'.($day-1).' days'));
+        $week_end = date('Y-m-d', strtotime('+'.($day-12).' days'));
 
         $calculator = new FinancialReportCalculation;
 
