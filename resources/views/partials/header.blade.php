@@ -27,6 +27,7 @@
                         <li><a href="{{ url('past/events/') }}">Past Events</a></li>
                         <li><a href="{{ url('client') }}">Clients</a></li>
                         <li><a href="{{ url('reports')}}">Reports</a></li>
+                        <li><a href="{{ url('public-holidays') }}">Public Holidays</a></li>
                         <li><a href="{{ url('user/' . Auth::user()->id . '/password') }}">Password</a></li>
                         <li><a href="{{ url('logout') }}">Logout</a></li>
                     @else

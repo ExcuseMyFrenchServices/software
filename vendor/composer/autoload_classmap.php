@@ -12,6 +12,7 @@ return array(
     'AddHoursToAssigments' => $baseDir . '/database/migrations/2016_09_06_120019_add_hours_to_assigments.php',
     'AddLvlColumnToUsersTable' => $baseDir . '/database/migrations/2017_01_09_013436_add_lvl_column_to_users_table.php',
     'AddNewRoles' => $baseDir . '/database/migrations/2016_01_07_093242_add_new_roles.php',
+    'AddNewTablePublicHolidays' => $baseDir . '/database/migrations/2017_01_12_014929_add_new_table_public_holidays.php',
     'AddNotifcationStatusesToEvents' => $baseDir . '/database/migrations/2016_07_19_091343_add_notifcation_statuses_to_events.php',
     'AddNotificationStatusToEvents' => $baseDir . '/database/migrations/2016_02_24_123211_add_notification_status_to_events.php',
     'AddNotificationToAssignment' => $baseDir . '/database/migrations/2016_08_17_124137_add_notification_to_assignment.php',

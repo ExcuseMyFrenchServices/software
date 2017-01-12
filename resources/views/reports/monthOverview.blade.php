@@ -11,7 +11,7 @@
 						<div class="list-group">
 							@for($i=1;$i<=12;$i++)
 								<a type="button" class="list-group-item" href="{{ url('reports/month-report/'.$last_year.'/'.$i) }}">
-										Month {{ $i }} : {{ $last_year_report[$i] }} events
+										Month {{ $i }} : {{ $last_year_report[$i] }} staff
 								</a>
 							@endfor
 						</div>
@@ -63,7 +63,7 @@
 						<div class="list-group">
 							@for($i=1;$i<=12;$i++)
 								<a type="button" class="list-group-item" href="{{ url('reports/month-report/'.$year.'/'.$i) }}">
-										Month {{ $i }} : {{ $this_year_report[$i] }} events
+										Month {{ $i }} : {{ $this_year_report[$i] }} staff
 								</a>
 							@endfor
 						</div>
@@ -84,7 +84,7 @@
 						<div class="list-group">
 							@for($i=1;$i<=12;$i++)
 								<a type="button" class="list-group-item" href="{{ url('reports/month-report/'.$last_last_year.'/'.$i) }}">
-										Month {{ $i }} : {{ $last_last_year_report[$i] }} events
+										Month {{ $i }} : {{ $last_last_year_report[$i] }} staff
 								</a>
 							@endfor
 						</div>
@@ -129,7 +129,7 @@
 						<div class="list-group">
 							@for($i=1;$i<=12;$i++)
 								<a type="button" class="list-group-item" href="{{ url('reports/month-report/'.$last_year.'/'.$i) }}">
-										Month {{ $i }} : {{ $last_year_report[$i] }} events
+										Month {{ $i }} : {{ $last_year_report[$i] }} staff
 								</a>
 							@endfor
 						</div>

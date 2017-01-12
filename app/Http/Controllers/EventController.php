@@ -381,7 +381,6 @@ class EventController extends Controller
 
         $events = DB::table('events')
                     ->select('clients.name',DB::raw('count(events.event_name) as events_number'))
-                    ->join('assignments','assignments.event_id','=','events.id')
                     ->join('clients','clients.id','=','events.client_id')
                     ->where('events.event_date','>=',$date)
                     ->where('events.event_date','<',$next_report_month)

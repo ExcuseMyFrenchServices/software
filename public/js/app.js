@@ -170,4 +170,12 @@ $( document ).ready(function() {
         theme: 'bootstrap-stars',
         readonly: true
     });
+
+    //PUBLIC HOLIDAYS
+
+    $('.public_holiday_delete_btn').click(function() {
+        var id = $(this).siblings('.public_holiday_id').html();
+        $('#public_holiday_form_delete').prop('action', '/public-holidays/' + id);
+        $('p#public_holiday_confirm_message').html('Are you sure you want to delete this public holiday?');
+    });    
 });

@@ -75,3 +75,10 @@ Route::get('reports/month-report', 'EventController@briefMonthReport');
 Route::get('reports/month-report/{year}/{month}', 'EventController@monthReport');
 
 Route::get('reports/week-report', 'AssignmentController@weekReport');
+
+// PUBLIC HOLIDAYS
+
+Route::resource('public-holidays', 'PublicHolidayController');
+Route::get('public-holidays/create', 'PublicHolidayController@create');
+Route::get('public-holidays/{publicHolidayId}/edit', 'PublicHolidayController@edit');
+Route::get('public-holidays/{publicHolidayId}/delete', 'PublicHolidayController@destroy');

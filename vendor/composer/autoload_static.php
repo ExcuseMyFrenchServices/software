@@ -296,6 +296,7 @@ class ComposerStaticInit30850f05a4420f36ece7f181e979755f
         'AddHoursToAssigments' => __DIR__ . '/../..' . '/database/migrations/2016_09_06_120019_add_hours_to_assigments.php',
         'AddLvlColumnToUsersTable' => __DIR__ . '/../..' . '/database/migrations/2017_01_09_013436_add_lvl_column_to_users_table.php',
         'AddNewRoles' => __DIR__ . '/../..' . '/database/migrations/2016_01_07_093242_add_new_roles.php',
+        'AddNewTablePublicHolidays' => __DIR__ . '/../..' . '/database/migrations/2017_01_12_014929_add_new_table_public_holidays.php',
         'AddNotifcationStatusesToEvents' => __DIR__ . '/../..' . '/database/migrations/2016_07_19_091343_add_notifcation_statuses_to_events.php',
         'AddNotificationStatusToEvents' => __DIR__ . '/../..' . '/database/migrations/2016_02_24_123211_add_notification_status_to_events.php',
         'AddNotificationToAssignment' => __DIR__ . '/../..' . '/database/migrations/2016_08_17_124137_add_notification_to_assignment.php',
