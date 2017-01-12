@@ -12,14 +12,14 @@
 				@foreach($assignments as $assignment)
 						@if(!isset($event_date))
 						<tr style="border-top:1px solid silver">
-							<td>{{ $event_date = date('l d/m/Y',strtotime($assignment->event_date)) }}</td>
+							<td><span class="badge">{{ $public_holiday[$assignment->event_id]}}</span> {{ $event_date = date('l d/m/Y',strtotime($assignment->event_date)) }}</td>
 						@else
 							@if($event_date != date('l d/m/Y',strtotime($assignment->event_date)))
 						<tr style="border-top:1px solid silver">
-							<td>{{ $event_date = date('l d/m/Y',strtotime($assignment->event_date)) }}</td>
+							<td><span class="badge">{{ $public_holiday[$assignment->event_id]}}</span> {{ $event_date = date('l d/m/Y',strtotime($assignment->event_date)) }}</td>
 							@elseif(isset($event_name) && $event_name != $assignment->event_name)
 						<tr style="border-top:1px solid silver">
-							<td>{{ $event_date = date('l d/m/Y',strtotime($assignment->event_date)) }}</td>														
+							<td><span class="badge">{{ $public_holiday[$assignment->event_id]}}</span> {{ $event_date = date('l d/m/Y',strtotime($assignment->event_date)) }}</td>														
 							@else
 						<tr>
 							<td></td>

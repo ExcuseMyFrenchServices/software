@@ -54,7 +54,7 @@ class AssignmentController extends Controller
     {
         $day = date('w');
         $week_start = date('Y-m-d', strtotime('-'.($day-1).' days'));
-        $week_end = date('Y-m-d', strtotime('+'.($day-12).' days'));
+        $week_end = date('Y-m-d', strtotime($week_start.'-7 days'));
 
         $calculator = new FinancialReportCalculation;
 
@@ -68,13 +68,22 @@ class AssignmentController extends Controller
                         ->orderBy('events.event_date','ASC')
                         ->get();
         $hours = [];
-        $cost = [];                
+        $cost = []; 
+        $public_holiday = [];               
         foreach ($assignments as $assignment) 
         {
+            if($calculator->is_public_holiday($assignment->event_date))
+            {
+                $public_holiday[$assignment->event_id] = "PH";
+            }
+            else
+            {
+                $public_holiday[$assignment->event_id] = ""; 
+            }
             $hours[$assignment->event_id.'-'.$assignment->user_id] = $calculator->hourSpent($assignment->start_time,$assignment->finish_time,$assignment->event_date);
             $cost[$assignment->event_id.'-'.$assignment->user_id] = $calculator->staffCost($assignment->start_time,$assignment->finish_time,$assignment->event_date,$assignment->level);
         }
 
-        return view('reports.week-report')->with(compact('assignments','week_start','week_end','hours','cost'));
+        return view('reports.week-report')->with(compact('assignments','week_start','week_end','hours','cost','public_holiday'));
     }
 }

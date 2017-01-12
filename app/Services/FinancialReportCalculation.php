@@ -5,8 +5,10 @@ use App\Assignment;
 use App\Availability;
 use App\Event;
 use App\User;
+use App\PublicHoliday;
 use DateTime;
 use App\Services\UsersMissions;
+
 
 class FinancialReportCalculation {
 
@@ -529,41 +531,20 @@ class FinancialReportCalculation {
         return $part[0] + floor(($part[1]/60)*100) / 100 . PHP_EOL;        
     }
 
-    public function publicHolidays($year)
-    {
-        $publicHolidays = [
-            '01/01/'.$year,
-            '26/01/'.$year,
-            '25/04/'.$year,
-            '25/12/'.$year,
-            '26/12/'.$year
-        ];
-
-        if($year == 2017)
-        {
-            $publicHolidays[] = '02/01/2017';
-            $publicHolidays[] = '14/04/2017';
-            $publicHolidays[] = '15/04/2017';
-            $publicHolidays[] = '16/04/2017';
-            $publicHolidays[] = '17/04/2017';
-            $publicHolidays[] = '12/06/2017';
-            $publicHolidays[] = '02/10/2017';
-        }
-        
-        return $publicHolidays;
-    }
 
     public function is_public_holiday($date)
     {
         $date = date('d/m/Y', strtotime($date));
         $year = date('Y', strtotime($date));
 
-        $publicHolidays = $this->publicHolidays($year);
-        $publiHolidaysNumber = count($publicHolidays);
+        $publicHolidays = PublicHoliday::where('year','=',$year)
+                                        ->orWhere('year', '=', 1)   
+                                        ->orderBy('public_holiday_date', 'ASC')
+                                        ->get();
 
-        for ($i=0; $i < $publiHolidaysNumber; $i++) 
+        foreach($publicHolidays as $publicHoliday) 
         { 
-            if($date == $publicHolidays[$i])
+            if($date == $publicHoliday->public_holiday_date)
             {
                 return true;
             }
