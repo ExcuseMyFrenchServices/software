@@ -1,13 +1,13 @@
 @extends('layouts.main')
 @section('content')
-	<div class="container">
+	<div class="container-fluid">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h1>Financial report from {{ date('D d F Y',strtotime($week_end)) }} to {{ date('D d F Y',strtotime($week_start)) }}</h1>
 			</div>
 			<div class="panel-body">
 			<table class="col-xs-12">
-				<tr><th>Event Date</th><th>Event Name</th><th>Staff</th><th>Level</th><th>Start Time</th><th>Finish Time</th><th>Hours spent</th><th>Cost</th></tr>
+				<tr><th>Event Date</th><th>Event Name</th><th>Staff</th><th>Level</th><th>Start Time</th><th>Finish Time</th><th>< 4 hours</th><th>7am - 7pm</th><th>7pm - 00am</th><th>00am - 7am</th><th>Saturday Hours</th><th>Sunday Hours</th><th>Public Holiday Hours</th><th>Total</th></tr>
 				<?php $total_cost = 0; ?>
 				@foreach($assignments as $assignment)
 						@if(!isset($event_date))
@@ -38,15 +38,19 @@
 						<td>{{ $assignment->level }}</td>
 						<td>{{ $start_time = str_replace('["','',str_replace('"]','',$assignment->start_time)) }}</td>
 						<td>{{ $finish_time = $assignment->finish_time }}</td>
-						<td>{{ $hours_spent = $hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['very_high_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['saturday_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['sunday_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['public_holiday_hours'] }}</td>
-						<td>${{ $event_cost = $cost[$assignment->event_id.'-'.$assignment->user_id] }}</td>
-						<?php $total_cost += $event_cost ?>
+						<td>{{ $hours[$assignment->event_id.'-'.$assignment->user_id]['bonus_time'] > 0 ? 'Yes' : ''  }}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['very_high_hours']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['saturday_hours']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['sunday_hours']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['public_holiday_hours']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['very_high_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['saturday_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['sunday_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['public_holiday_hours']}}</td>
 					</tr>
 				@endforeach
 			</table>
 			</div>
 			<div class="panel-footer">
-				<p>Total cost :<span class="pull-right">${{ $total_cost }}</span></p>
 			</div>
 		</div>
 	</div>

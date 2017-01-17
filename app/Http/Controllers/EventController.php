@@ -367,8 +367,8 @@ class EventController extends Controller
 
     public function monthReport($year, $month)
     {
-        $date = $year.'.'.$month.'.01';
-        $written_date = $month.'.'.$year;
+        $date = $year.'-'.$month.'-01';
+        $written_date = date('F Y', strtotime($date));
 
         $next_month = $month+1;
         $last_month = $month-1;
@@ -377,23 +377,26 @@ class EventController extends Controller
         $last_year = $year-1;
 
         $next_report_month = $year.'.'.$next_month.'.01';
-        
+        $days_numbers_in_month = date('t', strtotime($date));
 
         $events = DB::table('events')
-                    ->select('clients.name',DB::raw('count(events.event_name) as events_number'))
+                    ->select('clients.name',DB::raw('count(DISTINCT events.id) as events_number'), DB::raw('count(assignments.user_id) as staff_number'), DB::raw('count(DISTINCT events.event_date) as days_worked'))
+                    ->join('assignments','assignments.event_id', '=', 'events.id')
                     ->join('clients','clients.id','=','events.client_id')
                     ->where('events.event_date','>=',$date)
                     ->where('events.event_date','<',$next_report_month)
                     ->groupBy('clients.name')
                     ->orderBy('events_number', 'DESC')
-                    ->get();
+                    ->get();  
 
         $total_events = DB::table('events')
-                    ->select('events.event_name')
+                    ->select(DB::raw('count(DISTINCT events.id) as events_number'), DB::raw('count(assignments.user_id) as staff_number'), DB::raw('count(DISTINCT events.event_date) as days_worked'))
+                    ->join('assignments','assignments.event_id', '=', 'events.id')
+                    ->join('clients','clients.id','=','events.client_id')
                     ->where('events.event_date','>=',$date)
                     ->where('events.event_date','<',$next_report_month)
-                    ->count();            
+                    ->get();   
 
-        return view('reports.month-report')->with(compact('events','total_events','written_date','year','month', 'last_month', 'next_month', 'last_year', 'next_year'));
+        return view('reports.month-report')->with(compact('events','total_events','written_date','year','month', 'last_month', 'next_month', 'last_year', 'next_year', 'days_numbers_in_month'));
     }
 }

@@ -77,30 +77,46 @@ class FinancialReportCalculation {
 
         $hours_spent = [];
 
+        $bonus_time = 0;
+
         if($event_day != 'Saturday' && $event_day != 'Sunday' && !$this->is_public_holiday($event_date))
         {
             if(7 <= $start_time && $start_time < 19)
             {
                 if(7 < $finish_time && $finish_time <= 19)
                 {
-                    $hours_spent['low_cost_hours'] = $finish_time - $start_time;
+                    if($finish_time - $start_time < 4)
+                    {
+                        $bonus_time = 4 - ($finish_time - $start_time);
+                    }
+                    
+                    $hours_spent['low_cost_hours'] = ($finish_time - $start_time) + $bonus_time;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;                    
                 }
                 elseif(19 < $finish_time && $finish_time < 24)
                 {
+
                     $low_cost_hours = 19 - $start_time;                    
                     $high_cost_hours = 24 - $finish_time;
+                    
+                    if($high_cost_hours + $low_cost_hours < 4)
+                    {
+                        $bonus_time = 4 - ($high_cost_hours + $low_cost_hours);
+                    }
+                    
                     $hours_spent['low_cost_hours'] = $low_cost_hours;
-                    $hours_spent['high_cost_hours'] = $high_cost_hours;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours + $bonus_time;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;                    
                 }
                 elseif($finish_time == 0)
@@ -113,6 +129,7 @@ class FinancialReportCalculation {
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;                       
                 }
                 elseif(0 < $finish_time && $finish_time <= 7)
@@ -128,6 +145,7 @@ class FinancialReportCalculation {
                         $hours_spent['saturday_hours'] = 0;
                         $hours_spent['sunday_hours'] = 0;
                         $hours_spent['public_holiday_hours'] = $public_holiday_hours;
+                        $hours_spent['bonus_time'] = $bonus_time;
                         return $hours_spent;    
                     }
                     else
@@ -143,6 +161,7 @@ class FinancialReportCalculation {
                             $hours_spent['saturday_hours'] = 0;
                             $hours_spent['sunday_hours'] = 0;
                             $hours_spent['public_holiday_hours'] = 0;
+                            $hours_spent['bonus_time'] = $bonus_time;
                             return $hours_spent;  
                         }
                         elseif($event_day == 'Friday')
@@ -156,6 +175,7 @@ class FinancialReportCalculation {
                             $hours_spent['saturday_hours'] = $saturday_hours;
                             $hours_spent['sunday_hours'] = 0;
                             $hours_spent['public_holiday_hours'] = 0;
+                            $hours_spent['bonus_time'] = $bonus_time;
                             return $hours_spent;
                         }
                     }
@@ -174,6 +194,7 @@ class FinancialReportCalculation {
                         $hours_spent['saturday_hours'] = 0;
                         $hours_spent['sunday_hours'] = 0;
                         $hours_spent['public_holiday_hours'] = $public_holiday_hours;
+                        $hours_spent['bonus_time'] = $bonus_time;
                         return $hours_spent;    
                     }
                     else
@@ -189,6 +210,7 @@ class FinancialReportCalculation {
                             $hours_spent['saturday_hours'] = 0;
                             $hours_spent['sunday_hours'] = 0;
                             $hours_spent['public_holiday_hours'] = 0;
+                            $hours_spent['bonus_time'] = $bonus_time;
                             return $hours_spent;        
                         }
                         else
@@ -203,6 +225,7 @@ class FinancialReportCalculation {
                             $hours_spent['saturday_hours'] = $saturday_hours;
                             $hours_spent['sunday_hours'] = 0;
                             $hours_spent['public_holiday_hours'] = 0;
+                            $hours_spent['bonus_time'] = $bonus_time;
                             return $hours_spent; 
                         }
                     }                 
@@ -211,25 +234,40 @@ class FinancialReportCalculation {
             elseif(19 <= $start_time && $start_time < 24)
             {
                 if(19 < $finish_time && $finish_time < 24)
-                {                   
+                {        
+
                     $high_cost_hours = $finish_time - $start_time;
+                    
+                    if($high_cost_hours < 4)
+                    {
+                        $bonus_time = 4 - ($high_cost_hours);
+                    }                     
+                    
                     $hours_spent['low_cost_hours'] = 0;
-                    $hours_spent['high_cost_hours'] = $high_cost_hours;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours + $bonus_time;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;                    
                 }
                 elseif($finish_time == 0)
                 {                   
                     $high_cost_hours = 24 - $start_time;
+
+                    if($high_cost_hours < 4)
+                    {
+                        $bonus_time = 4 - ($high_cost_hours);
+                    } 
+
                     $hours_spent['low_cost_hours'] = 0;
-                    $hours_spent['high_cost_hours'] = $high_cost_hours;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours + $bonus_time;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;                       
                 }
                 elseif(0 < $finish_time && $finish_time < 7)
@@ -238,12 +276,19 @@ class FinancialReportCalculation {
                     {                   
                         $high_cost_hours = 24 - $start_time;
                         $public_holiday_hours = $finish_time;
+
+                        if($high_cost_hours + $public_holiday_hours < 4)
+                        {
+                            $bonus_time = 4 - ($high_cost_hours + $public_holiday_hours);
+                        } 
+
                         $hours_spent['low_cost_hours'] = 0;
                         $hours_spent['high_cost_hours'] = $high_cost_hours;
                         $hours_spent['very_high_hours'] = 0;
                         $hours_spent['saturday_hours'] = 0;
                         $hours_spent['sunday_hours'] = 0;
-                        $hours_spent['public_holiday_hours'] = $public_holiday_hours;
+                        $hours_spent['public_holiday_hours'] = $public_holiday_hours + $bonus_time;
+                        $hours_spent['bonus_time'] = $bonus_time;
                         return $hours_spent;    
                     }
                     else
@@ -252,24 +297,38 @@ class FinancialReportCalculation {
                         {                   
                             $high_cost_hours = 24 - $start_time;
                             $very_high_hours = $finish_time;
+
+                            if($high_cost_hours + $very_high_hours < 4)
+                            {
+                                $bonus_time = 4 - ($high_cost_hours + $very_high_hours);
+                            } 
+
                             $hours_spent['low_cost_hours'] = 0;
                             $hours_spent['high_cost_hours'] = $high_cost_hours;
-                            $hours_spent['very_high_hours'] = $very_high_hours;
+                            $hours_spent['very_high_hours'] = $very_high_hours + $bonus_time;
                             $hours_spent['saturday_hours'] = 0;
                             $hours_spent['sunday_hours'] = 0;
                             $hours_spent['public_holiday_hours'] = 0;
+                            $hours_spent['bonus_time'] = $bonus_time;
                             return $hours_spent;  
                         }
                         else
                         {
                             $high_cost_hours = 24 - $start_time;
                             $saturday_hours = $finish_time;
+
+                            if($high_cost_hours + $saturday_hours < 4)
+                            {
+                                $bonus_time = 4 - ($high_cost_hours + $saturday_hours);
+                            } 
+
                             $hours_spent['low_cost_hours'] = 0;
                             $hours_spent['high_cost_hours'] = $high_cost_hours;
                             $hours_spent['very_high_hours'] = 0;
-                            $hours_spent['saturday_hours'] = $saturday_hours;
+                            $hours_spent['saturday_hours'] = $saturday_hours + $bonus_time;
                             $hours_spent['sunday_hours'] = 0;
                             $hours_spent['public_holiday_hours'] = 0;
+                            $hours_spent['bonus_time'] = $bonus_time;
                             return $hours_spent;   
                         }
                     }
@@ -286,6 +345,7 @@ class FinancialReportCalculation {
                         $hours_spent['saturday_hours'] = 0;
                         $hours_spent['sunday_hours'] = 0;
                         $hours_spent['public_holiday_hours'] = $public_holiday_hours;
+                        $hours_spent['bonus_time'] = $bonus_time;
                         return $hours_spent;    
                     }
                     else
@@ -301,6 +361,7 @@ class FinancialReportCalculation {
                             $hours_spent['saturday_hours'] = 0;
                             $hours_spent['sunday_hours'] = 0;
                             $hours_spent['public_holiday_hours'] = 0;
+                            $hours_spent['bonus_time'] = $bonus_time;
                             return $hours_spent;  
                         }
                         else
@@ -314,6 +375,7 @@ class FinancialReportCalculation {
                             $hours_spent['saturday_hours'] = $saturday_hours;
                             $hours_spent['sunday_hours'] = 0;
                             $hours_spent['public_holiday_hours'] = 0;
+                            $hours_spent['bonus_time'] = $bonus_time;
                             return $hours_spent;  
                         }  
                     }                 
@@ -324,12 +386,17 @@ class FinancialReportCalculation {
                 if(0 < $finish_time && $finish_time <= 7)
                 {                   
                     $very_high_hours = $finish_time;
+                    if($very_high_hours < 4)
+                    {
+                        $bonus_time = 4 - ($very_high_hours);
+                    } 
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
-                    $hours_spent['very_high_hours'] = $very_high_hours;
+                    $hours_spent['very_high_hours'] = $very_high_hours + $bonus_time;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;  
                 }    
                 elseif(7 < $finish_time)
@@ -342,6 +409,7 @@ class FinancialReportCalculation {
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent; 
                 }         
             }
@@ -350,24 +418,38 @@ class FinancialReportCalculation {
                 if($finish_time <= 7)
                 {                   
                     $very_high_hours = $finish_time - $start_time;
+                    
+                    if($very_high_hours < 4)
+                    {
+                        $bonus_time = 4 - ($very_high_hours);
+                    }
+
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
-                    $hours_spent['very_high_hours'] = $very_high_hours;
+                    $hours_spent['very_high_hours'] = $very_high_hours + $bonus_time;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;  
                 }    
                 elseif(7 < $finish_time && $finish_time < 19)
                 {
                     $low_cost_hours = $finish_time - 7;
                     $very_high_hours = 7 - $start_time;
-                    $hours_spent['low_cost_hours'] = $low_cost_hours;
+
+                    if($low_cost_hours + $very_high_hours < 4)
+                    {
+                        $bonus_time = 4 - ($low_cost_hours + $very_high_hours);
+                    }
+
+                    $hours_spent['low_cost_hours'] = $low_cost_hours + $bonus_time;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = $very_high_hours;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent; 
                 } 
             }
@@ -378,44 +460,68 @@ class FinancialReportCalculation {
             {
                 if($start_time < $finish_time && $finish_time < 24)
                 {
+                    if($finish_time - $start_time < 4)
+                    {
+                        $bonus_time = 4 - ($finish_time - $start_time);
+                    }
+
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
-                    $hours_spent['saturday_hours'] = $finish_time - $start_time;
+                    $hours_spent['saturday_hours'] = ($finish_time - $start_time) + $bonus_time;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent; 
                 }
                 elseif($finish_time == 0)
                 {
+                    if(24 - $start_time < 4)
+                    {
+                        $bonus_time = 4 - (24-$start_time);
+                    }
+
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
-                    $hours_spent['saturday_hours'] = 24 - $start_time;
+                    $hours_spent['saturday_hours'] = (24 - $start_time) + $bonus_time;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent; 
                 }      
                 elseif (0 < $finish_time && $finish_time < $start_time) 
                 {
                     if($this->is_public_holiday($next_day))
                     {
+                        if( (24-$start_time)+$finish_time < 4)
+                        {
+                            $bonus_time = 4 - ((24-$start_time)+$finish_time);
+                        }
+
                         $hours_spent['low_cost_hours'] = 0;
                         $hours_spent['high_cost_hours'] = 0;
                         $hours_spent['very_high_hours'] = 0;
                         $hours_spent['saturday_hours'] = 24 - $start_time;
                         $hours_spent['sunday_hours'] = 0;
-                        $hours_spent['public_holiday_hours'] = $finish_time;
+                        $hours_spent['public_holiday_hours'] = $finish_time + $bonus_time;
+                        $hours_spent['bonus_time'] = $bonus_time;
                         return $hours_spent; 
                     }
                     else
                     {
+                        if( (24-$start_time)+$finish_time < 4)
+                        {
+                            $bonus_time = 4 - ((24-$start_time)+$finish_time);
+                        }
+
                         $hours_spent['low_cost_hours'] = 0;
                         $hours_spent['high_cost_hours'] = 0;
                         $hours_spent['very_high_hours'] = 0;
                         $hours_spent['saturday_hours'] = 24 - $start_time;
-                        $hours_spent['sunday_hours'] = $finish_time;
+                        $hours_spent['sunday_hours'] = $finish_time + $bonus_time;
                         $hours_spent['public_holiday_hours'] = 0;
+                        $hours_spent['bonus_time'] = $bonus_time;
                         return $hours_spent;                         
                     }
                 }         
@@ -425,44 +531,68 @@ class FinancialReportCalculation {
         {
             if( 7 < $finish_time && $finish_time < 24)
             {
+                if($finish_time - $start_time < 4)
+                {
+                    $bonus_time = 4 - ($finish_time - $start_time);
+                }
+
                 $hours_spent['low_cost_hours'] = 0;
                 $hours_spent['high_cost_hours'] = 0;
                 $hours_spent['very_high_hours'] = 0;
                 $hours_spent['saturday_hours'] = 0;
-                $hours_spent['sunday_hours'] = $finish_time - $start_time;
+                $hours_spent['sunday_hours'] = ($finish_time - $start_time)+$bonus_time;
                 $hours_spent['public_holiday_hours'] = 0;
+                $hours_spent['bonus_time'] = $bonus_time;
                 return $hours_spent;                 
             }
             elseif($finish_time == 0)
             {
+                if(24-$start_time < 4)
+                {
+                    $bonus_time = 4 - (24-$start_time);
+                }
+
                 $hours_spent['low_cost_hours'] = 0;
                 $hours_spent['high_cost_hours'] = 0;
                 $hours_spent['very_high_hours'] = 0;
                 $hours_spent['saturday_hours'] = 0;
-                $hours_spent['sunday_hours'] = 24 - $start_time;
+                $hours_spent['sunday_hours'] = (24 - $start_time)+$start_time;
                 $hours_spent['public_holiday_hours'] = 0;
+                $hours_spent['bonus_time'] = $bonus_time;
                 return $hours_spent;                    
             }
             elseif(0 < $finish_time && $finish_time <= 7)
             {
                 if($this->is_public_holiday($next_day))
                 {
+                    if( (24-$start_time)+ $finish_time < 4)
+                    {
+                        $bonus_time = 4 - ((24-$start_time)+$finish_time);
+                    }
+
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 24 - $start_time;
-                    $hours_spent['public_holiday_hours'] = $finish_time;
+                    $hours_spent['public_holiday_hours'] = $finish_time + $bonus_time;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;                        
                 }
                 else
                 {
+                    if( (24-$start_time)+ $finish_time < 4)
+                    {
+                        $bonus_time = 4 - ((24-$start_time)+$finish_time);
+                    }
+
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
-                    $hours_spent['very_high_hours'] = $finish_time;
+                    $hours_spent['very_high_hours'] = $finish_time + $bonus_time;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 24 - $start_time;
                     $hours_spent['public_holiday_hours'] = 0;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;                       
                 }
             }
@@ -471,54 +601,83 @@ class FinancialReportCalculation {
         {
             if($start_time < $finish_time && $finish_time < 24)
             {
+                if($finish_time - $start_time < 4)
+                {
+                    $bonus_time = 4 - ($finish_time - $start_time);
+                }
+
                 $hours_spent['low_cost_hours'] = 0;
                 $hours_spent['high_cost_hours'] = 0;
                 $hours_spent['very_high_hours'] = 0;
                 $hours_spent['saturday_hours'] = 0;
                 $hours_spent['sunday_hours'] = 0;
-                $hours_spent['public_holiday_hours'] = $finish_time - $start_time;
+                $hours_spent['public_holiday_hours'] = ($finish_time - $start_time) + $bonus_time;
+                $hours_spent['bonus_time'] = $bonus_time;
                 return $hours_spent;                   
             }
             elseif ($finish_time == 0) 
             {
+                if(24 - $start_time < 4)
+                {
+                    $bonus_time = 4 - (24 - $start_time);
+                }
+
                 $hours_spent['low_cost_hours'] = 0;
                 $hours_spent['high_cost_hours'] = 0;
                 $hours_spent['very_high_hours'] = 0;
                 $hours_spent['saturday_hours'] = 0;
                 $hours_spent['sunday_hours'] = 0;
-                $hours_spent['public_holiday_hours'] = 24 - $start_time;
+                $hours_spent['public_holiday_hours'] = (24 - $start_time)+$bonus_time;
+                $hours_spent['bonus_time'] = $bonus_time;
                 return $hours_spent;                   
             }
             elseif($finish_time < $start_time)
             {
                 if($next_event_day == 'Saturday')
                 {
+                    if( (24-$start_time)+$finish_time < 4)
+                    {
+                        $bonus_time = 4 - ((24-$start_time)+$finish_time);
+                    }
+
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
-                    $hours_spent['saturday_hours'] = $finish_time;
+                    $hours_spent['saturday_hours'] = $finish_time + $bonus_time;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 24 - $start_time;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;
                 }
                 elseif($next_event_day == 'Sunday')
                 {
+                    if( (24-$start_time)+$finish_time < 4)
+                    {
+                        $bonus_time = 4 - ((24-$start_time)+$finish_time);
+                    }
+
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
-                    $hours_spent['sunday_hours'] = $finish_time;
+                    $hours_spent['sunday_hours'] = $finish_time+$bonus_time;
                     $hours_spent['public_holiday_hours'] = 24 - $start_time;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;        
                 }
                 else
                 {
-                    $hours_spent['low_cost_hours'] = $finish_time;
+                    if( (24-$start_time)+$finish_time < 4)
+                    {
+                        $bonus_time = 4 - ((24-$start_time)+$finish_time);
+                    }
+                    $hours_spent['low_cost_hours'] = $finish_time+$bonus_time;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 24 - $start_time;
+                    $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;    
                 }
             }    

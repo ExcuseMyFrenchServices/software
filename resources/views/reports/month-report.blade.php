@@ -30,16 +30,32 @@
 			<div class="panel-body">
 				<table class="col-xs-12 table table-striped table-bordered">
 					<tr>
+						<th rowspan="2">Total</th>
+						<th>Events</th>
+						<th>Staff</th>
+						<th>Days worked</th>
+					</tr>
+					@foreach($total_events as $total_event)
+					<tr>
+						<td>{{ $total_event->events_number }}</td>
+						<td>{{ $total_event->staff_number }}</td>
+						<td>{{ $total_event->days_worked }} / <b>{{ $days_numbers_in_month }}<b></td>
+					</tr>
+					@endforeach
+				</table>
+				<table class="col-xs-12 table table-striped table-bordered">
+					<tr>
 						<th>Client name</th>
 						<th>Number of events</th>
+						<th>Staff</th>
+						<th>Days Worked</th>
 					</tr>
 					@foreach($events as $event)
-						<tr><td>{{ $event->name }}</td><td>{{ $event->events_number}}</td></tr>
+						<tr><td>{{ $event->name }}</td><td>{{ $event->events_number}}</td><td>{{ $event->staff_number }}</td><td>{{ $event->days_worked }}</td></tr>
 					@endforeach
 				</table>
 			</div>
 			<div class="panel-footer">
-				<p><b>Total : <span style="float:right; margin-right: 100px">{{ $total_events }}</span></b></p>	
 			</div>
 		</div>
 	</div>

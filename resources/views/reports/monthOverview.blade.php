@@ -28,7 +28,6 @@
 							@for($i=1;$i<=12;$i++)
 								@if($i > $month)
 									<li class="list-group-item list-group-item-info">
-										Goal :
 										{{ $last_year_report[$i] - $this_year_report[$i] }}
 									</li>									
 								@else		
@@ -36,6 +35,9 @@
 										<li class="list-group-item list-group-item-success">
 											<span class="glyphicon glyphicon-arrow-up"></span>
 											{{ $this_year_report[$i] - $last_year_report[$i] }}
+											@if($this_year_report > 0)
+											(+{{ round((($last_year_report[$i] - $this_year_report[$i]) / $last_year_report[$i]) * 100) }}%)
+											@endif
 										</li>
 									@elseif($this_year_report[$i] - $last_year_report[$i] == 0)
 										<li class="list-group-item list-group-item-warning">
@@ -46,6 +48,9 @@
 										<li class="list-group-item list-group-item-danger">
 											<span class="glyphicon glyphicon-arrow-down"></span>
 											{{ $this_year_report[$i] - $last_year_report[$i] }}
+											@if($this_year_report > 0)
+											(-{{ round((($last_year_report[$i] - $this_year_report[$i]) / $last_year_report[$i]) * 100) }}%)
+											@endif
 										</li>									
 									@endif
 								@endif
@@ -103,6 +108,9 @@
 									<li class="list-group-item list-group-item-success">
 										<span class="glyphicon glyphicon-arrow-up"></span>
 										{{ $last_year_report[$i] - $last_last_year_report[$i] }}
+										@if($last_last_year_report[$i] > 0)
+										(+{{ round((($last_year_report[$i] - $last_last_year_report[$i]) / $last_last_year_report[$i]) *100) }}%)
+										@endif
 									</li>
 								@elseif($last_year_report[$i] - $last_last_year_report[$i] == 0)
 									<li class="list-group-item list-group-item-warning">
@@ -113,6 +121,9 @@
 									<li class="list-group-item list-group-item-danger">
 										<span class="glyphicon glyphicon-arrow-down"></span>
 										{{ $last_year_report[$i] - $last_last_year_report[$i] }}
+										@if($last_last_year_report[$i] > 0)
+										(-{{ round((($last_year_report[$i] - $last_last_year_report[$i]) / $last_last_year_report[$i]) * 100) }}%)
+										@endif
 									</li>									
 								@endif
 							@endfor
