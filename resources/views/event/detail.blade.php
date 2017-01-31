@@ -61,15 +61,23 @@
                                                 @foreach($event->assignments->where('time', $time) as $assignment)
                                                     @include('event.staff-row', ['$assignment' => $assignment])
                                                 @endforeach
+                                                @if(Auth::user()->role_id == 1)
+                                                    <li class="list-group-item">
+                                                        <b>Admin Report</b>:<br>
+                                                        {{ $assignment->event->report }}
+                                                    </li>
+                                                @endif
                                                 </ul>
                                             @endif
 
                                             @if(Auth::user()->role_id == 1)
-                                                <a href="/assignment/add/{{ $event->id .'/'.$time }}" class="btn btn-primary btn-xs">
-                                                    <span class="glyphicon glyphicon-plus"></span> Add staff
-                                                </a>
-                                                <br>
-                                                <br>
+                                                @if($assignment->event->event_date >= date('Y-m-d'))
+                                                    <a href="/assignment/add/{{ $event->id .'/'.$time }}" class="btn btn-primary btn-xs">
+                                                        <span class="glyphicon glyphicon-plus"></span> Add staff
+                                                    </a>
+                                                    <br>
+                                                    <br>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>

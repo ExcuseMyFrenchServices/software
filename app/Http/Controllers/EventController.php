@@ -276,13 +276,51 @@ class EventController extends Controller
 
     public function saveTimesheet(TimesheetRequest $request, $eventId)
     {
-        foreach($request->except(['_token']) as $assignment => $hours) {
-            $assignment = Assignment::find($assignment);
-            $assignment->hours = $hours;
+        $event = Event::find($eventId);
+
+        for($i = 0; $i < $request->assignment_number; $i++)
+        {
+            $id = 'id-'.$i;
+            $assignment = Assignment::find($request->$id);
+            
+            $hours = $assignment->id.'-hours';
+            $break = $assignment->id.'-break';
+
+            $assignment->hours = $request->$hours;
+            $assignment->break = $request->$break;
             $assignment->save();
         }
+        //Add a report from the admin of the event to an event
+        
+        $event->report = $request->input('report');
+        $event->save();
 
         return redirect('event/' . $eventId);
+    }
+
+    public function confirmStartTime(Request $request, $eventId)
+    {
+        $event = Event::find($eventId);
+
+        if(null !== $request->input('confirm-all'))
+        {
+            foreach ($event->assignments as $assignment) 
+            {
+                $assignment->time = $request->input('confirmed_start_time');
+                $assignment->start_time_confirmation = true;
+                $assignment->save();
+            }
+            return redirect()->back();
+        }
+        else
+        {
+            $assignment = Assignment::find($request->input('assignment_id'));
+            $assignment->time = $request->input('confirmed_start_time');
+            $assignment->start_time_confirmation = true;
+            $assignment->save();
+
+            return redirect()->back();
+        }
     }
 
     public function changeUserRole()

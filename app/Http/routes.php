@@ -42,6 +42,7 @@ Route::post('event/{event}/staff', 'EventController@assign');
 Route::get('timesheets', 'EventController@timesheetIndex');
 Route::get('event/{event}/timesheet', 'EventController@getTimesheet');
 Route::post('event/{event}/timesheet', 'EventController@saveTimesheet');
+Route::post('event/{event}/start-time-confirm', 'EventController@confirmStartTime');
 
 Route::get('event/notify/{assignment}', 'AssignmentController@notify');
 Route::get('event/{event}/confirm', 'AssignmentController@confirm');

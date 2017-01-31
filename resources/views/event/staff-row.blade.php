@@ -25,6 +25,7 @@
             <span class="label label-danger">Cancelled</span>
         @endif
     @elseif(!empty($assignment->hours))
-            <span class="label label-success">{{ $assignment->hours }} Hours</span>
+            <span class="label label-success"> {{ $assignment->hours }} Hours </span>
+            <span class="label label-warning"> {{ $assignment->break }} Breaks </span>
     @endif
 </li>

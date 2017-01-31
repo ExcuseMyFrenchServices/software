@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'AddAdminToEvents' => $baseDir . '/database/migrations/2016_09_06_113022_add_admin_to_events.php',
+    'AddBreakToAssignements' => $baseDir . '/database/migrations/2017_01_31_010933_add_break_to_assignements.php',
     'AddClientIdToEvents' => $baseDir . '/database/migrations/2016_01_07_061746_add_client_id_to_events.php',
     'AddClientsFromEvents' => $baseDir . '/database/migrations/2016_01_07_090907_add_clients_from_events.php',
     'AddHoursToAssigments' => $baseDir . '/database/migrations/2016_09_06_120019_add_hours_to_assigments.php',
@@ -16,7 +17,9 @@ return array(
     'AddNotifcationStatusesToEvents' => $baseDir . '/database/migrations/2016_07_19_091343_add_notifcation_statuses_to_events.php',
     'AddNotificationStatusToEvents' => $baseDir . '/database/migrations/2016_02_24_123211_add_notification_status_to_events.php',
     'AddNotificationToAssignment' => $baseDir . '/database/migrations/2016_08_17_124137_add_notification_to_assignment.php',
+    'AddReportToEvents' => $baseDir . '/database/migrations/2017_01_31_010951_add_report_to_events.php',
     'AddServicesToEventsTable' => $baseDir . '/database/migrations/2016_01_06_030851_add_services_to_events_table.php',
+    'AddStartTimeConfirmationToAssignments' => $baseDir . '/database/migrations/2017_01_31_063455_add_start_time_confirmation_to_assignments.php',
     'AddTimeToAssignments' => $baseDir . '/database/migrations/2016_07_01_071842_add_time_to_assignments.php',
     'ChangeTimesFormat' => $baseDir . '/database/migrations/2016_06_30_063604_change_times_format.php',
     'CreateAssignmentsTable' => $baseDir . '/database/migrations/2015_09_16_085437_create_assignments_table.php',

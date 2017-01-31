@@ -291,6 +291,7 @@ class ComposerStaticInit30850f05a4420f36ece7f181e979755f
 
     public static $classMap = array (
         'AddAdminToEvents' => __DIR__ . '/../..' . '/database/migrations/2016_09_06_113022_add_admin_to_events.php',
+        'AddBreakToAssignements' => __DIR__ . '/../..' . '/database/migrations/2017_01_31_010933_add_break_to_assignements.php',
         'AddClientIdToEvents' => __DIR__ . '/../..' . '/database/migrations/2016_01_07_061746_add_client_id_to_events.php',
         'AddClientsFromEvents' => __DIR__ . '/../..' . '/database/migrations/2016_01_07_090907_add_clients_from_events.php',
         'AddHoursToAssigments' => __DIR__ . '/../..' . '/database/migrations/2016_09_06_120019_add_hours_to_assigments.php',
@@ -300,7 +301,9 @@ class ComposerStaticInit30850f05a4420f36ece7f181e979755f
         'AddNotifcationStatusesToEvents' => __DIR__ . '/../..' . '/database/migrations/2016_07_19_091343_add_notifcation_statuses_to_events.php',
         'AddNotificationStatusToEvents' => __DIR__ . '/../..' . '/database/migrations/2016_02_24_123211_add_notification_status_to_events.php',
         'AddNotificationToAssignment' => __DIR__ . '/../..' . '/database/migrations/2016_08_17_124137_add_notification_to_assignment.php',
+        'AddReportToEvents' => __DIR__ . '/../..' . '/database/migrations/2017_01_31_010951_add_report_to_events.php',
         'AddServicesToEventsTable' => __DIR__ . '/../..' . '/database/migrations/2016_01_06_030851_add_services_to_events_table.php',
+        'AddStartTimeConfirmationToAssignments' => __DIR__ . '/../..' . '/database/migrations/2017_01_31_063455_add_start_time_confirmation_to_assignments.php',
         'AddTimeToAssignments' => __DIR__ . '/../..' . '/database/migrations/2016_07_01_071842_add_time_to_assignments.php',
         'ChangeTimesFormat' => __DIR__ . '/../..' . '/database/migrations/2016_06_30_063604_change_times_format.php',
         'CreateAssignmentsTable' => __DIR__ . '/../..' . '/database/migrations/2015_09_16_085437_create_assignments_table.php',
