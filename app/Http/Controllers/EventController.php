@@ -261,13 +261,13 @@ class EventController extends Controller
         $event = Event::find($eventId);
 
         Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments], function($message) use ($event) {
-            $message->to($event->client->email)->subject('Event Confirmation');
+            $message->to('thomasleclercq90010@gmail.com')->subject('Event Confirmation');
         });
 
         $event->client_notification = true;
         $event->save();
 
-        //SWFSound(filename)
+        Session::flash('success', 'The notification was sent successfully');
 
         return redirect()->back();
     }

@@ -8,7 +8,17 @@
     @if($event['address'])
         <p><b>Address:</b> {{ $event['address'] }}</p>
     @endif
-    <p><b>Start:</b> {{ $event['start_time'][0] }}</p>
+    @if(count($event['start_time']) == 1)
+        <p><b>Start:</b> 
+                {{ $event['start_time'][0] }}
+        </p>
+    @else
+        @for($i=0;$i < count($event['start_time']);$i++)
+            <p><b>Start:</b> 
+                    {{ $event['start_time'][$i] }}
+            </p>
+        @endfor
+    @endif
     @if(!$event->assignments->isEmpty())
         <p><b>Team:</b></p>
         <div class="row">
@@ -16,7 +26,7 @@
                 <ul class="list-group">
                     @foreach($assignments as $assignment)
                         <li class="list-group-item user_list assignments">
-                            {{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name }}
+                            {{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name. " (" .$assignment->time.")"}}
                         </li>
                     @endforeach
                 </ul>

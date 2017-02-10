@@ -104,7 +104,7 @@ return [
     | When using the "sendmail" driver to send e-mails, we will need to know
     | the path to where Sendmail lives on this server. A default path has
     | been provided here, which will work well on most of your systems.
-    |
+    | 
     */
 
     'sendmail' => '/usr/sbin/sendmail -bs',
