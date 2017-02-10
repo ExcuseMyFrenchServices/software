@@ -98,6 +98,8 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
 
+        $old_start_time = $event->start_time;
+
         $event->event_name      = $request->input('event_name');
         $event->client_id       = $request->input('client');
         $event->finish_time     = $request->input('finish_time');
@@ -114,10 +116,20 @@ class EventController extends Controller
 
         $event->save();
 
-        // Delete assignments for removed hours
-        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event) {
-            if (!in_array($assignment->time, $event->start_time)) {
-                $assignment->delete();
+        // Update assignments for removed hours
+        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$old_start_time) 
+        {
+            if (!in_array($assignment->time, $event->start_time)) 
+            {
+                $time_diff = array_diff_assoc($event->start_time, $old_start_time);
+                for ($i=0; $i < count($event->start_time); $i++) 
+                { 
+                    if($assignment->time == $old_start_time[$i])
+                    {
+                        $assignment->time = $event->start_time[$i];
+                        $assignment->save();
+                    }
+                }
             }
         });
 
@@ -255,7 +267,7 @@ class EventController extends Controller
         $event->client_notification = true;
         $event->save();
 
-        Session::flash('success', 'The notification was sent successfully');
+        //SWFSound(filename)
 
         return redirect()->back();
     }

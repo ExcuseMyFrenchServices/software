@@ -10,23 +10,6 @@
                         <h3 class="panel-title">Timesheet - {{date_format(date_create($event->event_date), 'l jS F')}}</h3>
                     </div>
                     <div class="panel-body">
-                        <form id='confirm_start_time' action="{{ url('event/'.$event->id.'/start-time-confirm') }}" method="POST">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <label>Please confirm start time of event for :</label>
-                            <ul class="list-group">
-                            @foreach($event->assignments as $assignment)
-                                @if(!$assignment->start_time_confirmation)
-                                    <li class="list-group-item">    
-                                        {{ $assignment->user->profile->first_name . ' ' . $assignment->user->profile->last_name }}
-                                        <input type="text" name="confirmed_start_time" value="{{$assignment->time}}" class="form-control">
-                                        <input type="hidden" name="assignment_id" value="{{ $assignment->id }}">
-                                        <button type="submit" class="btn btn-info btn-sm">Confirm</button>
-                                    </li>
-                                @endif
-                            @endforeach
-                                <button type="submit" name="confirm-all" value="confirm-all" class="btn btn-primary">Confirm All</button>
-                            </ul>
-                        </form>
                         <form id="staff_timesheet" action="{{ url('event/' . $event->id . '/timesheet') }}" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 

@@ -135,7 +135,16 @@
                                 </div>
                             </div>
 
-                            
+                            <!-- Piece of code that will be remplaced --> 
+
+                            <div class="col-xs-12 col-md-6 form-group {{ $errors->has('number_staff') ? 'has-error' : '' }}">
+                                <label for="number_staff">Staff required</label>
+                                <input type="number" name="number_staff" id="number_staff" class="form-control" value="{{ $event->number_staff or old('number_staff') }}">
+                            </div>
+
+                            <!-- Piece of code that need to be updated instead -->
+
+                            <!-- 
                             <div class="col-xs-12 form-group {{ $errors->has('number_staff') ? 'has-error' : '' }}">
                                 <label for="number_staff">Staff required</label>
                                 <div class="staff-added">
@@ -161,6 +170,9 @@
                             </div>
                             @endif
                             
+                            -->
+                            <!-- End of piece of code that need to be updated -->
+
                             <div class="col-xs-12 form-group">
                                 <label for="address">Address</label>
                                 <textarea rows="2"  name="address" id="address" class="form-control">{{ $event->address or old('address') }}</textarea>
