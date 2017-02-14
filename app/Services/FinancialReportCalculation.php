@@ -688,7 +688,8 @@ class FinancialReportCalculation {
     {
         if(!empty($hour))
         {
-            $hour = str_replace('.',':',$hour);
+            $hour = str_replace('.3', '.30', $hour);
+            $hour = str_replace('.', ':', $hour);
             if(strstr($hour,':') === FALSE)
             {
                 $time = $hour;
@@ -696,7 +697,7 @@ class FinancialReportCalculation {
             else
             {
                 $part = explode(':', $hour);
-                $time = $part[0] + floor(($part[1]/60)*100) / 100 . PHP_EOL; 
+                $time = $part[0] + floor(($part[1]/60)*100) / 100 . PHP_EOL;    
             }
         }
         else
