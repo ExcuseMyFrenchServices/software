@@ -36,8 +36,8 @@
 						@endif
 						<td><a href="{{url('user/'.$assignment->user_id.'/edit')}}">{{ $assignment->first_name }} {{ $assignment->last_name }}</a></td>
 						<td>{{ $assignment->level }}</td>
-						<td>{{ $start_time = str_replace('["','',str_replace('"]','',$assignment->start_time)) }}</td>
-						<td>{{ $finish_time = $assignment->finish_time }}</td>
+						<td>{{ $start_time = str_replace('["','',str_replace('"]','',$assignment->time)) }}</td>
+						<td>{{ $finish_time = $assignment->hours }}</td>
 						<td>{{ $hours[$assignment->event_id.'-'.$assignment->user_id]['bonus_time'] > 0 ? 'Yes' : ''  }}</td>
 						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours']}}</td>
 						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours']}}</td>

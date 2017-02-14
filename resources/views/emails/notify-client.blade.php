@@ -9,12 +9,12 @@
         <p><b>Address:</b> {{ $event['address'] }}</p>
     @endif
     @if(count($event['start_time']) == 1)
-        <p><b>Start:</b> 
+        <p><b>Start Time:</b> 
                 {{ $event['start_time'][0] }}
         </p>
     @else
         @for($i=0;$i < count($event['start_time']);$i++)
-            <p><b>Start:</b> 
+            <p><b>Start Time:</b> 
                     {{ $event['start_time'][$i] }}
             </p>
         @endfor
@@ -32,5 +32,8 @@
                 </ul>
             </div>
         </div>
+    @endif
+    @if($event->finish_time)
+        <p><b>Expected finish time :</b> {{ $event->finish_time }}</p>
     @endif
 </div>

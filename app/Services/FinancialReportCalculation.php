@@ -103,7 +103,7 @@ class FinancialReportCalculation {
                 {
 
                     $low_cost_hours = 19 - $start_time;                    
-                    $high_cost_hours = 24 - $finish_time;
+                    $high_cost_hours = $finish_time - 19;
                     
                     if($high_cost_hours + $low_cost_hours < 4)
                     {
@@ -686,8 +686,25 @@ class FinancialReportCalculation {
 
     public function convertHourToFloat($hour)
     {
-        $part = explode(':', $hour);
-        return $part[0] + floor(($part[1]/60)*100) / 100 . PHP_EOL;        
+        if(!empty($hour))
+        {
+            $hour = str_replace('.',':',$hour);
+            if(strstr($hour,':') === FALSE)
+            {
+                $time = $hour;
+            }
+            else
+            {
+                $part = explode(':', $hour);
+                $time = $part[0] + floor(($part[1]/60)*100) / 100 . PHP_EOL; 
+            }
+        }
+        else
+        {
+            $time = '00';
+        }
+
+        return $time;        
     }
 
 

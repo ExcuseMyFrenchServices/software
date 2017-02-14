@@ -128,8 +128,18 @@ class EventController extends Controller
                     {
                         $assignment->time = $event->start_time[$i];
                         $assignment->save();
+
+                        Mail::send('emails.assignment-update', ['event' => $assignment->event, 'assignment' => $assignment], function($message) use ($assignment) {
+                            $message->to($assignment->user->profile->email)->subject('Important : Event Start Time Updated !');
+                        });
                     }
                 }
+            }
+            else
+            {
+                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment], function($message) use ($assignment) {
+                    $message->to($assignment->user->profile->email)->subject('Important : Event Updated');
+                }); 
             }
         });
 
@@ -261,7 +271,7 @@ class EventController extends Controller
         $event = Event::find($eventId);
 
         Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments], function($message) use ($event) {
-            $message->to('thomasleclercq90010@gmail.com')->subject('Event Confirmation');
+            $message->to($event->client->email)->cc('thomasleclercq90010@gmail.com')->subject('Event Confirmation');
         });
 
         $event->client_notification = true;
