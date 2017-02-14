@@ -7,7 +7,7 @@
 			</div>
 			<div class="panel-body">
 			<table class="col-xs-12">
-				<tr><th>Event Date</th><th>Event Name</th><th>Staff</th><th>Level</th><th>Start Time</th><th>Finish Time</th><th>< 4 hours</th><th>7am - 7pm</th><th>7pm - 00am</th><th>00am - 7am</th><th>Saturday Hours</th><th>Sunday Hours</th><th>Public Holiday Hours</th><th>Total</th></tr>
+				<tr><th>Event Date</th><th>Event Name</th><th>Staff</th><th>Level</th><th>Start Time</th><th>Finish Time</th><th>< 4 hours</th><th>Break</th><th>7am - 7pm</th><th>7pm - 00am</th><th>00am - 7am</th><th>Saturday Hours</th><th>Sunday Hours</th><th>Public Holiday Hours</th><th>Total</th></tr>
 				<?php $total_cost = 0; ?>
 				@foreach($assignments as $assignment)
 						@if(!isset($event_date))
@@ -39,6 +39,7 @@
 						<td>{{ $start_time = str_replace('["','',str_replace('"]','',$assignment->time)) }}</td>
 						<td>{{ $finish_time = $assignment->hours }}</td>
 						<td>{{ $hours[$assignment->event_id.'-'.$assignment->user_id]['bonus_time'] > 0 ? 'Yes' : ''  }}</td>
+						<td>{{ $assignment->break }}</td>
 						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours']}}</td>
 						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours']}}</td>
 						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['very_high_hours']}}</td>

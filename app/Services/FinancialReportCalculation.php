@@ -18,9 +18,9 @@ class FinancialReportCalculation {
      * The hours are extracted from the events hours and date
     */
 
-    public function staffCost($start_time, $finish_time, $event_date, $user_level)
+    public function staffCost($start_time, $finish_time, $event_date, $user_level, $break)
     {
-        $hours = $this->hourSpent($start_time, $finish_time, $event_date);
+        $hours = $this->hourSpent($start_time, $finish_time, $event_date, $break);
         switch ($user_level) 
         {
             case 1:
@@ -63,7 +63,7 @@ class FinancialReportCalculation {
         return $staffCost = $hours['low_cost_hours'] * $low_wage + $hours['high_cost_hours'] * $high_wage + $hours['very_high_hours'] * $very_high_wage + $hours['saturday_hours'] * $saturday_wage + $hours['sunday_hours'] * $sunday_wage + $hours['public_holiday_hours'] * $public_holiday_wage;
     }
 
-    public function hourSpent($start_time, $finish_time, $event_date)
+    public function hourSpent($start_time, $finish_time, $event_date, $break)
     {
         $event_day = date('l',strtotime($event_date));
         
@@ -79,6 +79,19 @@ class FinancialReportCalculation {
 
         $bonus_time = 0;
 
+        if(empty($break))
+        {
+            $break = 0;
+        }
+        else
+        {
+            if($break == '1')
+            {
+                $break == '60';
+            }
+            $break = floor(($break/60)*100) / 100 . PHP_EOL;
+        }
+
         if($event_day != 'Saturday' && $event_day != 'Sunday' && !$this->is_public_holiday($event_date))
         {
             if(7 <= $start_time && $start_time < 19)
@@ -90,7 +103,7 @@ class FinancialReportCalculation {
                         $bonus_time = 4 - ($finish_time - $start_time);
                     }
                     
-                    $hours_spent['low_cost_hours'] = ($finish_time - $start_time) + $bonus_time;
+                    $hours_spent['low_cost_hours'] = ($finish_time - $start_time) + $bonus_time-$break;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
@@ -110,7 +123,7 @@ class FinancialReportCalculation {
                         $bonus_time = 4 - ($high_cost_hours + $low_cost_hours);
                     }
                     
-                    $hours_spent['low_cost_hours'] = $low_cost_hours;
+                    $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                     $hours_spent['high_cost_hours'] = $high_cost_hours + $bonus_time;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
@@ -123,7 +136,7 @@ class FinancialReportCalculation {
                 {
                     $low_cost_hours = 19 - $start_time;                    
                     $high_cost_hours = 24 - 19;
-                    $hours_spent['low_cost_hours'] = $low_cost_hours;
+                    $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                     $hours_spent['high_cost_hours'] = $high_cost_hours;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
@@ -139,7 +152,7 @@ class FinancialReportCalculation {
                         $low_cost_hours = 19 - $start_time;                    
                         $high_cost_hours = 24 - 19;
                         $public_holiday_hours = $finish_time;
-                        $hours_spent['low_cost_hours'] = $low_cost_hours;
+                        $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                         $hours_spent['high_cost_hours'] = $high_cost_hours;
                         $hours_spent['very_high_hours'] = 0;
                         $hours_spent['saturday_hours'] = 0;
@@ -155,7 +168,7 @@ class FinancialReportCalculation {
                             $low_cost_hours = 19 - $start_time;                    
                             $high_cost_hours = 24 - 19;
                             $very_high_hours = $finish_time;
-                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                             $hours_spent['high_cost_hours'] = $high_cost_hours;
                             $hours_spent['very_high_hours'] = $very_high_hours;
                             $hours_spent['saturday_hours'] = 0;
@@ -169,7 +182,7 @@ class FinancialReportCalculation {
                             $low_cost_hours = 19 - $start_time;                    
                             $high_cost_hours = 24 - 19;
                             $saturday_hours = $finish_time;
-                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                             $hours_spent['high_cost_hours'] = $high_cost_hours;
                             $hours_spent['very_high_hours'] = 0;
                             $hours_spent['saturday_hours'] = $saturday_hours;
@@ -188,7 +201,7 @@ class FinancialReportCalculation {
                         $low_cost_hours = 19 - $start_time;                    
                         $high_cost_hours = 24 - 19;
                         $public_holiday_hours = $finish_time;
-                        $hours_spent['low_cost_hours'] = $low_cost_hours;
+                        $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                         $hours_spent['high_cost_hours'] = $high_cost_hours;
                         $hours_spent['very_high_hours'] = 0;
                         $hours_spent['saturday_hours'] = 0;
@@ -204,7 +217,7 @@ class FinancialReportCalculation {
                             $low_cost_hours = 19 - $start_time + $finish_time - 7;                    
                             $high_cost_hours = 24 - 19;
                             $very_high_hours = 7;
-                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                             $hours_spent['high_cost_hours'] = $high_cost_hours;
                             $hours_spent['very_high_hours'] = $very_high_hours;
                             $hours_spent['saturday_hours'] = 0;
@@ -219,7 +232,7 @@ class FinancialReportCalculation {
                             $high_cost_hours = 24 - 19;
                             $very_high_hours = 7;
                             $saturday_hours = $finish_time - 7;
-                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                             $hours_spent['high_cost_hours'] = $high_cost_hours;
                             $hours_spent['very_high_hours'] = $very_high_hours;
                             $hours_spent['saturday_hours'] = $saturday_hours;
@@ -244,7 +257,7 @@ class FinancialReportCalculation {
                     }                     
                     
                     $hours_spent['low_cost_hours'] = 0;
-                    $hours_spent['high_cost_hours'] = $high_cost_hours + $bonus_time;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours + $bonus_time-$break;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
@@ -262,7 +275,7 @@ class FinancialReportCalculation {
                     } 
 
                     $hours_spent['low_cost_hours'] = 0;
-                    $hours_spent['high_cost_hours'] = $high_cost_hours + $bonus_time;
+                    $hours_spent['high_cost_hours'] = $high_cost_hours + $bonus_time-$break;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
@@ -283,7 +296,7 @@ class FinancialReportCalculation {
                         } 
 
                         $hours_spent['low_cost_hours'] = 0;
-                        $hours_spent['high_cost_hours'] = $high_cost_hours;
+                        $hours_spent['high_cost_hours'] = $high_cost_hours-$break;
                         $hours_spent['very_high_hours'] = 0;
                         $hours_spent['saturday_hours'] = 0;
                         $hours_spent['sunday_hours'] = 0;
@@ -304,7 +317,7 @@ class FinancialReportCalculation {
                             } 
 
                             $hours_spent['low_cost_hours'] = 0;
-                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours-$break;
                             $hours_spent['very_high_hours'] = $very_high_hours + $bonus_time;
                             $hours_spent['saturday_hours'] = 0;
                             $hours_spent['sunday_hours'] = 0;
@@ -323,7 +336,7 @@ class FinancialReportCalculation {
                             } 
 
                             $hours_spent['low_cost_hours'] = 0;
-                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours-$break;
                             $hours_spent['very_high_hours'] = 0;
                             $hours_spent['saturday_hours'] = $saturday_hours + $bonus_time;
                             $hours_spent['sunday_hours'] = 0;
@@ -340,7 +353,7 @@ class FinancialReportCalculation {
                         $high_cost_hours = 24 - $start_time;
                         $public_holiday_hours = $finish_time;
                         $hours_spent['low_cost_hours'] = 0;
-                        $hours_spent['high_cost_hours'] = $high_cost_hours;
+                        $hours_spent['high_cost_hours'] = $high_cost_hours-$break;
                         $hours_spent['very_high_hours'] = 0;
                         $hours_spent['saturday_hours'] = 0;
                         $hours_spent['sunday_hours'] = 0;
@@ -355,7 +368,7 @@ class FinancialReportCalculation {
                             $low_cost_hours = $finish_time - 7;
                             $high_cost_hours = 24 - $start_time;
                             $very_high_hours = 7;
-                            $hours_spent['low_cost_hours'] = $low_cost_hours;
+                            $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                             $hours_spent['high_cost_hours'] = $high_cost_hours;
                             $hours_spent['very_high_hours'] = $very_high_hours;
                             $hours_spent['saturday_hours'] = 0;
@@ -370,7 +383,7 @@ class FinancialReportCalculation {
                             $high_cost_hours = 24 - $start_time;
                             $very_high_hours = 7;
                             $hours_spent['low_cost_hours'] = 0;
-                            $hours_spent['high_cost_hours'] = $high_cost_hours;
+                            $hours_spent['high_cost_hours'] = $high_cost_hours-$break;
                             $hours_spent['very_high_hours'] = $very_high_hours;
                             $hours_spent['saturday_hours'] = $saturday_hours;
                             $hours_spent['sunday_hours'] = 0;
@@ -392,7 +405,7 @@ class FinancialReportCalculation {
                     } 
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
-                    $hours_spent['very_high_hours'] = $very_high_hours + $bonus_time;
+                    $hours_spent['very_high_hours'] = $very_high_hours + $bonus_time-$break;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
@@ -403,7 +416,7 @@ class FinancialReportCalculation {
                 {
                     $low_cost_hours = $finish_time - 7;
                     $very_high_hours = 7;
-                    $hours_spent['low_cost_hours'] = $low_cost_hours;
+                    $hours_spent['low_cost_hours'] = $low_cost_hours-$break;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = $very_high_hours;
                     $hours_spent['saturday_hours'] = 0;
@@ -426,7 +439,7 @@ class FinancialReportCalculation {
 
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
-                    $hours_spent['very_high_hours'] = $very_high_hours + $bonus_time;
+                    $hours_spent['very_high_hours'] = $very_high_hours + $bonus_time-$break;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
@@ -443,7 +456,7 @@ class FinancialReportCalculation {
                         $bonus_time = 4 - ($low_cost_hours + $very_high_hours);
                     }
 
-                    $hours_spent['low_cost_hours'] = $low_cost_hours + $bonus_time;
+                    $hours_spent['low_cost_hours'] = $low_cost_hours + $bonus_time-$break;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = $very_high_hours;
                     $hours_spent['saturday_hours'] = 0;
@@ -468,7 +481,7 @@ class FinancialReportCalculation {
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
-                    $hours_spent['saturday_hours'] = ($finish_time - $start_time) + $bonus_time;
+                    $hours_spent['saturday_hours'] = ($finish_time - $start_time) + $bonus_time-$break;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
                     $hours_spent['bonus_time'] = $bonus_time;
@@ -484,7 +497,7 @@ class FinancialReportCalculation {
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
-                    $hours_spent['saturday_hours'] = (24 - $start_time) + $bonus_time;
+                    $hours_spent['saturday_hours'] = (24 - $start_time) + $bonus_time-$break;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 0;
                     $hours_spent['bonus_time'] = $bonus_time;
@@ -502,7 +515,7 @@ class FinancialReportCalculation {
                         $hours_spent['low_cost_hours'] = 0;
                         $hours_spent['high_cost_hours'] = 0;
                         $hours_spent['very_high_hours'] = 0;
-                        $hours_spent['saturday_hours'] = 24 - $start_time;
+                        $hours_spent['saturday_hours'] = 24 - $start_time-$break;
                         $hours_spent['sunday_hours'] = 0;
                         $hours_spent['public_holiday_hours'] = $finish_time + $bonus_time;
                         $hours_spent['bonus_time'] = $bonus_time;
@@ -518,7 +531,7 @@ class FinancialReportCalculation {
                         $hours_spent['low_cost_hours'] = 0;
                         $hours_spent['high_cost_hours'] = 0;
                         $hours_spent['very_high_hours'] = 0;
-                        $hours_spent['saturday_hours'] = 24 - $start_time;
+                        $hours_spent['saturday_hours'] = 24 - $start_time-$break;
                         $hours_spent['sunday_hours'] = $finish_time + $bonus_time;
                         $hours_spent['public_holiday_hours'] = 0;
                         $hours_spent['bonus_time'] = $bonus_time;
@@ -540,7 +553,7 @@ class FinancialReportCalculation {
                 $hours_spent['high_cost_hours'] = 0;
                 $hours_spent['very_high_hours'] = 0;
                 $hours_spent['saturday_hours'] = 0;
-                $hours_spent['sunday_hours'] = ($finish_time - $start_time)+$bonus_time;
+                $hours_spent['sunday_hours'] = ($finish_time - $start_time)+$bonus_time-$break;
                 $hours_spent['public_holiday_hours'] = 0;
                 $hours_spent['bonus_time'] = $bonus_time;
                 return $hours_spent;                 
@@ -556,7 +569,7 @@ class FinancialReportCalculation {
                 $hours_spent['high_cost_hours'] = 0;
                 $hours_spent['very_high_hours'] = 0;
                 $hours_spent['saturday_hours'] = 0;
-                $hours_spent['sunday_hours'] = (24 - $start_time)+$start_time;
+                $hours_spent['sunday_hours'] = (24 - $start_time)+$start_time-$break;
                 $hours_spent['public_holiday_hours'] = 0;
                 $hours_spent['bonus_time'] = $bonus_time;
                 return $hours_spent;                    
@@ -574,7 +587,7 @@ class FinancialReportCalculation {
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
-                    $hours_spent['sunday_hours'] = 24 - $start_time;
+                    $hours_spent['sunday_hours'] = 24 - $start_time-$break;
                     $hours_spent['public_holiday_hours'] = $finish_time + $bonus_time;
                     $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;                        
@@ -588,7 +601,7 @@ class FinancialReportCalculation {
 
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
-                    $hours_spent['very_high_hours'] = $finish_time + $bonus_time;
+                    $hours_spent['very_high_hours'] = $finish_time + $bonus_time-$break;
                     $hours_spent['saturday_hours'] = 0;
                     $hours_spent['sunday_hours'] = 24 - $start_time;
                     $hours_spent['public_holiday_hours'] = 0;
@@ -611,7 +624,7 @@ class FinancialReportCalculation {
                 $hours_spent['very_high_hours'] = 0;
                 $hours_spent['saturday_hours'] = 0;
                 $hours_spent['sunday_hours'] = 0;
-                $hours_spent['public_holiday_hours'] = ($finish_time - $start_time) + $bonus_time;
+                $hours_spent['public_holiday_hours'] = ($finish_time - $start_time) + $bonus_time-$break;
                 $hours_spent['bonus_time'] = $bonus_time;
                 return $hours_spent;                   
             }
@@ -627,7 +640,7 @@ class FinancialReportCalculation {
                 $hours_spent['very_high_hours'] = 0;
                 $hours_spent['saturday_hours'] = 0;
                 $hours_spent['sunday_hours'] = 0;
-                $hours_spent['public_holiday_hours'] = (24 - $start_time)+$bonus_time;
+                $hours_spent['public_holiday_hours'] = (24 - $start_time)+$bonus_time-$break;
                 $hours_spent['bonus_time'] = $bonus_time;
                 return $hours_spent;                   
             }
@@ -643,7 +656,7 @@ class FinancialReportCalculation {
                     $hours_spent['low_cost_hours'] = 0;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
-                    $hours_spent['saturday_hours'] = $finish_time + $bonus_time;
+                    $hours_spent['saturday_hours'] = $finish_time + $bonus_time-$break;
                     $hours_spent['sunday_hours'] = 0;
                     $hours_spent['public_holiday_hours'] = 24 - $start_time;
                     $hours_spent['bonus_time'] = $bonus_time;
@@ -660,7 +673,7 @@ class FinancialReportCalculation {
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;
-                    $hours_spent['sunday_hours'] = $finish_time+$bonus_time;
+                    $hours_spent['sunday_hours'] = $finish_time+$bonus_time-$break;
                     $hours_spent['public_holiday_hours'] = 24 - $start_time;
                     $hours_spent['bonus_time'] = $bonus_time;
                     return $hours_spent;        
@@ -671,7 +684,7 @@ class FinancialReportCalculation {
                     {
                         $bonus_time = 4 - ((24-$start_time)+$finish_time);
                     }
-                    $hours_spent['low_cost_hours'] = $finish_time+$bonus_time;
+                    $hours_spent['low_cost_hours'] = $finish_time+$bonus_time-$break;
                     $hours_spent['high_cost_hours'] = 0;
                     $hours_spent['very_high_hours'] = 0;
                     $hours_spent['saturday_hours'] = 0;

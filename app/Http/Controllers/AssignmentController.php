@@ -59,7 +59,7 @@ class AssignmentController extends Controller
         $calculator = new FinancialReportCalculation;
 
         $assignments = DB::table('assignments')
-                        ->select('events.id as event_id','events.event_date','events.event_name','users.id as user_id','profiles.last_name','profiles.first_name','users.level', 'assignments.time', 'assignments.hours')
+                        ->select('events.id as event_id','events.event_date','events.event_name','users.id as user_id','profiles.last_name','profiles.first_name','users.level', 'assignments.time', 'assignments.hours', 'assignments.break')
                         ->join('events','events.id','=','assignments.event_id')
                         ->join('users','users.id', '=', 'assignments.user_id')
                         ->join('profiles','profiles.user_id','=','users.id')
@@ -80,8 +80,8 @@ class AssignmentController extends Controller
             {
                 $public_holiday[$assignment->event_id] = ""; 
             }
-            $hours[$assignment->event_id.'-'.$assignment->user_id] = $calculator->hourSpent($assignment->time,$assignment->hours,$assignment->event_date);
-            $cost[$assignment->event_id.'-'.$assignment->user_id] = $calculator->staffCost($assignment->time,$assignment->hours,$assignment->event_date,$assignment->level);
+            $hours[$assignment->event_id.'-'.$assignment->user_id] = $calculator->hourSpent($assignment->time,$assignment->hours,$assignment->event_date, $assignment->break);
+            $cost[$assignment->event_id.'-'.$assignment->user_id] = $calculator->staffCost($assignment->time,$assignment->hours,$assignment->event_date,$assignment->level,$assignment->break);
         }
 
         return view('reports.week-report')->with(compact('assignments','week_start','week_end','hours','cost','public_holiday'));
