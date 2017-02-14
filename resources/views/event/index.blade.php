@@ -52,8 +52,8 @@
                             @if (!$pastEvents)
                                 <th>Start time</th>
                             @endif
-                            @if(Auth::user()->role_id == 1)
-                                <th>Staff</th>
+                            @if(Auth::user()->role_id == 1) 
+                                <th>Staff</th>                           
                                 @if($pastEvents)
                                     <th>Feedback</th>
                                 @else
@@ -61,6 +61,8 @@
                                 @endif
                                 <th></th>
                                 <th></th>
+                            @else
+                                <th>Team</th>    
                             @endif
                             <th></th>
                         </thead>
@@ -77,8 +79,9 @@
                                         <td>{{ $event->start_time[0] }}</td>
                                     @endif
                                 @endif
-                                @if(Auth::user()->role_id == 1)
+                                
                                     <td>@include('event.staff-counter', ['event' => $event])</td>
+                                @if(Auth::user()->role_id == 1)
                                     @if ($pastEvents)
                                         <td>@include('event.feedback-status', ['event' => $event])</td>
                                     @else

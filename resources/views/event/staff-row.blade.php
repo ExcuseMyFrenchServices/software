@@ -34,16 +34,18 @@
     </form>
     @endif
 
-    @if ($assignment->event->event_date >= date('Y-m-d'))
-        @if($assignment->status == 'confirmed')
-            <span style="margin-top:-50px" class="label label-success">Confirmed</span>
-        @elseif($assignment->status == 'pending')
-            <span style="margin-top:-50px" class="label label-warning">Pending</span>
-        @else
-            <span style="margin-top:-50px" class="label label-danger">Cancelled</span>
+    @if(Auth::user()->role_id == 1)
+        @if ($assignment->event->event_date >= date('Y-m-d'))
+            @if($assignment->status == 'confirmed')
+                <span style="margin-top:-50px" class="label label-success">Confirmed</span>
+            @elseif($assignment->status == 'pending')
+                <span style="margin-top:-50px" class="label label-warning">Pending</span>
+            @else
+                <span style="margin-top:-50px" class="label label-danger">Cancelled</span>
+            @endif
+        @elseif(!empty($assignment->hours))
+                <span style="margin-top:-50px" class="label label-success"> {{ $assignment->hours }} Hours </span>
+                <span style="margin-top:-50px" class="label label-warning"> {{ $assignment->break }} Breaks </span>
         @endif
-    @elseif(!empty($assignment->hours))
-            <span style="margin-top:-50px" class="label label-success"> {{ $assignment->hours }} Hours </span>
-            <span style="margin-top:-50px" class="label label-warning"> {{ $assignment->break }} Breaks </span>
     @endif
 </li>
