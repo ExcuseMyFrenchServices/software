@@ -43,7 +43,7 @@ class EventController extends Controller
         $range = $request->input('date-range') ?: date('Y-m');
 
         $events = Event::all()->filter(function ($event) use ($range) {
-            return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d');
+            return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d 05:00:00');
         })->sortByDesc('event_date');
 
         return view('event.index')->with(compact('events', 'range'));
@@ -250,7 +250,7 @@ class EventController extends Controller
             $events = $assignments->map(function($assignment) {
                 return Event::find($assignment->event_id);
             })->filter(function ($event) {
-                return $event->event_date >= date('Y-m-d');
+                return $event->event_date >= date('Y-m-d 05:00:00');
             })->sortBy('event_date');
 
             return view('event.index')->with(compact('events', 'user', 'assignments'));

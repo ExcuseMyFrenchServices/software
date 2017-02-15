@@ -20,7 +20,7 @@
                 <ul class="nav navbar-nav navbar-right">
 
                     @if(Auth::user()->role_id == 1)
-                        <li><a href="{{ url('events/' . Auth::user()->id) }}">Home</a></li>
+                        <li><a href="{{ url('event') }}">Home</a></li>
                         <li><a href="{{ url('availability') }}">Availability</a></li>
                         <li><a href="{{ url('user') }}">Users</a></li>
                         <li><a href="{{ url('event') }}">Events</a></li>
