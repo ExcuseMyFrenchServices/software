@@ -2,6 +2,7 @@
 
 use App\Assignment;
 use App\Services\FinancialReportCalculation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -26,6 +27,17 @@ class AssignmentController extends Controller
     public function confirm($eventId)
     {
         Assignment::where(['event_id' => $eventId, 'user_id' => Auth::user()->id])->each(function ($assignment) {
+            $assignment->status = 'confirmed';
+
+            $assignment->push();
+        });
+
+        return redirect()->back();
+    }
+
+    public function forceConfirm(Request $request, $eventId)
+    {
+        Assignment::where(['event_id' => $eventId, 'user_id' => $request->input('user_id')])->each(function ($assignment) {
             $assignment->status = 'confirmed';
 
             $assignment->push();

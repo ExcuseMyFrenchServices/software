@@ -46,6 +46,7 @@ Route::post('event/{event}/start-time-confirm', 'EventController@confirmStartTim
 
 Route::get('event/notify/{assignment}', 'AssignmentController@notify');
 Route::get('event/{event}/confirm', 'AssignmentController@confirm');
+Route::post('event/{event}/confirm', 'AssignmentController@forceConfirm');
 Route::get('assignment/delete/{assignment}', 'AssignmentController@destroy');
 
 // EVENT FEEDBACK

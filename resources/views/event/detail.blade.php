@@ -86,6 +86,27 @@
                                     <br>
                                 @endif
 
+                                @if(Auth::user()->role_id == 1)
+                                    @if(!$event->assignments->where('status','pending')->isEmpty())
+                                    <div class="row">
+                                        <p><b>Force confirmation :</b></p>
+                                        <form action="{{ url('event/' . $event->id . '/confirm') }}" method="POST" class="form">
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <div class="form-group col-xs-12">
+                                                <select name="user_id" data-live-search="true" data-size="8" data-width="100%">
+                                                    @foreach($event->assignments->where('status','pending') as $assignment)
+                                                        <option value="{{ $assignment->user_id }}">{{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-xs-4">
+                                                <button role="submit" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-warning-sign"> </span> Force confirmation for this staff</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    @endif
+                                @endif
+
                                 @if ($event->event_date >= date('Y-m-d'))
                                     <a class="btn btn-info btn-sm back_btn" href="{{ url('events/' . Auth::user()->id) }}">Back</a>
                                 @else

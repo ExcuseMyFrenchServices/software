@@ -44,7 +44,7 @@
                 <span style="margin-top:-50px" class="label label-danger">Cancelled</span>
             @endif
         @elseif(!empty($assignment->hours))
-                <span style="margin-top:-50px" class="label label-success"> {{ $assignment->hours }} Hours </span>
+                <span style="margin-top:-50px; margin-right: 50px" class="label label-success"> {{ $assignment->hours }} Hours </span>
                 <span style="margin-top:-50px" class="label label-warning"> {{ $assignment->break }} Breaks </span>
         @endif
     @endif
