@@ -21,6 +21,9 @@
     @endif
     @if(!$event->assignments->isEmpty())
         <p><b>Team:</b></p>
+        @if(!empty($admin))
+            <p><b>Main Contact :</b>{{ $admin->first_name." ".$admin->last_name }}</p>
+        @endif
         <div class="row">
             <div class="col-xs-12 col-sm-8">
                 <ul class="list-group">

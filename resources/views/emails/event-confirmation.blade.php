@@ -2,6 +2,9 @@
     <h3 class="panel-title">{{ date_format(date_create($event['event_date']), 'l jS F') }}</h3>
 
     <p><b>Client:</b> {{ $event->client['name'] }}</p>
+    @if(!empty($admin))
+        <p><b>Admin :</b>{{ $admin->first_name." ".$admin->last_name }}</p>
+    @endif
     @if($event['address'])
         <p><b>Address:</b> {{ $event['address'] }}</p>
     @endif

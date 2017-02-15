@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Assignment;
+use App\User;
 use App\Services\FinancialReportCalculation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,8 +50,10 @@ class AssignmentController extends Controller
     public function notify($assignmentId)
     {
         $assignment = Assignment::find($assignmentId);
+        $admin = User::find($assignment->event->admin_id)->profile;
 
-        Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment], function($message) use ($assignment) {
+
+        Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin], function($message) use ($assignment) {
             $message->to($assignment->user->profile->email)->subject('Event Confirmation');
         });
 

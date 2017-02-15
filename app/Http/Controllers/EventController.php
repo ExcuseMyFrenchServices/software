@@ -222,6 +222,16 @@ class EventController extends Controller
 
         $event->save();
 
+        $assignment = Assignment::where('event_id',$event->id)->where('user_id',$userId)->first();
+        $assignment->notification = true;
+        $assignment->save();
+
+        Mail::send('emails.admin-notification', ['event' => $event, 'assignment' => $assignment], function($message) use ($assignment) {
+            $message->to($assignment->user->profile->email)->subject("Admin Notification");
+        });
+
+        Session::flash('success', 'The admin was sent successfully');
+        
         return redirect()->back();
     }
 
@@ -272,8 +282,9 @@ class EventController extends Controller
     public function notifyClient($eventId)
     {
         $event = Event::find($eventId);
+        $admin = User::find($event->admin_id);
 
-        Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments], function($message) use ($event) {
+        Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments, 'admin'=>$admin], function($message) use ($event) {
             $message->to($event->client->email)->cc('thomasleclercq90010@gmail.com')->subject('Event Confirmation');
         });
 

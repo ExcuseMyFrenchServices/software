@@ -1,10 +1,8 @@
 <div>
     <h3 class="panel-title">{{ date_format(date_create($event['event_date']), 'l jS F') }}</h3>
 
-    <p><b>Client:</b> {{ $event->client['name'] }}</p>
-    @if(!empty($admin))
-        <p><b>Admin :</b>{{ $admin->first_name." ".$admin->last_name }}</p>
-    @endif
+    <h4 style="color:blue">You will be an Admin during this event !</h4>
+    <p><b>client:</b> {{ $event->client['name'] }}</p>
     @if($event['address'])
         <p><b>Address:</b> {{ $event['address'] }}</p>
     @endif
@@ -22,5 +20,4 @@
     @if($event['notes'])
         <p><b>Notes:</b> {{ $event['notes'] }}</p>
     @endif
-    <h4>If the new event changes does not suits your agenda please contact JB ASAP at : 0410 125 994</h4>
 </div>
