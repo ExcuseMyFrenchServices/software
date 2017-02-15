@@ -33,7 +33,7 @@ class EventController extends Controller
 
     public function index()
     {
-        $events = Event::where('event_date', '>=', date('Y-m-d'))->get()->sortBy('event_date');
+        $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00'))->get()->sortBy('event_date');
 
         return view('event.index')->with(compact('events'));
     }
@@ -59,6 +59,8 @@ class EventController extends Controller
 
     public function store(CreateEventRequest $request)
     {
+        $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
+
         $event = Event::create([
             'event_name'    => $request->input('event_name'),
             'client_id'     => $request->input('client'),
@@ -72,7 +74,7 @@ class EventController extends Controller
             'notes'         => $request->input('notes'),
             'start_time'    => array_values(array_filter(array_flatten($request->input('start_times')))),
             'booking_date'  => new DateTime($request->input('booking_date')),
-            'event_date'    => new DateTime($request->input('event_date')),
+            'event_date'    => new DateTime($request->input('event_date').$start_time[0]),
         ]);
 
         return redirect('event/' . $event->id);
@@ -98,6 +100,7 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
 
+        $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
         $old_start_time = $event->start_time;
 
         $event->event_name      = $request->input('event_name');
@@ -112,7 +115,7 @@ class EventController extends Controller
         $event->notes           = $request->input('notes');
         $event->start_time      = array_values(array_filter(array_flatten($request->input('start_times'))));
         $event->booking_date    = new DateTime($request->input('booking_date'));
-        $event->event_date      = new DateTime($request->input('event_date'));
+        $event->event_date      = new DateTime($request->input('event_date').$start_time[0]);
 
         $event->save();
 
