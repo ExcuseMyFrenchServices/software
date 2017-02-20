@@ -21,6 +21,7 @@ return array(
     'AddServicesToEventsTable' => $baseDir . '/database/migrations/2016_01_06_030851_add_services_to_events_table.php',
     'AddStartTimeConfirmationToAssignments' => $baseDir . '/database/migrations/2017_01_31_063455_add_start_time_confirmation_to_assignments.php',
     'AddTimeToAssignments' => $baseDir . '/database/migrations/2016_07_01_071842_add_time_to_assignments.php',
+    'ChangeStartTimeConfirmationToVarchar' => $baseDir . '/database/migrations/2017_02_19_230018_change_start_time_confirmation_to_varchar.php',
     'ChangeTimesFormat' => $baseDir . '/database/migrations/2016_06_30_063604_change_times_format.php',
     'CreateAssignmentsTable' => $baseDir . '/database/migrations/2015_09_16_085437_create_assignments_table.php',
     'CreateAvailabilitiesTable' => $baseDir . '/database/migrations/2015_08_26_035649_create_availabilities_table.php',

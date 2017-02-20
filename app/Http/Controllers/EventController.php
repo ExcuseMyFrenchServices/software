@@ -33,7 +33,7 @@ class EventController extends Controller
 
     public function index()
     {
-        $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00'))->get()->sortBy('event_date');
+        $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->get()->sortBy('event_date');
 
         return view('event.index')->with(compact('events'));
     }
@@ -43,7 +43,7 @@ class EventController extends Controller
         $range = $request->input('date-range') ?: date('Y-m');
 
         $events = Event::all()->filter(function ($event) use ($range) {
-            return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d 05:00:00');
+            return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d 05:00:00', strtotime('+11 hour'));
         })->sortByDesc('event_date');
 
         return view('event.index')->with(compact('events', 'range'));
@@ -250,13 +250,13 @@ class EventController extends Controller
             $events = $assignments->map(function($assignment) {
                 return Event::find($assignment->event_id);
             })->filter(function ($event) {
-                return $event->event_date >= date('Y-m-d 05:00:00');
+                return $event->event_date >= date('Y-m-d 05:00:00', strtotime('+11 hour'));
             })->sortBy('event_date');
 
             return view('event.index')->with(compact('events', 'user', 'assignments'));
         }
 
-        $events = Event::where('event_date', '>=', date('Y-m-d'))->get()->sortBy('event_date');
+        $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->get()->sortBy('event_date');
 
         return view('event.index')->with(compact('events'));
     }
@@ -318,10 +318,12 @@ class EventController extends Controller
         {
             $id = 'id-'.$i;
             $assignment = Assignment::find($request->$id);
-            
+
+            $start_time = $assignment->id.'-start-time';
             $hours = $assignment->id.'-hours';
             $break = $assignment->id.'-break';
 
+            $assignment->start_time = $request->$start_time;
             $assignment->hours = $request->$hours;
             $assignment->break = $request->$break;
             $assignment->save();
@@ -338,25 +340,28 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
 
-        if(null !== $request->input('confirm-all'))
+        $assignment = Assignment::find($request->input('assignment_id'));
+        $old_assignment_time = $assignment->time;
+        $assignment->time = $request->input('confirmed_start_time');
+        $assignment->start_time_confirmation = true;
+
+        if(count($event->start_time) > 1)
         {
-            foreach ($event->assignments as $assignment) 
-            {
-                $assignment->time = $request->input('confirmed_start_time');
-                $assignment->start_time_confirmation = true;
-                $assignment->save();
-            }
-            return redirect()->back();
+            //Look for the key of the time changed in the array 
+            $start_time_key = array_search($old_assignment_time, $event->start_time);
+            //Prepare a new entry for the array $event->start_time
+            $new_time = array($start_time_key => $request->input('confirmed_start_time') );
+            //Replace the old start time by the new
+            $event->start_time = array_replace($event->start_time, $new_time);
         }
         else
         {
-            $assignment = Assignment::find($request->input('assignment_id'));
-            $assignment->time = $request->input('confirmed_start_time');
-            $assignment->start_time_confirmation = true;
-            $assignment->save();
-
-            return redirect()->back();
+            $event->start_time = array(0 => $request->input('confirmed_start_time'));
         }
+
+        $event->save();
+        $assignment->save();
+        return redirect()->back();
     }
 
     public function changeUserRole()

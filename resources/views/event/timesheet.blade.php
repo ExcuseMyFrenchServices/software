@@ -23,19 +23,17 @@
                                             </div>
                                             <div class="form-group">
                                                 <input type="hidden" name="id-{{$i}}" value="{{ $assignment->id }}">
-                                                @if($assignment->start_time_confirmation)
                                                 <div class="col-sm-4">
-                                                    <label>Confirmed Start Time</label>
-                                                    <p>{{$assignment->time}}</p>
-                                                </div>
-                                                @endif
-                                                <div class="col-sm-4">
-                                                    <label>Finish time</label>
-                                                    <input type="text" name="{{ $assignment->id }}-hours" class="form-control" value="{{ $assignment->hours }}">
+                                                    <label>Start Time</label>
+                                                    <input type="text" name="{{ $assignment->id }}-start-time" class="form-control" value="{{ empty($assignment->start_time) ? $assignment->time : $assignment->start_time }}">
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <label>Break</label>
                                                     <input type="text" name="{{$assignment->id}}-break" class=" form-control" value="{{ $assignment->break }}">
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <label>Finish time</label>
+                                                    <input type="text" name="{{ $assignment->id }}-hours" class="form-control" value="{{ $assignment->hours }}">
                                                 </div>
                                                 <?php $i++; ?>
                                                 <input type="hidden" name="assignment_number" value="{{$i}}">
