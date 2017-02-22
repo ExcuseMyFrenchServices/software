@@ -20,4 +20,6 @@
     @if($event['notes'])
         <p><b>Notes:</b> {{ $event['notes'] }}</p>
     @endif
+    <h4>To confirm your assistance, please click the link below:</h4>
+    <p>http://staff.excusemyfrenchservices.com/confirm/{{ $assignment['hash'] }}</p>
 </div>

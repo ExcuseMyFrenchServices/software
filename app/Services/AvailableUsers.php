@@ -19,9 +19,9 @@ class AvailableUsers {
     public function get($event, $time)
     {
         $date = new DateTime($event->event_date);
-
+        
         $event_hours = $this->getEventHours($event, $time);
-        $availabilities = Availability::where('date', $date)->get();
+        $availabilities = Availability::where('date', $date->format('Y-m-d'))->get();
 
         $available_users = [];
 
