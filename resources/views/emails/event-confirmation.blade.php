@@ -9,6 +9,10 @@
         <p><b>Address:</b> {{ $event['address'] }}</p>
     @endif
 
+    @if($event['details'])
+        <p><b>Details:</b> {{ $event['details'] }}</p>
+    @endif    
+    
     @if($event['uniform'])
         <p><b>Uniform:</b> {{ $event['uniform'] }}</p>
     @endif

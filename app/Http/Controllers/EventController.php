@@ -67,6 +67,7 @@ class EventController extends Controller
             'finish_time'   => $request->input('finish_time'),
             'number_staff'  => $request->input('number_staff'),
             'address'       => $request->input('address'),
+            'details'       => $request->input('details'),
             'uniform'       => $request->input('uniform'),
             'glasses'       => $request->input('glasses') == 'on',
             'soft_drinks'   => $request->input('soft_drinks') == 'on',
@@ -108,6 +109,7 @@ class EventController extends Controller
         $event->finish_time     = $request->input('finish_time');
         $event->number_staff    = $request->input('number_staff');
         $event->address         = $request->input('address');
+        $event->details         = $request->input('details');
         $event->uniform         = $request->input('uniform');
         $event->glasses         = $request->input('glasses') == 'on';
         $event->soft_drinks     = $request->input('soft_drinks') == 'on';

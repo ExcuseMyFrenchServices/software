@@ -179,6 +179,11 @@
                             </div>
 
                             <div class="col-xs-12 form-group">
+                                <label for="address">Details</label>
+                                <textarea rows="2"  name="details" id="details" class="form-control">{{ $event->details or old('details') }}</textarea>
+                            </div>
+
+                            <div class="col-xs-12 form-group">
                                 <label for="uniform">Uniform</label>
                                 <textarea rows="2"  name="uniform" id="uniform" class="form-control">{{ $event->uniform or old('uniform') }}</textarea>
                             </div>

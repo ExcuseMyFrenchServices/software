@@ -294,6 +294,7 @@ class ComposerStaticInit30850f05a4420f36ece7f181e979755f
         'AddBreakToAssignements' => __DIR__ . '/../..' . '/database/migrations/2017_01_31_010933_add_break_to_assignements.php',
         'AddClientIdToEvents' => __DIR__ . '/../..' . '/database/migrations/2016_01_07_061746_add_client_id_to_events.php',
         'AddClientsFromEvents' => __DIR__ . '/../..' . '/database/migrations/2016_01_07_090907_add_clients_from_events.php',
+        'AddDetailsToEvents' => __DIR__ . '/../..' . '/database/migrations/2017_02_28_044639_add_details_to_events.php',
         'AddHoursToAssigments' => __DIR__ . '/../..' . '/database/migrations/2016_09_06_120019_add_hours_to_assigments.php',
         'AddLvlColumnToUsersTable' => __DIR__ . '/../..' . '/database/migrations/2017_01_09_013436_add_lvl_column_to_users_table.php',
         'AddNewRoles' => __DIR__ . '/../..' . '/database/migrations/2016_01_07_093242_add_new_roles.php',

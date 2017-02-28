@@ -8,6 +8,9 @@
     @if($event['address'])
         <p><b>Address:</b> {{ $event['address'] }}</p>
     @endif
+    @if($event['details'])
+        <p><b>Address Details:</b> {{ $event['details'] }}</p>
+    @endif    
     @if(count($event['start_time']) == 1)
         <p><b>Start Time:</b> 
                 {{ $event['start_time'][0] }}
