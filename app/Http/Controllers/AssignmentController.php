@@ -50,7 +50,14 @@ class AssignmentController extends Controller
     public function notify($assignmentId)
     {
         $assignment = Assignment::find($assignmentId);
-        $admin = User::find($assignment->event->admin_id)->profile;
+        if(!empty($assignment->event->admin_id))
+        {
+            $admin = User::find($assignment->event->admin_id)->profile;
+        }
+        else
+        {
+            $admin = "";
+        }
 
 
         Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin], function($message) use ($assignment) {

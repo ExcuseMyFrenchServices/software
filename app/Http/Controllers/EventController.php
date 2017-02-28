@@ -191,10 +191,12 @@ class EventController extends Controller
 
         $unavailable = User::all()->diff($available);
 
+        $temp_user = User::where('username','smember')->first();
+
         $roles = Role::all();
 
 
-        return view('event.staff')->with(compact('event','time', 'available', 'unavailable', 'roles', 'client', 'userMissions'));
+        return view('event.staff')->with(compact('event','time', 'available', 'unavailable', 'roles', 'client', 'userMissions','temp_user'));
     }
 
     public function assign(Request $request, $eventId)
@@ -227,7 +229,7 @@ class EventController extends Controller
         $assignment->save();
 
         Mail::send('emails.admin-notification', ['event' => $event, 'assignment' => $assignment], function($message) use ($assignment) {
-            $message->to($assignment->user->profile->email)->subject("Admin Notification");
+            $message->to($assignment->user->profile->email)->subject("New Event Confirmation");
         });
 
         Session::flash('success', 'The admin was sent successfully');

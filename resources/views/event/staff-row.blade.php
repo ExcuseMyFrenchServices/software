@@ -12,18 +12,26 @@
         <a href="{{ url('event/' . $assignment->event->id . '/admin/' . $assignment->user->id) }}">
             <span class="label label-{{ $assignment->event->admin_id == $assignment->user->id ? 'success' : 'warning' }} assign_delete">Admin</span>
         </a>
+    @else
+        <span class="label label-{{ $assignment->event->admin_id == $assignment->user->id ? 'success' : 'warning' }} assign_delete">Admin</span>
     @endif
 
-    {{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name }}<b style="margin-left: 15px"><a href="tel: +61{{ $assignment->user->profile->phone_number }}">{{ $assignment->user->profile->phone_number }}</a></b>
+    {{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name  }}
+
+    @if($assignment->time != $assignment->start_time)
+        <span style="color:red">late : {{ $assignment->start_time}}</span>
+    @endif
+
+    <b style="margin-left: 15px"><a href="tel: +61{{ $assignment->user->profile->phone_number }}">{{ $assignment->user->profile->phone_number }}</a></b>
 
     @if(Auth::user()->role_id == 1)
         @if ($assignment->event->event_date >= date('Y-m-d'))
             @if($assignment->status == 'confirmed')
-                <span style="margin-top:-50px" class="label label-success">Confirmed</span>
+                <span class="label label-success">Confirmed</span>
             @elseif($assignment->status == 'pending')
-                <span style="margin-top:-50px" class="label label-warning">Pending</span>
+                <span class="label label-warning">Pending</span>
             @else
-                <span style="margin-top:-50px" class="label label-danger">Cancelled</span>
+                <span class="label label-danger">Cancelled</span>
             @endif
         @elseif(!empty($assignment->hours))
                 <span style="margin-right: 50px" class="label label-success"> {{ $assignment->hours }} Hours </span>

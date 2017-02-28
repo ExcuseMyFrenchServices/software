@@ -23,6 +23,7 @@
                         <li><a href="{{ url('event') }}">Home</a></li>
                         <li><a href="{{ url('availability') }}">Availability</a></li>
                         <li><a href="{{ url('user') }}">Users</a></li>
+                        <li><a href="{{ url('archive')}}">Archived Users</a></li>
                         <li><a href="{{ url('event') }}">Events</a></li>
                         <li><a href="{{ url('past/events/') }}">Past Events</a></li>
                         <li><a href="{{ url('client') }}">Clients</a></li>

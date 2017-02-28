@@ -16,9 +16,14 @@ Route::resource('user', 'UserController');
 Route::get('user/{user}/credentials/edit', 'UserController@editCredentialsForm');
 Route::get('user/{user}/password', 'UserController@passwordEditForm');
 Route::get('reset/{hash}', 'UserController@passwordEdit');
+Route::get('user/archive/{user}', 'UserController@archive');
+Route::get('user/unarchive/{user}', 'UserController@unarchive');
 
 Route::post('user/{user}/credentials/edit', 'UserController@editCredentials');
 Route::post('user/{user}/password', 'UserController@passwordUpdate');
+
+
+Route::get('archive', 'UserController@archiveIndex');
 
 	//Search functionnality
 Route::post('user/search', 'UserController@search');

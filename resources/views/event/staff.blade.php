@@ -31,6 +31,18 @@
                                     <p>No users available</p>
                                 </div>
                             @endif
+                            @if(count($temp_user) == 1)
+                            <h6>Temporary User</h6>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <div class="checkbox" style="margin: 0;">
+                                            <label>
+                                                <input type="checkbox" name={{ $temp_user->id }}> {{ $temp_user->profile->first_name .' '. $temp_user->profile->last_name  }}
+                                            </label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            @endif
                             <h6>Unavailable</h6>
                             @if(count($unavailable) >= 1)
                                 <ul class="list-group">

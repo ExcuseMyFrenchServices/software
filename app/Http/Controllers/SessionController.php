@@ -13,7 +13,11 @@ class SessionController extends Controller
         $password = $request->input('password');
 
         if (Auth::attempt(['username' => $username, 'password' => $password])) {
-            return redirect('events/' . Auth::user()->id);
+            if(Auth::user()->role_id != 12)
+            {
+                return redirect('events/' . Auth::user()->id);
+            }
+            return view('login')->with('error', 'You are not allow to login anymore, please contact EMFS');
         }
 
         return view('login')->with('error', 'Login failed');

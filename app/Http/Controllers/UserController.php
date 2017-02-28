@@ -208,4 +208,31 @@ class UserController extends Controller
 
         return redirect()->back();
     }
+
+    public function archiveIndex()
+    {
+        $users = User::where('role_id',12)->get();
+
+        return view('user.archived')->with(compact('users'));
+    }
+
+    public function archive($user)
+    {
+        $user = User::find($user);
+
+        $user->role_id = 12;
+        $user->save();
+
+        return redirect()->back();
+    }
+
+    public function unarchive($user)
+    {
+        $user = User::find($user);
+
+        $user->role_id = 2;
+        $user->save();
+
+        return redirect()->back();
+    }
 }

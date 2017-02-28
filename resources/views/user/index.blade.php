@@ -30,6 +30,7 @@
                     <tbody>
                     @foreach($users as $user)
                         <tr>
+                            @if($user->role_id != 12)
                             <td>{{ $user->profile->first_name }}</td>
                             <td>{{ $user->profile->last_name }}</td>
                             <td>{{ $user->profile->email }}</td>
@@ -41,6 +42,12 @@
                                 <div class="hidden user_id" >{{ $user->id }}</div>
                                 <div class="hidden username" >{{ $user->username }}</div>
                             </td>
+                            <td>
+                                @if(Auth::user()->id != $user->id)
+                                    <a href="/user/archive/{{ $user->id }}" class="btn btn-warning btn-xs" role="button"><span class="glyphicon glyphicon-inbox"> </span> Archive</a>
+                                @endif
+                            </td>
+                            @endif
                         </tr>
                     @endforeach
                     </tbody>
