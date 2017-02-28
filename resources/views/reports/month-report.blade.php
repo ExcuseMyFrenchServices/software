@@ -46,9 +46,33 @@
 				<table class="col-xs-12 table table-striped table-bordered">
 					<tr>
 						<th>Client name</th>
-						<th>Number of events</th>
-						<th>Staff</th>
-						<th>Days Worked</th>
+						<th>
+							@if($order != "events_number")
+								<a href="{{ url('reports/month-report/'.$year.'/'.$month.'/events_number') }}"> 
+									Number of events
+								</a>
+							@else
+								Number of events <span class="pull-right glyphicon glyphicon-arrow-down"></span>
+							@endif
+						</th>
+						<th>
+							@if($order != "staff_number")
+								<a href="{{ url('reports/month-report/'.$year.'/'.$month.'/staff_number') }}">
+									Staff
+								</a>
+							@else
+								Staff <span class="pull-right glyphicon glyphicon-arrow-down"></span>
+							@endif
+						</th>
+						<th>
+							@if($order != "days_worked")
+							<a href="{{ url('reports/month-report/'.$year.'/'.$month.'/days_worked') }}">
+								Days Worked
+							</a>
+							@else
+								Days Worked <span class="pull-right glyphicon glyphicon-arrow-down"></span>
+							@endif
+						</th>
 					</tr>
 					@foreach($events as $event)
 						<tr><td>{{ $event->name }}</td><td>{{ $event->events_number}}</td><td>{{ $event->staff_number }}</td><td>{{ $event->days_worked }}</td></tr>

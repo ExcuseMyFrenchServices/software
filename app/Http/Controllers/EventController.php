@@ -446,7 +446,7 @@ class EventController extends Controller
 
     }
 
-    public function monthReport($year, $month)
+    public function monthReport($year, $month, $order)
     {
         $date = $year.'-'.$month.'-01';
         $written_date = date('F Y', strtotime($date));
@@ -467,7 +467,7 @@ class EventController extends Controller
                     ->where('events.event_date','>=',$date)
                     ->where('events.event_date','<',$next_report_month)
                     ->groupBy('clients.name')
-                    ->orderBy('events_number', 'DESC')
+                    ->orderBy($order, 'DESC')
                     ->get();  
 
         $total_events = DB::table('events')
@@ -478,6 +478,6 @@ class EventController extends Controller
                     ->where('events.event_date','<',$next_report_month)
                     ->get();   
 
-        return view('reports.month-report')->with(compact('events','total_events','written_date','year','month', 'last_month', 'next_month', 'last_year', 'next_year', 'days_numbers_in_month'));
+        return view('reports.month-report')->with(compact('events','total_events','written_date','year','month', 'last_month', 'next_month', 'last_year', 'next_year', 'days_numbers_in_month', 'order'));
     }
 }

@@ -79,7 +79,7 @@ Route::get('reports', function(){
 });
 
 Route::get('reports/month-report', 'EventController@briefMonthReport');
-Route::get('reports/month-report/{year}/{month}', 'EventController@monthReport');
+Route::get('reports/month-report/{year}/{month}/{order}', 'EventController@monthReport');
 
 Route::get('reports/week-report', 'AssignmentController@weekReport');
 
