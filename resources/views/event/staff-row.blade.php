@@ -12,13 +12,13 @@
         <a href="{{ url('event/' . $assignment->event->id . '/admin/' . $assignment->user->id) }}">
             <span class="label label-{{ $assignment->event->admin_id == $assignment->user->id ? 'success' : 'warning' }} assign_delete">Admin</span>
         </a>
-    @else
-        <span class="label label-{{ $assignment->event->admin_id == $assignment->user->id ? 'success' : 'warning' }} assign_delete">Admin</span>
+    @elseif($assignment->event->admin_id == $assignment->user->id)
+        <span class="label label-success }} assign_delete">Admin</span>
     @endif
 
     {{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name  }}
 
-    @if($assignment->time != $assignment->start_time)
+    @if(Auth::user()->role_id == 1 && !empty($assignment->start_time) && $assignment->time != $assignment->start_time && $assignment->event->event_date >= date('Y-m-d'))
         <span style="color:red">late : {{ $assignment->start_time}}</span>
     @endif
 
