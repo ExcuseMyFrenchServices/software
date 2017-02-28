@@ -10,15 +10,15 @@
 			<ul class="pager">
 
 				@if($last_month == 0)
-				<li class="previous"><a href="{{ url('reports/month-report/'.$last_year.'/12') }}"><span aria-hidden="true">&larr;</span> Last Year</a></li>
+				<li class="previous"><a href="{{ url('reports/month-report/'.$last_year.'/12/'.$order) }}"><span aria-hidden="true">&larr;</span> Last Year</a></li>
 				@else
-				<li class="previous"><a href="{{ url('reports/month-report/'.$year.'/'.$last_month) }}"><span aria-hidden="true">&larr;</span> Last Month</a></li>			
+				<li class="previous"><a href="{{ url('reports/month-report/'.$year.'/'.$last_month.'/'.$order) }}"><span aria-hidden="true">&larr;</span> Last Month</a></li>			
 				@endif
 
 				@if($next_month == 13)
-				<li class="next"><a href="{{ url('reports/month-report/'.$next_year.'/01') }}"> Next Year <span aria-hidden="true">&rarr;</span></a></li>
+				<li class="next"><a href="{{ url('reports/month-report/'.$next_year.'/01/'.$order) }}"> Next Year <span aria-hidden="true">&rarr;</span></a></li>
 				@else
-				<li class="next"><a href="{{ url('reports/month-report/'.$year.'/'.$next_month) }}">Next Month <span aria-hidden="true">&rarr;</span></a></li>
+				<li class="next"><a href="{{ url('reports/month-report/'.$year.'/'.$next_month.'/'.$order) }}">Next Month <span aria-hidden="true">&rarr;</span></a></li>
 				@endif
 
 			</ul>

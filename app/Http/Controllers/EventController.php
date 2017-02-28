@@ -461,7 +461,7 @@ class EventController extends Controller
         $days_numbers_in_month = date('t', strtotime($date));
 
         $events = DB::table('events')
-                    ->select('clients.name',DB::raw('count(DISTINCT events.id) as events_number'), DB::raw('count(assignments.user_id) as staff_number'), DB::raw('count(DISTINCT events.event_date) as days_worked'))
+                    ->select('clients.name',DB::raw('count(DISTINCT events.id) as events_number'), DB::raw('count(assignments.user_id) as staff_number'), DB::raw('count(DISTINCT DATE_FORMAT(events.event_date,\'%Y-%m-%d\')) as days_worked'))
                     ->join('assignments','assignments.event_id', '=', 'events.id')
                     ->join('clients','clients.id','=','events.client_id')
                     ->where('events.event_date','>=',$date)
@@ -471,7 +471,7 @@ class EventController extends Controller
                     ->get();  
 
         $total_events = DB::table('events')
-                    ->select(DB::raw('count(DISTINCT events.id) as events_number'), DB::raw('count(assignments.user_id) as staff_number'), DB::raw('count(DISTINCT events.event_date) as days_worked'))
+                    ->select(DB::raw('count(DISTINCT events.id) as events_number'), DB::raw('count(assignments.user_id) as staff_number'), DB::raw('count(DISTINCT DATE_FORMAT(events.event_date,\'%Y-%m-%d\')) as days_worked'))
                     ->join('assignments','assignments.event_id', '=', 'events.id')
                     ->join('clients','clients.id','=','events.client_id')
                     ->where('events.event_date','>=',$date)
