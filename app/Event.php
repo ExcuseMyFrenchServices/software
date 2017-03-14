@@ -17,7 +17,7 @@ class Event extends Model
      *
      * @var array
      */
-    protected $fillable = ['event_name', 'client_id', 'booking_date', 'event_date', 'start_time', 'finish_time', 'number_staff', 'address','uniform', 'glasses', 'soft_drinks', 'bar', 'notes', 'notification_status'];
+    protected $fillable = ['event_name', 'client_id', 'booking_date', 'event_date', 'start_time', 'finish_time', 'number_staff', 'address','details','uniform', 'glasses', 'soft_drinks', 'bar', 'notes', 'notification_status'];
 
     /**
      * The attributes that should be cast to native types.
