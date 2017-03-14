@@ -180,7 +180,7 @@
 
                             <div class="col-xs-12 form-group">
                                 <label for="address">Details</label>
-                                <textarea rows="2"  name="details" id="details" class="form-control">{{ $event->details or old('details') }}</textarea>
+                                <textarea rows="2"  name="details" id="details" class="form-control">{{ $event->details or old('details')}}</textarea>
                             </div>
 
                             <div class="col-xs-12 form-group">
