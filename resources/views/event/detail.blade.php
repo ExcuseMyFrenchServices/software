@@ -24,6 +24,10 @@
                                     <br>
                                 @endif
 
+                                @if(!empty($event->details))
+                                    <p><b>Adress Details:</b> {{ $event->details }}</p>
+                                    <br>
+                                @endif
                                 @if(!empty($event->uniform))
                                     <p><b>Uniform:</b> {{ $event->uniform }}</p>
                                     <br>
