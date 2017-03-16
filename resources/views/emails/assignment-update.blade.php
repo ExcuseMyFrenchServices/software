@@ -13,8 +13,38 @@
         <p><b>Details:</b> {{ $event['details'] }}</p>
     @endif    
 
-    @if($event['uniform'])
-        <p><b>Uniform:</b> {{ $event['uniform'] }}</p>
+    @if(!empty($uniform))
+        <p>
+            <b>Uniform: </b>
+            <ul style="list-style: none; padding: 0">
+                    <li><b>{{ $uniform->set_name }}</b></li>
+                @if(!empty($uniform->jacket))
+                    <li>
+                    <span class="pull-left" style="width:20px;height:20px;border:1px solid white;background-color: {{ $uniform->jacket_color }}; margin-right: 5px"> </span>
+                     {{ $uniform->jacket_color }} {{ $uniform->jacket }} 
+                    </li>
+                @endif
+                @if(!empty($uniform->shirt))
+                    <li>
+                    <span class="pull-left" style="width:20px;height:20px;border:1px solid white;background-color: {{ $uniform->shirt_color }}; margin-right: 5px"> </span>  
+                     {{ $uniform->shirt_color }} {{ $uniform->shirt }}  
+                    </li>
+                @endif
+                @if(!empty($uniform->pant))
+                    <li>
+                    <span class="pull-left" style="width:20px;height:20px;border:1px solid white;background-color: {{ $uniform->pant_color }}; margin-right: 5px"> </span>
+                     {{ $uniform->pant_color }} {{ $uniform->pant }}
+                    </li>
+                @endif
+                @if(!empty($uniform->shoes))
+                    <li>
+                    <span class="pull-left" style="width:20px;height:20px;border:1px solid white;background-color: {{ $uniform->shoes_color }}; margin-right: 5px"> </span>
+                     {{ $uniform->shoes_color }} {{ $uniform->shoes }}
+                    </li>
+                @endif
+            </ul>
+        </p>
+        <br>
     @endif
 
     <p style="color:red"><b>New Job start:</b> {{ $assignment['time'] }}</p>

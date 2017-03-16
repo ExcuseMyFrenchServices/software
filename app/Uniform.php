@@ -1,23 +1,25 @@
 <?php
+
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Client extends Model
+
+class Uniform extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'clients';
+    protected $table = 'uniforms';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'email','second_email','third_email', 'phone_number'];
+    protected $fillable = ['set_name','jacket','jacket_color','shirt','shirt_color','pant','pant_color','shoes','shoes_color'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -32,16 +34,11 @@ class Client extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'integer'
+        'id' => 'integer',
     ];
 
-    public function events()
+    public function event()
     {
-        return $this->hasMany('App\Event');
-    }
-
-    public function feedbacks()
-    {
-        return $this->hasMany('App\Feedback');
+        return $this->belongsToOne('App\Event');
     }
 }

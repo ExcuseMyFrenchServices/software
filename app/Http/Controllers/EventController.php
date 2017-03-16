@@ -3,6 +3,7 @@
 use App\Assignment;
 use App\Client;
 use App\Event;
+use App\Uniform;
 use App\Http\Requests\Event\CreateEventRequest;
 use App\Http\Requests\Event\TimesheetRequest;
 use App\Http\Requests\Event\UpdateEventRequest;
@@ -53,8 +54,9 @@ class EventController extends Controller
     {
         $clients = Client::all()->sortBy('name');
         $roles = Role::all();
+        $uniforms = Uniform::all();
 
-        return view('event.create')->with(compact('clients', 'roles'));
+        return view('event.create')->with(compact('clients', 'roles', 'uniforms'));
     }
 
     public function store(CreateEventRequest $request)
@@ -84,8 +86,9 @@ class EventController extends Controller
     public function show($eventId)
     {
         $event = Event::find($eventId);
+        $uniform = Uniform::find($event->uniform);
 
-        return view('event.detail')->with(compact('event'));
+        return view('event.detail')->with(compact('event','uniform'));
     }
 
     public function edit($eventId)
@@ -93,13 +96,15 @@ class EventController extends Controller
         $event = Event::find($eventId);
 
         $clients = Client::all()->sortBy('name');
+        $uniforms = Uniform::all();
 
-        return view('event.create')->with(compact('event', 'clients'));
+        return view('event.create')->with(compact('event', 'clients', 'uniforms'));
     }
 
     public function update(UpdateEventRequest $request, $eventId)
     {
         $event = Event::find($eventId);
+        $uniform = Uniform::find((int)$request->input('uniform'));
 
         $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
         $old_start_time = $event->start_time;
@@ -134,15 +139,16 @@ class EventController extends Controller
                         $assignment->time = $event->start_time[$i];
                         $assignment->save();
 
-                        Mail::send('emails.assignment-update', ['event' => $assignment->event, 'assignment' => $assignment], function($message) use ($assignment) {
+                        Mail::send('emails.assignment-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment) {
                             $message->to($assignment->user->profile->email)->subject('Important : Event Start Time Updated !');
                         });
+
                     }
                 }
             }
             else
             {
-                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment], function($message) use ($assignment) {
+                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment) {
                     $message->to($assignment->user->profile->email)->subject('Important : Event Updated');
                 }); 
             }
@@ -165,8 +171,9 @@ class EventController extends Controller
         $event->event_date      = null;
 
         $clients = Client::all()->sortBy('name');
+        $uniforms = Uniform::all();
 
-        return view('event.create')->with(compact('event', 'clients'));
+        return view('event.create')->with(compact('event', 'clients', 'uniforms'));
     }
 
     public function destroy($eventId)
@@ -230,7 +237,9 @@ class EventController extends Controller
         $assignment->notification = true;
         $assignment->save();
 
-        Mail::send('emails.admin-notification', ['event' => $event, 'assignment' => $assignment], function($message) use ($assignment) {
+        $uniform = Uniform::find($event->uniform);
+
+        Mail::send('emails.admin-notification', ['event' => $event, 'assignment' => $assignment, 'uniform' => $uniform ], function($message) use ($assignment) {
             $message->to($assignment->user->profile->email)->subject("New Event Confirmation");
         });
 
@@ -283,14 +292,39 @@ class EventController extends Controller
         return redirect('event/' . $assignment->event_id);
     }
 
-    public function notifyClient($eventId)
+    public function notifyClient(Request $request, $eventId)
     {
         $event = Event::find($eventId);
         $admin = User::find($event->admin_id);
+        $email = $request->input('client-email');
 
-        Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments, 'admin'=>$admin], function($message) use ($event) {
-            $message->to($event->client->email)->cc('thomasleclercq90010@gmail.com')->subject('Event Confirmation');
-        });
+        if(!empty($email) && $email != "to-all")
+        {
+            Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments, 'admin'=>$admin], function($message) use ($email) {
+                $message->to($email)->subject('Event Confirmation');
+            });
+        } 
+        elseif(!empty($email) && $email == "to-all")
+        {
+            if(!empty($event->client->third_email))
+            {
+                Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments, 'admin'=>$admin], function($message) use ($event) {
+                    $message->to($event->client->email)->cc($event->client->second_email)->cc($event->client->third_email)->subject('Event Confirmation');
+                });
+            }
+            elseif(!empty($event->client->second_email))
+            {
+                Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments, 'admin'=>$admin], function($message) use ($event) {
+                    $message->to($event->client->email)->cc($event->client->second_email)->subject('Event Confirmation');
+                });
+            }
+        }
+        else
+        {
+            Mail::send('emails.notify-client', ['event' => $event, 'client' => $event->client, 'assignments' => $event->assignments, 'admin'=>$admin], function($message) use ($event) {
+                $message->to($event->client->email)->subject('Event Confirmation');
+            });
+        }
 
         $event->client_notification = true;
         $event->save();

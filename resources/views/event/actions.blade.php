@@ -1,9 +1,16 @@
 @if(Auth::user()->role_id == 1)
     @if($event->event_date >= date('Y-m-d'))
+        @if(!empty($event->client->second_email))
+        <a id="client-mail" class="btn btn-{{ $event->client_notification ? 'success' : 'warning' }} btn-sm back_btn">
+            <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+            Client
+        </a>
+        @else
         <a class="btn btn-{{ $event->client_notification ? 'success' : 'warning' }} btn-sm back_btn" href="{{ url('event/notify/'.$event->id.'/client') }}">
             <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
             Client
         </a>
+        @endif
     @else
         @if(is_null($event->feedback) || !is_null($event->feedback->hash))
             <a class="btn btn-warning btn-sm back_btn" href="{{ url('feedback/request/'.$event->id) }}">

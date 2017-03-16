@@ -38,7 +38,7 @@ Route::get('events/{user}', 'EventController@events');
 Route::get('past/events', 'EventController@indexPast');
 Route::get('assignment/add/{event}/{time}', 'EventController@staff');
 Route::get('confirm/{hash}', 'EventController@confirmAssistance');
-Route::get('event/notify/{event}/client', 'EventController@notifyClient');
+Route::post('event/notify/{event}/client', 'EventController@notifyClient');
 Route::get('event/{event}/copy', 'EventController@copy');
 Route::get('event/{event}/admin/{user}', 'EventController@setAdmin');
 
@@ -89,3 +89,10 @@ Route::resource('public-holidays', 'PublicHolidayController');
 Route::get('public-holidays/create', 'PublicHolidayController@create');
 Route::get('public-holidays/{publicHolidayId}/edit', 'PublicHolidayController@edit');
 Route::get('public-holidays/{publicHolidayId}/delete', 'PublicHolidayController@destroy');
+
+// UNIFORMS
+
+Route::resource('uniforms', 'UniformController');
+Route::get('uniforms/create', 'UniformController@create');
+Route::get('uniforms/{uniformId}/edit', 'UniformController@edit');
+Route::get('uniforms/{uniformId}/delete', 'UniformController@destroy');

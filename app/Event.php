@@ -51,4 +51,9 @@ class Event extends Model
     {
         return $this->hasOne('App\Feedback');
     }
+
+    public function uniform()
+    {
+        return $this->hasOne('App\Uniform');
+    }
 }

@@ -2,6 +2,7 @@
 
 use App\Assignment;
 use App\User;
+use App\Uniform;
 use App\Services\FinancialReportCalculation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -59,8 +60,9 @@ class AssignmentController extends Controller
             $admin = "";
         }
 
+        $uniform = Uniform::find($assignment->event->uniform);
 
-        Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin], function($message) use ($assignment) {
+        Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
             $message->to($assignment->user->profile->email)->subject('Event Confirmation');
         });
 

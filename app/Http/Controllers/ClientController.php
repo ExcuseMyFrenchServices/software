@@ -43,6 +43,8 @@ class ClientController extends Controller
             'name'          => $request->input('name'),
             'phone_number'  => $request->input('phone_number'),
             'email'         => $request->input('email'),
+            'second_email'  => $request->input('second_email'),
+            'third_email'   => $request->input('third_email'),
         ]);
 
         return redirect('client');
@@ -61,6 +63,8 @@ class ClientController extends Controller
 
         $client->name           = $request->input('name');
         $client->email          = $request->input('email');
+        $client->second_email   = $request->input('second_email');
+        $client->third_email    = $request->input('third_email');
         $client->phone_number   = $request->input('phone_number');
 
         $client->save();

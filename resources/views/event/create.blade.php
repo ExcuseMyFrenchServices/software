@@ -39,6 +39,7 @@
                             <div class="col-xs-8 form-group {{ $errors->has('client') ? 'has-error' : '' }}">
                                 <label for="client">Client</label>
                                 <select name="client" data-live-search="true" data-size="8" data-width="100%">
+                                    <option value="{{ $event->client_id or old('client')}}"></option>
                                     @foreach($clients as $client)
                                         @if(isset($event))
                                             <option {{ $client->id == $event->client_id ? 'selected' : '' }} value="{{ $client->id }}">{{ ucfirst($client->name) }}</option>
@@ -185,7 +186,16 @@
 
                             <div class="col-xs-12 form-group">
                                 <label for="uniform">Uniform</label>
-                                <textarea rows="2"  name="uniform" id="uniform" class="form-control">{{ $event->uniform or old('uniform') }}</textarea>
+                                <select name="uniform" id="uniform" class="form-control">
+                                    <option value="{{ $event->uniform or old('uniform') }}"></option>
+                                    @foreach($uniforms as $uniform)
+                                        @if(isset($event))
+                                            <option {{ $uniform->id == $event->uniform ? 'selected' : '' }} value="{{ $uniform->id }}">{{ $uniform->set_name }}</option>
+                                        @else
+                                            <option {{ old('uniform') == $uniform->id ? 'selected' : '' }} value="{{ $uniform->id }}">{{ $uniform->set_name }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="col-xs-12 col-sm-4 form-group services">

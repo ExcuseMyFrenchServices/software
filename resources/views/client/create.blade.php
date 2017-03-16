@@ -57,6 +57,16 @@
                                 <input type="email" name="email" id="email" class="form-control"  value="{{ $client->email or old('email') }}">
                             </div>
 
+                            <div class="col-xs-12 form-group {{ $errors->has('email') ? 'has-error' : '' }}">
+                                <label for="email">Second Email</label>
+                                <input type="email" name="second_email" id="second_email" class="form-control"  value="{{ $client->second_email or old('second_email') }}">
+                            </div>
+
+                            <div class="col-xs-12 form-group {{ $errors->has('email') ? 'has-error' : '' }}">
+                                <label for="email">Third Email</label>
+                                <input type="email" name="third_email" id="third_email" class="form-control"  value="{{ $client->third_email or old('third_email') }}">
+                            </div>
+
                             @if(isset($client))
                                 <button  class="btn btn-primary btn-sm" type="submit">Update</button>
                             @else
