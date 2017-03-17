@@ -12,7 +12,7 @@
     @if($event['details'])
         <p><b>Details:</b> {{ $event['details'] }}</p>
     @endif    
-
+    
     @if(!empty($uniform))
         <p>
             <b>Uniform: </b>

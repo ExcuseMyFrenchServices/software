@@ -62,8 +62,21 @@ class AssignmentController extends Controller
 
         $uniform = Uniform::find($assignment->event->uniform);
 
-        Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
-            $message->to($assignment->user->profile->email)->subject('Event Confirmation');
+        if(file_exists('files/'.$assignment->event->id.'.jpg'))
+        {
+            $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.jpg';
+        }
+        elseif(file_exists('files/'.$assignment->event->id.'.pdf'))
+        {
+            $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.pdf';
+        }
+        else
+        {
+            $file = "";
+        }
+
+        Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform, 'file'=>$file], function($message) use ($assignment, $file) {
+            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
         });
 
         $assignment->notification = true;

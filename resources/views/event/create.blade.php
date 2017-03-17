@@ -29,7 +29,7 @@
                         </div>
 
 
-                        <form id="create-form" action="{{ isset($event) && !is_null($event->id) ? '/event/'.$event->id : url('event') }}" method="POST">
+                        <form id="create-form" action="{{ isset($event) && !is_null($event->id) ? '/event/'.$event->id : url('event') }}" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                             @if(isset($event) && !is_null($event->id))
@@ -241,6 +241,11 @@
                             <div class="col-xs-12 form-group">
                                 <label for="notes">Notes</label>
                                 <textarea rows="2"  name="notes" id="notes" class="form-control">{{ $event->notes or old('notes') }}</textarea>
+                            </div>
+
+                            <div class="col-xs-12 form-group">
+                                <label for="event_file">Add a file to event</label>
+                                <input type="file" name="event_file">
                             </div>
 
                             <div class="col-xs-12">

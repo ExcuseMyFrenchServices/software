@@ -80,6 +80,14 @@ class EventController extends Controller
             'event_date'    => new DateTime($request->input('event_date').$start_time[0]),
         ]);
 
+        $file = request()->file('event_file');
+        $ext = $file->guessClientExtension();
+        if($ext == '.jpeg' || $ext == '.png')
+        {
+            $ext = '.jpg';
+        }
+        $file->move('files/',$event->id.'.'.$ext);
+
         return redirect('event/' . $event->id);
     }
 
@@ -126,6 +134,19 @@ class EventController extends Controller
 
         $event->save();
 
+        if(file_exists('files/'.$event->id.'.jpg'))
+        {
+            $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.jpg');
+        }
+        elseif(file_exists('files/'.$event->id.'.pdf'))
+        {
+            $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.pdf');
+        }
+        else
+        {
+            $file = "";
+        }
+
         // Update assignments for removed hours
         Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$old_start_time) 
         {
@@ -139,8 +160,8 @@ class EventController extends Controller
                         $assignment->time = $event->start_time[$i];
                         $assignment->save();
 
-                        Mail::send('emails.assignment-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment) {
-                            $message->to($assignment->user->profile->email)->subject('Important : Event Start Time Updated !');
+                        Mail::send('emails.assignment-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform, 'file'=>$file], function($message) use ($assignment, $file) {
+                            $message->to($assignment->user->profile->email)->subject('Important : Event Start Time Updated !')->attach($file);
                         });
 
                     }
@@ -148,8 +169,8 @@ class EventController extends Controller
             }
             else
             {
-                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment) {
-                    $message->to($assignment->user->profile->email)->subject('Important : Event Updated');
+                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform, 'file'=>$file], function($message) use ($assignment, $file) {
+                    $message->to($assignment->user->profile->email)->subject('Important : Event Updated')->attach($file);
                 }); 
             }
         });
@@ -239,8 +260,21 @@ class EventController extends Controller
 
         $uniform = Uniform::find($event->uniform);
 
-        Mail::send('emails.admin-notification', ['event' => $event, 'assignment' => $assignment, 'uniform' => $uniform ], function($message) use ($assignment) {
-            $message->to($assignment->user->profile->email)->subject("New Event Confirmation");
+        if(file_exists('files/'.$event->id.'.jpg'))
+        {
+            $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.jpg');
+        }
+        elseif(file_exists('files/'.$event->id.'.pdf'))
+        {
+            $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.pdf');
+        }
+        else
+        {
+            $file = "";
+        }
+
+        Mail::send('emails.admin-notification', ['event' => $event, 'assignment' => $assignment, 'uniform' => $uniform, 'file'=>$file ], function($message) use ($assignment,$file) {
+            $message->to($assignment->user->profile->email)->subject("New Event Confirmation")->attach($file);
         });
 
         Session::flash('success', 'The admin was sent successfully');
