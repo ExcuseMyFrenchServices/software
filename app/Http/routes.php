@@ -49,6 +49,7 @@ Route::get('event/{event}/timesheet', 'EventController@getTimesheet');
 Route::post('event/{event}/timesheet', 'EventController@saveTimesheet');
 Route::post('event/{event}/start-time-confirm', 'EventController@confirmStartTime');
 
+Route::get('event/notify-all/{event}', 'AssignmentController@notifyAll');
 Route::get('event/notify/{assignment}', 'AssignmentController@notify');
 Route::get('event/{event}/confirm', 'AssignmentController@confirm');
 Route::post('event/{event}/confirm', 'AssignmentController@forceConfirm');
@@ -96,3 +97,13 @@ Route::resource('uniforms', 'UniformController');
 Route::get('uniforms/create', 'UniformController@create');
 Route::get('uniforms/{uniformId}/edit', 'UniformController@edit');
 Route::get('uniforms/{uniformId}/delete', 'UniformController@destroy');
+
+//STOCKS
+
+Route::resource('stocks', 'StockController');
+Route::post('stocks/sort', 'StockController@sort');
+Route::get('stocks/{id}/delete', 'StockController@destroy');
+
+//OUTSTOCKS
+
+Route::get('outstocks/{outstock}/destroy/{eventId}', 'OutStockController@destroy');

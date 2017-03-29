@@ -25,7 +25,7 @@
                                 @endif
 
                                 @if(!empty($event->details))
-                                    <p><b>Adress Details:</b> {{ $event->details }}</p>
+                                    <p><b>Address Details:</b> {{ $event->details }}</p>
                                     <br>
                                 @endif
 
@@ -79,19 +79,63 @@
                                     </p>
                                     <br>
                                 @endif
+  
 
-                                @if(!empty($event->glasses) || !empty($event->soft_drinks) || !empty($event->bar))
+                                @if(!empty($softs) || !empty($glasses) || !empty($accessories) || !empty($alcohols))
                                     <p>
                                         <b>Extras:</b>
-                                        <ul>
-                                            @if(!empty($event->glasses))
-                                                <li>Glasses</li>
+                                        <ul class="list-group">
+                                            @if(count($glasses) != 0)
+                                                <li class="list-group-item"><b>Glasses</b></li>
+                                                <li class="list-group-item">
+                                                    <ul>
+                                                    @foreach($glasses as $glass)
+                                                        <li style="min-height: 40px">
+                                                        {{ $glass->quantity.' '.$glass->name }}
+                                                        <a href="{{ url('/outstocks/'.$glass->id.'/destroy/'.$event->id) }}" class='pull-right btn btn-danger btn-sm'>X</a>
+                                                        </li>
+                                                    @endforeach
+                                                    </ul>
+                                                </li>
                                             @endif
-                                            @if(!empty($event->soft_drinks))
-                                                <li>Soft drinks</li>
+                                            @if(count($softs) != 0)
+                                                <li class="list-group-item"><b>Soft drinks</b></li>
+                                                <li class="list-group-item">
+                                                    <ul>
+                                                    @foreach($softs as $soft)
+                                                        <li style="min-height: 40px">
+                                                        {{ $soft->quantity.' '.$soft->name }}
+                                                        <a href="{{ url('/outstocks/'.$soft->id.'/destroy/'.$event->id) }}" class='pull-right btn btn-danger btn-sm'>X</a>
+                                                        </li>
+                                                    @endforeach
+                                                    </ul>
+                                                </li>
                                             @endif
-                                            @if(!empty($event->bar))
-                                                <li>Bar</li>
+                                            @if(count($alcohols) != 0)
+                                                <li class="list-group-item"><b>Alcohols</b></li>
+                                                <li class="list-group-item">
+                                                    <ul>
+                                                    @foreach($alcohols as $alcohol)
+                                                        <li style="min-height: 40px">
+                                                        {{ $alcohol->quantity.' '.$alcohol->name }}
+                                                        <a href="{{ url('/outstocks/'.$alcohol->id.'/destroy/'.$event->id) }}" class='pull-right btn btn-danger btn-sm'>X</a>
+                                                        </li>
+                                                    @endforeach
+                                                    </ul>
+                                                </li>
+                                            @endif
+                                            @if(count($accessories) != 0)
+                                                <li class="list-group-item"><b>Accessories</b></li>
+                                                <li class="list-group-item">
+                                                    <ul>
+                                                    @foreach($accessories as $accessory)
+                                                        <li style="min-height: 40px">
+                                                        {{ $accessory->quantity.' '.$accessory->name }}
+                                                        <a href="{{ url('/outstocks/'.$accessory->id.'/destroy/'.$event->id) }}" class='pull-right btn btn-danger btn-sm'>X</a>
+                                                        </li>
+                                                    @endforeach
+                                                    </ul>
+                                                </li>
                                             @endif
                                         </ul>
                                     </p>
@@ -113,6 +157,9 @@
                                                     @include('event.staff-row', ['$assignment' => $assignment])
                                                 @endforeach
                                                 @if(Auth::user()->role_id == 1)
+                                                    <li class="list-group-item">
+                                                        <a href="{{ url('event/notify-all/'.$event->id) }}" class="btn btn-success btn-sm">Notify all</a>
+                                                    </li>
                                                     <li class="list-group-item">
                                                         <b>Admin Report</b>:<br>
                                                         {{ $event->report }}
@@ -179,6 +226,7 @@
             </div>
         </div>
     </div>
+    <!-- Hidden content -->
     <div id="popUp" class="hidden" style="position: absolute; width: 100vw; height: 150vh; background-color: rgba(0,0,0,0.8); top: 0; left: 0">
             <div id="formContainer" class="col-sm-6 col-sm-offset-3" style="height: 50vh;margin-top:15%;padding:150px 0px;background-color: white">
                 <form action="{{ url('event/notify/'.$event->id.'/client') }}" method="POST" class="form">

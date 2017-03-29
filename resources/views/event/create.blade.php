@@ -26,6 +26,11 @@
                                     {{ Session::get('success') }}
                                 </div>
                             @endif
+                            @if(Session::has('danger'))
+                                <div class="alert alert-danger" role="alert">
+                                    {{ Session::get('danger') }}
+                                </div>
+                            @endif
                         </div>
 
 
@@ -198,6 +203,43 @@
                                 </select>
                             </div>
 
+                            @if(!empty($outStockSofts) || !empty($outStockAlcohols) || !empty($outStockAccessories) || !empty($outStockGlasses))
+                            <div class="col-xs-12">
+                                <p><b>Book Items</b></p>
+                                <div class="col-xs-3">
+                                    <p><b>Soft Drinks</b>
+                                    @foreach($outStockSofts as $item)
+                                        {{ $item->quantity }}{{ $item->name }}
+                                    @endforeach
+                                    </p>
+                                </div>
+
+                                <div class="col-xs-3">
+                                    <p><b>Alcohols</b>
+                                    @foreach($outStockAlcohols as $item)
+                                        {{ $item->quantity}}{{$item->name }}
+                                    @endforeach
+                                    </p>
+                                </div>
+
+                                <div class="col-xs-3">
+                                    <p><b>Accesories</b>
+                                    @foreach($outStockAccessories as $item)
+                                        {{ $item->quantity }}{{ $item->name }}
+                                    @endforeach
+                                    </p>
+                                </div>
+
+                                <div class="col-xs-3">
+                                    <p><b>Glasses</b>
+                                    @foreach($outStockGlasses as $item)
+                                        {{ $item->quantity }}{{ $item->name }}
+                                    @endforeach
+                                    </p>
+                                </div>
+                            </div>    
+                            @endif
+
                             <div class="col-xs-12 col-sm-4 form-group services">
                                 <label class="">Extras</label>
                                 <div class="checkbox">
@@ -237,6 +279,60 @@
                                 </div>
                             </div>
 
+                            <div id="extras" class="col-xs-12 form-group services">
+                                <div id="glassesExtra" class="hidden">
+                                    <h6>Glasses</h6>
+                                    @foreach($glasses as $stock)
+                                    <div class="col-xs-6">
+                                        <div class="col-xs-8">
+                                            <input type="number" name="{{ $stock->name }}" id="{{ $stock->name }}" class="form-control">
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label for="{{ $stock->name }}">{{ $stock->name }}({{ $stock->quantity }})</label>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <div id="softDrinksExtra" class="hidden">
+                                    <h6>Soft Drinks</h6>
+                                    @foreach($soft_drinks as $soft)
+                                    <div class="col-xs-6">
+                                        <div class="col-xs-8">
+                                            <input type="number" name="{{ $soft->name }}" id="{{ $soft->name }}" class="form-control">
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label for="{{ $soft->name }}">{{ $soft->name }}({{ $soft->quantity }})</label>
+                                        </div>   
+                                    </div>    
+                                    @endforeach
+                                </div>
+                                <div id="alcoholExtra" class="hidden">
+                                    <h6>Alcohols</h6>
+                                    @foreach($alcohols as $stock)
+                                    <div class="col-xs-6">
+                                        <div class="col-xs-8">
+                                            <input type="number" name="{{ $stock->name }}" id="{{ $stock->name }}" class="form-control">
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label for="{{ $stock->name }}">{{ $stock->name }}({{ $stock->quantity }})</label>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <div id="accessoryExtra" class="hidden">
+                                    <h6>Accessories</h6>
+                                    @foreach($accessories as $stock)
+                                    <div class="col-xs-6">
+                                        <div class="col-xs-8">
+                                            <input type="number" name="{{ $stock->name }}" id="{{ $stock->name }}" class="form-control">
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label for="{{ $stock->name }}">{{ $stock->name }}({{ $stock->quantity }})</label>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
 
                             <div class="col-xs-12 form-group">
                                 <label for="notes">Notes</label>
@@ -247,6 +343,16 @@
                                 <label for="event_file">Add a file to event</label>
                                 <input type="file" name="event_file">
                             </div>
+
+                            @if(isset($event) && !is_null($event->id))
+                            <div class="col-xs-12">    
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="notify-all"> Notify staff about the update
+                                    </label>
+                                </div>
+                            </div>
+                            @endif
 
                             <div class="col-xs-12">
                                 <button class="create-event btn btn-primary btn-sm" type="submit">{{ isset($event) && !is_null($event->id) ? 'Update' : 'Create' }}</button>
@@ -261,6 +367,28 @@
 @stop
 
 @section('scripts')
+    <script type="text/javascript">
+        var glassInput = document.getElementById('glasses');
+        glassInput.addEventListener('change', function(e){ 
+            if(e.target.checked){
+                document.getElementById('glassesExtra').className = 'container-fluid';
+            } else {
+                document.getElementById('glassesExtra').className = 'hidden';
+            }
+        });
+
+        var softInput = document.getElementById('soft_drinks');
+        softInput.addEventListener('change', function(e){ 
+            if(e.target.checked){
+                document.getElementById('softDrinksExtra').className = 'container-fluid'; 
+                document.getElementById('alcoholExtra').className = 'container-fluid';
+            } else {
+                document.getElementById('softDrinksExtra').className = 'hidden'; 
+                document.getElementById('alcoholExtra').className = 'hidden';
+            }
+        });
+    </script>
+
     <script type="text/javascript">
         $(document).ready(function(){
 

@@ -10,12 +10,6 @@
     @if($event['details'])
         <p><b>Details:</b> {{ $event['details'] }}</p>
     @endif    
-
-    @if(!empty($file))
-        <div id="file" class="col-xs-12" style="margin-bottom: 25px">
-            <a href="{{ url('files/'.$file) }}" style="border: 1px solid rgba(100,100,100,0.2);border-radius:5px;padding: 15px;text-align: center;text-decoration: none;color: black"><span class="glyphicon glyphicon-file"> </span> Attached File</a>
-        </div>
-    @endif
     
     @if(!empty($uniform))
         <p>

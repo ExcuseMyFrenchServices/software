@@ -24,6 +24,8 @@ return array(
     'AddServicesToEventsTable' => $baseDir . '/database/migrations/2016_01_06_030851_add_services_to_events_table.php',
     'AddSetNameToUniforms' => $baseDir . '/database/migrations/2017_03_16_003021_add_set_name_to_uniforms.php',
     'AddStartTimeConfirmationToAssignments' => $baseDir . '/database/migrations/2017_01_31_063455_add_start_time_confirmation_to_assignments.php',
+    'AddStocksTable' => $baseDir . '/database/migrations/2017_03_23_035719_add_stocks_table.php',
+    'AddTableOutstock' => $baseDir . '/database/migrations/2017_03_24_024829_add_table_outstock.php',
     'AddTimeToAssignments' => $baseDir . '/database/migrations/2016_07_01_071842_add_time_to_assignments.php',
     'ChangeStartTimeConfirmationToVarchar' => $baseDir . '/database/migrations/2017_02_19_230018_change_start_time_confirmation_to_varchar.php',
     'ChangeTimesFormat' => $baseDir . '/database/migrations/2016_06_30_063604_change_times_format.php',

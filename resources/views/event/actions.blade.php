@@ -6,10 +6,14 @@
             Client
         </a>
         @else
-        <a class="btn btn-{{ $event->client_notification ? 'success' : 'warning' }} btn-sm back_btn" href="{{ url('event/notify/'.$event->id.'/client') }}">
-            <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
-            Client
-        </a>
+        <form action="{{ url('event/notify/'.$event->id.'/client') }}" method="post">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input name="client-email" type="hidden" value="{{ $event->client->email }}">
+            <input type="submit" class="btn btn-{{ $event->client_notification ? 'success' : 'warning' }} btn-sm back_btn">
+                <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                Client
+            </input>
+        </form>
         @endif
     @else
         @if(is_null($event->feedback) || !is_null($event->feedback->hash))

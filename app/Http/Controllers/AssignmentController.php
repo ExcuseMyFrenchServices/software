@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Assignment;
+use App\Event;
 use App\User;
 use App\Uniform;
 use App\Services\FinancialReportCalculation;
@@ -47,6 +48,56 @@ class AssignmentController extends Controller
 
         return redirect()->back();
     }
+    public function notifyAll($eventId)
+    {
+        $event = Event::find($eventId);
+        $assignments = $event->assignments;
+        foreach($assignments as $assignment)
+        {
+            if(!empty($assignment->event->admin_id))
+            {
+                $admin = User::find($assignment->event->admin_id)->profile;
+            }
+            else
+            {
+                $admin = "";
+            }
+
+            $uniform = Uniform::find($assignment->event->uniform);
+
+            if(file_exists('files/'.$assignment->event->id.'.jpg'))
+            {
+                $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.jpg');
+
+                Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
+                $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
+                });
+            }
+            elseif(file_exists('files/'.$assignment->event->id.'.pdf'))
+            {
+                $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.pdf');
+
+                Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment, $file) {
+                $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
+                });
+            }
+            else
+            {
+                $file = "";
+                Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
+                $message->to($assignment->user->profile->email)->subject('Event Confirmation');
+                });
+            }
+
+
+            $assignment->notification = true;
+            $assignment->save();
+        }
+
+        Session::flash('success', 'The notification was sent successfully');
+
+        return redirect()->back();
+    }
 
     public function notify($assignmentId)
     {
@@ -64,20 +115,28 @@ class AssignmentController extends Controller
 
         if(file_exists('files/'.$assignment->event->id.'.jpg'))
         {
-            $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.jpg';
+            $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.jpg');
+
+            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
+            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
+            });
         }
         elseif(file_exists('files/'.$assignment->event->id.'.pdf'))
         {
-            $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.pdf';
+            $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.pdf');
+
+            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment, $file) {
+            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
+            });
         }
         else
         {
             $file = "";
+            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
+            $message->to($assignment->user->profile->email)->subject('Event Confirmation');
+            });
         }
 
-        Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform, 'file'=>$file], function($message) use ($assignment, $file) {
-            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
-        });
 
         $assignment->notification = true;
         $assignment->save();

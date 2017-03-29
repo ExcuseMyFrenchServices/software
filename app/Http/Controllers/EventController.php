@@ -4,12 +4,15 @@ use App\Assignment;
 use App\Client;
 use App\Event;
 use App\Uniform;
+use App\Stock;
+use App\OutStock;
 use App\Http\Requests\Event\CreateEventRequest;
 use App\Http\Requests\Event\TimesheetRequest;
 use App\Http\Requests\Event\UpdateEventRequest;
 use App\Role;
 use App\Services\AvailableUsers;
 use App\Services\UsersMissions;
+use App\Services\stockItems;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -55,8 +58,12 @@ class EventController extends Controller
         $clients = Client::all()->sortBy('name');
         $roles = Role::all();
         $uniforms = Uniform::all();
+        $soft_drinks = Stock::where('category',"=","soft drink")->get();
+        $alcohols = Stock::where('category',"=","alcohol")->get();
+        $accessories = Stock::where('category',"=","accessory")->get();
+        $glasses = Stock::where('category',"=","glass")->get();
 
-        return view('event.create')->with(compact('clients', 'roles', 'uniforms'));
+        return view('event.create')->with(compact('clients', 'roles', 'uniforms', 'stocks','soft_drinks','alcohols','accessories','glasses'));
     }
 
     public function store(CreateEventRequest $request)
@@ -71,22 +78,39 @@ class EventController extends Controller
             'address'       => $request->input('address'),
             'details'       => $request->input('details'),
             'uniform'       => $request->input('uniform'),
-            'glasses'       => $request->input('glasses') == 'on',
-            'soft_drinks'   => $request->input('soft_drinks') == 'on',
-            'bar'           => $request->input('bar') == 'on',
             'notes'         => $request->input('notes'),
             'start_time'    => array_values(array_filter(array_flatten($request->input('start_times')))),
             'booking_date'  => new DateTime($request->input('booking_date')),
             'event_date'    => new DateTime($request->input('event_date').$start_time[0]),
         ]);
 
-        $file = request()->file('event_file');
-        $ext = $file->guessClientExtension();
-        if($ext == '.jpeg' || $ext == '.png')
+        // OutStockItems is a function that stores how many items will be used for this event
+        if($request->input('soft_drinks') == 'checked')
         {
-            $ext = '.jpg';
+            $this->outStockItems('soft drink',$request,$event->id);
+        } 
+
+        if($request->input('glasses') == 'checked')
+        {
+            $this->outStockItems('glass',$request,$event->id);
         }
-        $file->move('files/',$event->id.'.'.$ext);
+
+        if($request->input('bar') === 'checked')
+        {
+            $this->outStockItems('accessory',$request,$event->id);
+        }
+
+        //Allow the admin to add a file that all staf can access
+        $file = request()->file('event_file');
+        if(!empty($file))
+        {
+            $ext = $file->guessClientExtension();
+            if($ext == '.jpeg' || $ext == '.png')
+            {
+                $ext = '.jpg';
+            }
+            $file->move('files/',$event->id.'.'.$ext);
+        }
 
         return redirect('event/' . $event->id);
     }
@@ -95,8 +119,11 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
         $uniform = Uniform::find($event->uniform);
-
-        return view('event.detail')->with(compact('event','uniform'));
+        $glasses = OutStock::where('event_id','=',$eventId)->where('category','=','glass')->get();
+        $softs = OutStock::where('event_id','=',$eventId)->where('category','=','soft drink')->get();
+        $accessories = OutStock::where('event_id','=',$eventId)->where('category','=','accessory')->get();
+        $alcohols = OutStock::where('event_id','=',$eventId)->where('category','=','alcohol')->get();
+        return view('event.detail')->with(compact('event','uniform','glasses','softs','alcohols','accessories'));
     }
 
     public function edit($eventId)
@@ -106,7 +133,19 @@ class EventController extends Controller
         $clients = Client::all()->sortBy('name');
         $uniforms = Uniform::all();
 
-        return view('event.create')->with(compact('event', 'clients', 'uniforms'));
+        //Display all items that are registered in the stock section
+        $soft_drinks = Stock::where('category',"=","soft drink")->get();
+        $alcohols = Stock::where('category',"=","alcohol")->get();
+        $accessories = Stock::where('category',"=","accessory")->get();
+        $glasses = Stock::where('category',"=","glass")->get();
+
+        //Shows if the user already booked some items for the event
+        $outStockGlasses = OutStock::where('event_id','=',$eventId)->where('category','=','glass')->get();
+        $outStockSofts = OutStock::where('event_id','=',$eventId)->where('category','=','soft drink')->get();
+        $outStockAccessories = OutStock::where('event_id','=',$eventId)->where('category','=','accessory')->get();
+        $outStockAlcohols = OutStock::where('event_id','=',$eventId)->where('category','=','alcohol')->get();
+        
+        return view('event.create')->with(compact('event', 'clients', 'uniforms','glasses','alcohols','accessories','soft_drinks','outStockGlasses','outStockSofts','outStockAlcohols','outStockAccessories'));
     }
 
     public function update(UpdateEventRequest $request, $eventId)
@@ -114,8 +153,29 @@ class EventController extends Controller
         $event = Event::find($eventId);
         $uniform = Uniform::find((int)$request->input('uniform'));
 
+        if($request->input('soft_drinks') == 'on')
+        {
+            $this->outStockItems('soft drink',$request,$event->id);
+        } 
+  
+        if($request->input('glasses') == 'on')
+        {
+            $this->outStockItems('glass',$request,$event->id);
+        }
+
+        if($request->input('bar') === 'checked')
+        {
+            $this->outStockItems('accessory',$request,$event->id);
+        }
+
         $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
+        // Keep track of old values to know exactly what have been updated
         $old_start_time = $event->start_time;
+        $old_finish_time = $event->finish_time;
+        $old_address = $event->address;
+        $old_details = $event->details;
+        $old_uniform = $event->uniform;
+        $old_notes = $event->notes;
 
         $event->event_name      = $request->input('event_name');
         $event->client_id       = $request->input('client');
@@ -124,9 +184,6 @@ class EventController extends Controller
         $event->address         = $request->input('address');
         $event->details         = $request->input('details');
         $event->uniform         = $request->input('uniform');
-        $event->glasses         = $request->input('glasses') == 'on';
-        $event->soft_drinks     = $request->input('soft_drinks') == 'on';
-        $event->bar             = $request->input('bar') == 'on';
         $event->notes           = $request->input('notes');
         $event->start_time      = array_values(array_filter(array_flatten($request->input('start_times'))));
         $event->booking_date    = new DateTime($request->input('booking_date'));
@@ -148,7 +205,7 @@ class EventController extends Controller
         }
 
         // Update assignments for removed hours
-        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$old_start_time) 
+        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$old_start_time,$uniform,$old_finish_time,$old_address,$old_details,$old_notes,$old_uniform) 
         {
             if (!in_array($assignment->time, $event->start_time)) 
             {
@@ -160,17 +217,36 @@ class EventController extends Controller
                         $assignment->time = $event->start_time[$i];
                         $assignment->save();
 
-                        Mail::send('emails.assignment-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform, 'file'=>$file], function($message) use ($assignment, $file) {
-                            $message->to($assignment->user->profile->email)->subject('Important : Event Start Time Updated !')->attach($file);
+                        Mail::send('emails.assignment-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment) {
+                            $message->to($assignment->user->profile->email)->subject('Important : Event Start Time Updated !');
                         });
 
                     }
                 }
             }
-            else
+            elseif($request->input('notify-all') == 'checked')
             {
-                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform, 'file'=>$file], function($message) use ($assignment, $file) {
-                    $message->to($assignment->user->profile->email)->subject('Important : Event Updated')->attach($file);
+                $subject = 'Important : Event Updated';
+                // Change the email subject depending on what have been updated
+                if($old_finish_time != $event->finish_time)
+                {
+                    $subject = 'Important : Event End Time updated';
+                }
+                elseif ($old_address != $event->address) 
+                {
+                    $subject = "Important : Event's Address Changed";
+                }
+                elseif($old_uniform != $event->uniform)
+                {
+                    $subject = "Important : Event's Uniform Changed";
+                }
+                elseif($old_details != $event->details)
+                {
+                    $subject = "Important : Event's Details Changed";
+                }
+
+                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment) {
+                    $message->to($assignment->user->profile->email)->subject($subject);
                 }); 
             }
         });
@@ -273,8 +349,8 @@ class EventController extends Controller
             $file = "";
         }
 
-        Mail::send('emails.admin-notification', ['event' => $event, 'assignment' => $assignment, 'uniform' => $uniform, 'file'=>$file ], function($message) use ($assignment,$file) {
-            $message->to($assignment->user->profile->email)->subject("New Event Confirmation")->attach($file);
+        Mail::send('emails.admin-notification', ['event' => $event, 'assignment' => $assignment, 'uniform' => $uniform, 'file'=>$file ], function($message) use ($assignment) {
+            $message->to($assignment->user->profile->email)->subject("New Event Confirmation");
         });
 
         Session::flash('success', 'The admin was sent successfully');
@@ -378,6 +454,27 @@ class EventController extends Controller
     public function getTimesheet(TimesheetRequest $request, $eventId)
     {
         $event = Event::find($eventId);
+
+        // Empty the OutStock database to put back the item number in stock after the admin has added the timesheet to the event, which means that the event is over and the glasses should be given back. If the stock item doesn't exist anymore (=0 when event was created), a new object is created.
+        $items = OutStock::where('event_id','=',$eventId)->where('category','=','glass')->get();
+        foreach ($items as $item) 
+        {
+            $stock = Stock::where('name','=',$item->name)->first();
+            if(!empty($stock))
+            {
+                $stock->quantity = $stock->quantity + $item->quantity;
+                $stock->save();
+            }
+            else
+            {
+                $stock = Stock::create([
+                    'name'      =>  $item->name,
+                    'category'  =>  $item->category,
+                    'quantity'  =>  $item->quantity,
+                ]);
+            }
+            $item->delete();
+        }
 
         return view('event.timesheet')->with(compact('event'));
     }
@@ -549,5 +646,76 @@ class EventController extends Controller
                     ->get();   
 
         return view('reports.month-report')->with(compact('events','total_events','written_date','year','month', 'last_month', 'next_month', 'last_year', 'next_year', 'days_numbers_in_month', 'order'));
+    }
+
+    /* 
+    *
+    If while creating/updating an event, a category is choosen, the app checks if the item is registered in the stock database. 
+    Then, the quantity asked is reduced from the stock. 
+    If the user doesn't ask too much items, the quantity asked is stored to OutStock, which contains all the items used for the event. 
+    If the amount of items in stock = 0, the object is destroyed for avoiding to be chosen again by the user in another event creation.  
+    *
+    */
+    public function outStockItems($category,$request,$eventId)
+    {
+        $stockItems = Stock::where('category','=',$category)->get();
+        if(!empty($stockItems))
+        {
+            foreach ($stockItems as $stockItem) 
+            {
+                // Fetch the item in stocks and substract the quantity wanted
+                $newItem = Stock::find($stockItem->id);
+
+                $newItem->quantity = $newItem->quantity - $request->input(str_replace(' ','_',$stockItem->name));
+
+                if($newItem->quantity < 0)
+                {
+                    Session::flash('danger', 'Too Many '.$newItem->name.' asked !');
+                    return redirect()->back();
+                }
+                elseif($newItem->quantity == 0)
+                {
+                    // Update or create a new item in the event stock
+                    $outStock = OutStock::where('event_id','=',$eventId)->where('name',"=",$newItem->name)->first();
+                    if(!empty($outStock))
+                    {
+                        $outStock->quantity = $outStock->quantity + $request->input(str_replace(' ','_',$stockItem->name));
+                        $outStock->save();
+                    }
+                    else
+                    {
+                        $OutStock = OutStock::create([
+                            'event_id'      =>  $eventId,
+                            'name'          =>  $newItem->name,
+                            'category'      =>   $newItem->category,
+                            'quantity'      =>  $newItem->quantity,
+                        ]);
+                    }
+                    // Delete the instock item for avoiding using it right after in another event
+                    $newItem->delete();
+                } 
+                else 
+                {
+                    // Update or create a new item in the event stock
+                    $outStock = OutStock::where('event_id','=',$eventId)->where('name',"=",$newItem->name)->first();
+                    if(!empty($outStock))
+                    {
+                        $outStock->quantity = $outStock->quantity + $request->input(str_replace(' ','_',$stockItem->name));
+                        $outStock->save();
+                    }
+                    else
+                    {
+                        $OutStock = OutStock::create([
+                            'event_id'      =>  $eventId,
+                            'name'          =>  $newItem->name,
+                            'category'      =>   $newItem->category,
+                            'quantity'      =>  $newItem->quantity,
+                        ]);
+                    }
+                    //Update the new quantity of items in stock
+                    $newItem->save();
+                }
+            }
+        }
     }
 }
