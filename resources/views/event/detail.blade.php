@@ -81,7 +81,7 @@
                                 @endif
   
 
-                                @if(!empty($softs) || !empty($glasses) || !empty($accessories) || !empty($alcohols))
+                                @if(count($softs) != 0 || count($glasses) != 0 || count($accessories) != 0 || count($alcohols) != 0)
                                     <p>
                                         <b>Extras:</b>
                                         <ul class="list-group">
@@ -206,13 +206,13 @@
                                 @endif
 
                                 @if ($event->event_date >= date('Y-m-d'))
-                                    <a class="btn btn-info btn-sm back_btn" href="{{ url('events/' . Auth::user()->id) }}">Back</a>
+                                    <a class="col-xs-1 btn btn-info btn-sm back_btn" href="{{ url('events/' . Auth::user()->id) }}">Back</a>
                                 @else
-                                    <a class="btn btn-info btn-sm back_btn" href="{{ url('past/events/') }}">Back</a>
+                                    <a class="col-xs-1 btn btn-info btn-sm back_btn" href="{{ url('past/events/') }}">Back</a>
                                 @endif
 
                                 @if(!$event->assignments->where('user_id', Auth::user()->id)->where('status', 'pending')->isEmpty())
-                                    <a class="btn btn-success btn-sm back_btn" href="{{ url('event/' . $event->id . '/confirm') }}">
+                                    <a class="col-xs-2 btn btn-success btn-sm back_btn" href="{{ url('event/' . $event->id . '/confirm') }}">
                                         <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
                                         Confirm
                                     </a>
@@ -260,6 +260,7 @@
         </div>
 @stop
 @section('scripts')
+    @if(!empty($event->client->second_email))
     <script type="text/javascript">
         document.getElementById('client-mail').addEventListener('click', function(e){
             var popUp = document.getElementById('popUp');
@@ -274,4 +275,5 @@
             })
         });
     </script>
+    @endif
 @stop

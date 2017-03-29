@@ -204,8 +204,10 @@ class EventController extends Controller
             $file = "";
         }
 
+        $updated = $request->input('notify-all');
+
         // Update assignments for removed hours
-        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$old_start_time,$uniform,$old_finish_time,$old_address,$old_details,$old_notes,$old_uniform) 
+        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$old_start_time,$uniform,$old_finish_time,$old_address,$old_details,$old_notes,$old_uniform, $updated) 
         {
             if (!in_array($assignment->time, $event->start_time)) 
             {
@@ -224,7 +226,7 @@ class EventController extends Controller
                     }
                 }
             }
-            elseif($request->input('notify-all') == 'checked')
+            elseif($updated == 'on')
             {
                 $subject = 'Important : Event Updated';
                 // Change the email subject depending on what have been updated
@@ -245,7 +247,7 @@ class EventController extends Controller
                     $subject = "Important : Event's Details Changed";
                 }
 
-                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment) {
+                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment,$subject) {
                     $message->to($assignment->user->profile->email)->subject($subject);
                 }); 
             }
