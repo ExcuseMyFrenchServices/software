@@ -47,6 +47,8 @@
                                 @else
                                     <th>Client notification</th>
                                 @endif
+                                <th>Bar</th>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                             @else
@@ -75,6 +77,19 @@
                                     @else
                                         <td>@include('event.notifications-status', ['event' => $event])</td>
                                     @endif
+
+                                    @if($event->bar == 1)
+                                    <td>
+                                        @if($event->barEvent->status == 1)
+                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-warning btn-xs">Bar Function - Client Called</a>
+                                        @elseif($event->barEvent->status == 2)
+                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-success btn-xs">Bar Function Ready</a>
+                                        @else
+                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-default btn-xs">New Bar Function</a>
+                                        @endif
+                                    </td>
+                                    @endif     
+
                                     <td><a href="/event/{{ $event->id }}/edit" class="btn btn-info btn-xs" role="button">Update</a></td>
                                     <td><a href="/event/{{ $event->id }}/copy" class="btn btn-primary btn-xs" role="button">Copy</a></td>
                                     <td>
@@ -82,6 +97,7 @@
                                         <div class="hidden event_id" >{{ $event->id }}</div>
                                         <div class="hidden client_name" >{{ $event->client->name}}</div>
                                     </td>
+
                                 @elseif(isset($user))
                                     <td>
                                         @if($user->assignments->where('event_id', $event->id)->where('user_id', $user->id)->first()->status == 'confirmed')
@@ -95,6 +111,7 @@
                                     </td>
                                 @endif
                             </tr>
+
                         @endforeach
                         </tbody>
                     </table>

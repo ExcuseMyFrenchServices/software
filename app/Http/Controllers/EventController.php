@@ -6,6 +6,7 @@ use App\Event;
 use App\Uniform;
 use App\Stock;
 use App\OutStock;
+use App\BarEvent;
 use App\Http\Requests\Event\CreateEventRequest;
 use App\Http\Requests\Event\TimesheetRequest;
 use App\Http\Requests\Event\UpdateEventRequest;
@@ -78,26 +79,18 @@ class EventController extends Controller
             'address'       => $request->input('address'),
             'details'       => $request->input('details'),
             'uniform'       => $request->input('uniform'),
+            'bar'           => $request->input('bar') == "on",
             'notes'         => $request->input('notes'),
             'start_time'    => array_values(array_filter(array_flatten($request->input('start_times')))),
             'booking_date'  => new DateTime($request->input('booking_date')),
             'event_date'    => new DateTime($request->input('event_date').$start_time[0]),
         ]);
 
-        // OutStockItems is a function that stores how many items will be used for this event
-        if($request->input('soft_drinks') == 'checked')
+        if($request->input('bar') == 'on')
         {
-            $this->outStockItems('soft drink',$request,$event->id);
-        } 
-
-        if($request->input('glasses') == 'checked')
-        {
-            $this->outStockItems('glass',$request,$event->id);
-        }
-
-        if($request->input('bar') === 'checked')
-        {
-            $this->outStockItems('accessory',$request,$event->id);
+            $bar_event = BarEvent::create([
+                'event_id'  => $event->id,
+            ]);
         }
 
         //Allow the admin to add a file that all staf can access
@@ -153,19 +146,24 @@ class EventController extends Controller
         $event = Event::find($eventId);
         $uniform = Uniform::find((int)$request->input('uniform'));
 
-        if($request->input('soft_drinks') == 'on')
+        // Check if an Bar Event object exists, needs to be created or deleted
+        if($request->input('bar') === 'on')
         {
-            $this->outStockItems('soft drink',$request,$event->id);
-        } 
-  
-        if($request->input('glasses') == 'on')
-        {
-            $this->outStockItems('glass',$request,$event->id);
+            $bar_event = $event->barEvent;
+            if(empty($bar_empty))
+            {
+                $bar_event = BarEvent::create([
+                    'event_id'  => $event->id,
+                ]);
+            }
         }
-
-        if($request->input('bar') === 'checked')
+        else
         {
-            $this->outStockItems('accessory',$request,$event->id);
+            $bar_event = $event->barEvent;
+            if(!empty($bar_event))
+            {
+                $bar_event->delete();
+            }
         }
 
         $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
@@ -262,6 +260,11 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
 
+        $glasses = OutStock::where('event_id','=',$eventId)->where('category','=','glass')->get();
+        $softs = OutStock::where('event_id','=',$eventId)->where('category','=','soft drink')->get();
+        $accessories = OutStock::where('event_id','=',$eventId)->where('category','=','accessory')->get();
+        $alcohols = OutStock::where('event_id','=',$eventId)->where('category','=','alcohol')->get();
+
         $event->id              = null;
         $event->start_time      = [];
         $event->finish_time     = null;
@@ -272,7 +275,7 @@ class EventController extends Controller
         $clients = Client::all()->sortBy('name');
         $uniforms = Uniform::all();
 
-        return view('event.create')->with(compact('event', 'clients', 'uniforms'));
+        return view('event.create')->with(compact('event', 'clients', 'uniforms','glasses','softs','accessories','alcohols'));
     }
 
     public function destroy($eventId)
@@ -496,7 +499,7 @@ class EventController extends Controller
 
             $assignment->start_time = $request->$start_time;
             $assignment->hours = $request->$hours;
-            $assignment->break = $request->$break;
+            $assignment->break = str_replace(':','.',$request->$break);
             $assignment->save();
         }
         //Add a report from the admin of the event to an event

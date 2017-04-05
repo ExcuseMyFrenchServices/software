@@ -203,134 +203,16 @@
                                 </select>
                             </div>
 
-                            @if(!empty($outStockSofts) || !empty($outStockAlcohols) || !empty($outStockAccessories) || !empty($outStockGlasses))
-                            <div class="col-xs-12">
-                                <p><b>Book Items</b></p>
-                                <div class="col-xs-3">
-                                    <p><b>Soft Drinks</b>
-                                    @foreach($outStockSofts as $item)
-                                        {{ $item->quantity }}{{ $item->name }}
-                                    @endforeach
-                                    </p>
-                                </div>
-
-                                <div class="col-xs-3">
-                                    <p><b>Alcohols</b>
-                                    @foreach($outStockAlcohols as $item)
-                                        {{ $item->quantity}}{{$item->name }}
-                                    @endforeach
-                                    </p>
-                                </div>
-
-                                <div class="col-xs-3">
-                                    <p><b>Accesories</b>
-                                    @foreach($outStockAccessories as $item)
-                                        {{ $item->quantity }}{{ $item->name }}
-                                    @endforeach
-                                    </p>
-                                </div>
-
-                                <div class="col-xs-3">
-                                    <p><b>Glasses</b>
-                                    @foreach($outStockGlasses as $item)
-                                        {{ $item->quantity }}{{ $item->name }}
-                                    @endforeach
-                                    </p>
-                                </div>
-                            </div>    
-                            @endif
-
-                            <div class="col-xs-12 col-sm-4 form-group services">
-                                <label class="">Extras</label>
+                            <div class="col-xs-12 col-sm-10 form-group services">
+                                <label class="">Bar Service</label>
                                 <div class="checkbox">
                                     <label>
                                         @if(isset($event))
-                                            <input type="checkbox" name="glasses" id="glasses" {{ $event->glasses ? 'checked' : '' }}> Glasses
+                                            <input type="checkbox" name="bar" id="glasses" {{ $event->bar ? 'checked' : '' }}> Bar Service required
                                         @else
-                                            <input type="checkbox" name="glasses" id="glasses" {{ old('glasses') == '0' ? 'checked' : '' }}> Glasses
+                                            <input type="checkbox" name="bar" id="glasses"> Bar Service required
                                         @endif
                                     </label>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-12 col-sm-4 form-group services">
-                                <label class="hidden-xs">&nbsp;</label>
-                                <div class="checkbox">
-                                    <label>
-                                        @if(isset($event))
-                                            <input type="checkbox" name="soft_drinks" id="soft_drinks" {{ $event->soft_drinks ? 'checked' : '' }}> Soft drinks
-                                        @else
-                                            <input type="checkbox" name="soft_drinks" id="soft_drinks" {{ old('soft_drinks') == '0' ? 'checked' : '' }}> Soft drinks
-                                        @endif
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-12 col-sm-4 form-group services">
-                                <label class="hidden-xs">&nbsp;</label>
-                                <div class="checkbox">
-                                    <label>
-                                        @if(isset($event))
-                                            <input type="checkbox" name="bar" id="bar" {{ $event->bar ? 'checked' : '' }}> Bar
-                                        @else
-                                            <input type="checkbox" name="bar" id="bar" {{ old('bar') == '0' ? 'checked' : '' }}> Bar
-                                        @endif
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div id="extras" class="col-xs-12 form-group services">
-                                <div id="glassesExtra" class="hidden">
-                                    <h6>Glasses</h6>
-                                    @foreach($glasses as $stock)
-                                    <div class="col-xs-6">
-                                        <div class="col-xs-8">
-                                            <input type="number" name="{{ $stock->name }}" id="{{ $stock->name }}" class="form-control">
-                                        </div>
-                                        <div class="col-xs-4">
-                                            <label for="{{ $stock->name }}">{{ $stock->name }}({{ $stock->quantity }})</label>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                <div id="softDrinksExtra" class="hidden">
-                                    <h6>Soft Drinks</h6>
-                                    @foreach($soft_drinks as $soft)
-                                    <div class="col-xs-6">
-                                        <div class="col-xs-8">
-                                            <input type="number" name="{{ $soft->name }}" id="{{ $soft->name }}" class="form-control">
-                                        </div>
-                                        <div class="col-xs-4">
-                                            <label for="{{ $soft->name }}">{{ $soft->name }}({{ $soft->quantity }})</label>
-                                        </div>   
-                                    </div>    
-                                    @endforeach
-                                </div>
-                                <div id="alcoholExtra" class="hidden">
-                                    <h6>Alcohols</h6>
-                                    @foreach($alcohols as $stock)
-                                    <div class="col-xs-6">
-                                        <div class="col-xs-8">
-                                            <input type="number" name="{{ $stock->name }}" id="{{ $stock->name }}" class="form-control">
-                                        </div>
-                                        <div class="col-xs-4">
-                                            <label for="{{ $stock->name }}">{{ $stock->name }}({{ $stock->quantity }})</label>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                <div id="accessoryExtra" class="hidden">
-                                    <h6>Accessories</h6>
-                                    @foreach($accessories as $stock)
-                                    <div class="col-xs-6">
-                                        <div class="col-xs-8">
-                                            <input type="number" name="{{ $stock->name }}" id="{{ $stock->name }}" class="form-control">
-                                        </div>
-                                        <div class="col-xs-4">
-                                            <label for="{{ $stock->name }}">{{ $stock->name }}({{ $stock->quantity }})</label>
-                                        </div>
-                                    </div>
-                                    @endforeach
                                 </div>
                             </div>
 

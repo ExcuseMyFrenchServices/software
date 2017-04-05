@@ -63,6 +63,15 @@ Route::get('feedback/view/{event}', 'FeedbackController@show');
 
 Route::post('feedback/{hash}', 'FeedbackController@submit');
 
+// EVENT BAR
+
+Route::resource('bar-event', 'BarEventController');
+Route::get('bar-event/{eventBarId}', 'BarEventController@show');
+Route::get('bar-event/create/{eventBarId}', 'BarEventController@edit');
+Route::post('bar-event/create/{eventBarId}', 'BarEventController@store');
+ROute::get('/bar-event/confirm/{eventBarId}', 'BarEventController@confirm');
+
+
 // AVAILABILITES
 
 Route::resource('availability', 'AvailabilityController');

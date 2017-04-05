@@ -147,6 +147,14 @@
                                     <br>
                                 @endif
 
+                                @if(!empty($event->outStock))
+                                    <ul>
+                                        @foreach($event->outStock as $item)
+                                        <li>{{ $item->category }} | {{ $item->name }} - {{ $item->quantity }}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+
                                 @foreach($event->start_time as $time)
                                     <p><b>Team starting at {{ $time }}</b></p>
                                     <div class="row">

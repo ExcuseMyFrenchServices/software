@@ -42,6 +42,11 @@ class Event extends Model
         return $this->hasMany('App\Assignment');
     }
 
+    public function barEvent()
+    {
+        return $this->hasOne('App\BarEvent');
+    }
+
     public function client()
     {
         return $this->belongsTo('App\Client');
@@ -55,5 +60,10 @@ class Event extends Model
     public function uniform()
     {
         return $this->hasOne('App\Uniform');
+    }
+
+    public function outStock()
+    {
+        return $this->hasMany('App\OutStock');
     }
 }
