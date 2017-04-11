@@ -38,7 +38,8 @@ class EventController extends Controller
 
     public function index()
     {
-        $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->get()->sortBy('event_date');
+            $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->get()->sortBy('event_date');
+            $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->where('bar','=','1')->get()->sortBy('event_date');
 
         return view('event.index')->with(compact('events'));
     }
@@ -59,37 +60,85 @@ class EventController extends Controller
         $clients = Client::all()->sortBy('name');
         $roles = Role::all();
         $uniforms = Uniform::all();
-        $soft_drinks = Stock::where('category',"=","soft drink")->get();
-        $alcohols = Stock::where('category',"=","alcohol")->get();
-        $accessories = Stock::where('category',"=","accessory")->get();
-        $glasses = Stock::where('category',"=","glass")->get();
 
-        return view('event.create')->with(compact('clients', 'roles', 'uniforms', 'stocks','soft_drinks','alcohols','accessories','glasses'));
+        $beers = [];
+        $whines = [];
+        $spirits = [];
+        $cocktails = [];
+        $shots = [];
+        $ingredients = [];
+        $softs = [];
+        $bars = [];
+        $furnitures = [];
+
+        return view('event.create')->with(compact('clients', 'roles', 'uniforms','beers','whines','spirits','cocktails','shots','ingredients','softs','bars','furnitures','event'));
     }
 
     public function store(CreateEventRequest $request)
     {
         $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
 
+        // Add an hour to the event date so the past_event function can filters more effectively
+        if(count($start_time) > 0)
+        {
+            $hour = $start_time[0];
+        }
+        else
+        {
+            $hour = $request->input('guest_arrival');
+        }
+
+        echo($hour);
+
+        /*
         $event = Event::create([
-            'event_name'    => $request->input('event_name'),
-            'client_id'     => $request->input('client'),
-            'finish_time'   => $request->input('finish_time'),
-            'number_staff'  => $request->input('number_staff'),
-            'address'       => $request->input('address'),
-            'details'       => $request->input('details'),
-            'uniform'       => $request->input('uniform'),
-            'bar'           => $request->input('bar') == "on",
-            'notes'         => $request->input('notes'),
-            'start_time'    => array_values(array_filter(array_flatten($request->input('start_times')))),
-            'booking_date'  => new DateTime($request->input('booking_date')),
-            'event_date'    => new DateTime($request->input('event_date').$start_time[0]),
+            'event_name'        => $request->input('event_name'),
+            'event_type'        => $request->input('event_type'),
+            'guest_arrival_time'=> $request->input('guest_arrival_time'),
+            'guest_number'      => $request->input('guest_number'),
+            'client_id'         => $request->input('client'),
+            'finish_time'       => $request->input('finish_time'),
+            'number_staff'      => $request->input('number_staff'),
+            'address'           => $request->input('address'),
+            'details'           => $request->input('details'),
+            'uniform'           => $request->input('uniform'),
+            'bar'               => $request->input('bar') == "on",
+            'notes'             => $request->input('notes'),
+            'start_time'        => array_values(array_filter(array_flatten($request->input('start_times')))),
+            'booking_date'      => new DateTime($request->input('booking_date')),
+            'event_date'        => new DateTime($request->input('event_date').$hour),
         ]);
 
         if($request->input('bar') == 'on')
-        {
+        {   
+            // Drinks creation
+            EventController::outStockBarItems('beers',$request,$event->id);
+            EventController::outStockBarItems('whine',$request,$event->id);
+            EventController::outStockBarItems('spirits',$request,$event->id);
+            EventController::outStockBarItems('cocktails',$request,$event->id);
+            EventController::outStockBarItems('shots',$request,$event->id);
+            
+            // Supplies 
+            EventController::outStockBarItems('softs',$request,$event->id);
+            EventController::outStockBarItems('ingredients',$request,$event->id);
+
+            // Equipment
+            EventController::outStockBarItems('bars',$request,$event->id);
+            EventController::outStockBarItems('furnitures',$request,$event->id);
+
             $bar_event = BarEvent::create([
-                'event_id'  => $event->id,
+                'event_id'          => $event->id,
+                'private'           => $request->input('privateNumber'),
+                'bar_back'          => $request->input('barBackNumber'),
+                'bar_runner'        => $request->input('barRunnerNumber'),
+                'classic_bartender' => $request->input('classicBartenderNumber'),
+                'cocktail_bartender' => $request->input('cocktailBartenderNumber'),
+                'flair_bartender'   => $request->input('flairBartenderNumber'),
+                'mixologist'        => $request->input('mixologistNumber'),
+                'glass_type'        => $request->input('glassChoice'),
+                'ice'               => $request->input('ice') == 'on',
+                'bar_number'        => $request->input('barNumber'),
+                'notes'             => $request->input('barNotes'),
             ]);
         }
 
@@ -105,18 +154,34 @@ class EventController extends Controller
             $file->move('files/',$event->id.'.'.$ext);
         }
 
-        return redirect('event/' . $event->id);
+        //return redirect('event/' . $event->id);
+        */
     }
 
     public function show($eventId)
     {
         $event = Event::find($eventId);
         $uniform = Uniform::find($event->uniform);
-        $glasses = OutStock::where('event_id','=',$eventId)->where('category','=','glass')->get();
-        $softs = OutStock::where('event_id','=',$eventId)->where('category','=','soft drink')->get();
-        $accessories = OutStock::where('event_id','=',$eventId)->where('category','=','accessory')->get();
-        $alcohols = OutStock::where('event_id','=',$eventId)->where('category','=','alcohol')->get();
-        return view('event.detail')->with(compact('event','uniform','glasses','softs','alcohols','accessories'));
+
+        if($event->bar != 0)
+        {
+            function getBarItems($item,$event)
+            {
+                return $items = OutStock::where('event_id','=',$event->id)->where('category','=',$item)->get();
+            }
+
+            $beers = getBarItems('beers',$event);
+            $whines = getBarItems('whine',$event);
+            $spirits = getBarItems('spirits',$event);
+            $cocktails = getBarItems('cocktails',$event);
+            $shots = getBarItems('shots',$event);
+            $softs = getBarItems('softs',$event);
+            $ingredients = getBarItems('ingredients',$event);
+            $furnitures = getBarItems('furnitures',$event);
+        
+            return view('event.detail')->with(compact('event','uniform','beers','whines','spirits','cocktails','shots','softs','ingredients','furnitures'));
+        }
+        return view('event.detail')->with(compact('event','uniform'));
     }
 
     public function edit($eventId)
@@ -126,19 +191,18 @@ class EventController extends Controller
         $clients = Client::all()->sortBy('name');
         $uniforms = Uniform::all();
 
-        //Display all items that are registered in the stock section
-        $soft_drinks = Stock::where('category',"=","soft drink")->get();
-        $alcohols = Stock::where('category',"=","alcohol")->get();
-        $accessories = Stock::where('category',"=","accessory")->get();
-        $glasses = Stock::where('category',"=","glass")->get();
+        $beers = EventController::fetchItems('beers',$eventId);
+        $whines = EventController::fetchItems('whine',$eventId);
+        $spirits = EventController::fetchItems('spirits',$eventId);
+        $cocktails = EventController::fetchItems('cocktails',$eventId);
+        $shots = EventController::fetchItems('shots',$eventId);
+        $ingredients = EventController::fetchItems('ingredients',$eventId);
+        $softs = EventController::fetchItems('softs',$eventId);
+        $bars = EventController::fetchItems('bars',$eventId);
+        $furnitures = EventController::fetchItems('furnitures',$eventId);
 
-        //Shows if the user already booked some items for the event
-        $outStockGlasses = OutStock::where('event_id','=',$eventId)->where('category','=','glass')->get();
-        $outStockSofts = OutStock::where('event_id','=',$eventId)->where('category','=','soft drink')->get();
-        $outStockAccessories = OutStock::where('event_id','=',$eventId)->where('category','=','accessory')->get();
-        $outStockAlcohols = OutStock::where('event_id','=',$eventId)->where('category','=','alcohol')->get();
         
-        return view('event.create')->with(compact('event', 'clients', 'uniforms','glasses','alcohols','accessories','soft_drinks','outStockGlasses','outStockSofts','outStockAlcohols','outStockAccessories'));
+        return view('event.create')->with(compact('event', 'clients', 'uniforms','beers','whines','spirits','cocktails','shots','ingredients','softs','bars','furnitures'));
     }
 
     public function update(UpdateEventRequest $request, $eventId)
@@ -175,20 +239,59 @@ class EventController extends Controller
         $old_uniform = $event->uniform;
         $old_notes = $event->notes;
 
-        $event->event_name      = $request->input('event_name');
-        $event->client_id       = $request->input('client');
-        $event->finish_time     = $request->input('finish_time');
-        $event->number_staff    = $request->input('number_staff');
-        $event->address         = $request->input('address');
-        $event->details         = $request->input('details');
-        $event->uniform         = $request->input('uniform');
-        $event->notes           = $request->input('notes');
-        $event->start_time      = array_values(array_filter(array_flatten($request->input('start_times'))));
-        $event->booking_date    = new DateTime($request->input('booking_date'));
-        $event->event_date      = new DateTime($request->input('event_date').$start_time[0]);
+        $event->event_name          = $request->input('event_name');
+        $event->event_type          = $request->input('event_type');
+        $event->client_id           = $request->input('client');
+        $event->guest_arrival_time  = $request->input('guest_arrival_time');
+        $event->guest_number        = $request->input('guest_number');
+        $event->finish_time         = $request->input('finish_time');
+        $event->number_staff        = $request->input('number_staff');
+        $event->address             = $request->input('address');
+        $event->details             = $request->input('details');
+        $event->uniform             = $request->input('uniform');
+        $event->notes               = $request->input('notes');
+        $event->start_time          = array_values(array_filter(array_flatten($request->input('start_times'))));
+        $event->booking_date        = new DateTime($request->input('booking_date'));
+        $event->event_date          = new DateTime($request->input('event_date').$start_time[0]);
 
         $event->save();
 
+        $barEvent = BarEvent::where('event_id','=',$event->id)->first();
+        $barEvent->notes             = $request->input('barNotes');
+
+        // BAR EVENT HANDLER
+        if($request->input('bar') == 'on')
+        {   
+            // Drinks creation
+            EventController::outStockBarItems('beers',$request,$event->id);
+            EventController::outStockBarItems('whine',$request,$event->id);
+            EventController::outStockBarItems('spirits',$request,$event->id);
+            EventController::outStockBarItems('cocktails',$request,$event->id);
+            EventController::outStockBarItems('shots',$request,$event->id);
+            
+            // Supplies 
+            EventController::outStockBarItems('softs',$request,$event->id);
+            EventController::outStockBarItems('ingredients',$request,$event->id);
+
+            // Equipment
+            EventController::outStockBarItems('bars',$request,$event->id);
+            EventController::outStockBarItems('furnitures',$request,$event->id);
+
+            $barEvent->private           = $request->input('privateNumber');
+            $barEvent->bar_back          = $request->input('barBackNumber');
+            $barEvent->bar_runner        = $request->input('barRunnerNumber');
+            $barEvent->classic_bartender = $request->input('classicBartenderNumber');
+            $barEvent->cocktail_bartender = $request->input('cocktailBartenderNumber');
+            $barEvent->flair_bartender   = $request->input('falirBartenderNumber');
+            $barEvent->mixologist        = $request->input('mixologistNumber');
+            $barEvent->glass_type        = $request->input('glassChoice');
+            $barEvent->ice               = $request->input('ice') == 'on';
+            $barEvent->bar_number        = $request->input('barNumber');
+            $barEvent->notes             = $request->input('barNotes');
+        }
+        $barEvent->save();
+
+        // FILE HANDLER
         if(file_exists('files/'.$event->id.'.jpg'))
         {
             $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.jpg');
@@ -260,10 +363,15 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
 
-        $glasses = OutStock::where('event_id','=',$eventId)->where('category','=','glass')->get();
-        $softs = OutStock::where('event_id','=',$eventId)->where('category','=','soft drink')->get();
-        $accessories = OutStock::where('event_id','=',$eventId)->where('category','=','accessory')->get();
-        $alcohols = OutStock::where('event_id','=',$eventId)->where('category','=','alcohol')->get();
+        $beers = EventController::fetchItems('beers',$eventId);
+        $whines = EventController::fetchItems('whine',$eventId);
+        $spirits = EventController::fetchItems('spirits',$eventId);
+        $cocktails = EventController::fetchItems('cocktails',$eventId);
+        $shots = EventController::fetchItems('shots',$eventId);
+        $ingredients = EventController::fetchItems('ingredients',$eventId);
+        $softs = EventController::fetchItems('softs',$eventId);
+        $bars = EventController::fetchItems('bars',$eventId);
+        $furnitures = EventController::fetchItems('furnitures',$eventId);
 
         $event->id              = null;
         $event->start_time      = [];
@@ -275,7 +383,7 @@ class EventController extends Controller
         $clients = Client::all()->sortBy('name');
         $uniforms = Uniform::all();
 
-        return view('event.create')->with(compact('event', 'clients', 'uniforms','glasses','softs','accessories','alcohols'));
+        return view('event.create')->with(compact('event', 'clients', 'uniforms','beers','whines','spirits','cocktails','shots','ingredients','softs','bars','furnitures'));
     }
 
     public function destroy($eventId)
@@ -372,7 +480,7 @@ class EventController extends Controller
             return redirect('/');
         }
 
-        if ($user->role_id != 1) {
+        if ($user->role_id != 1 && $user->role_id != 13) {
             $assignments = Assignment::where('user_id', $userId)->get();
 
             $events = $assignments->map(function($assignment) {
@@ -384,7 +492,17 @@ class EventController extends Controller
             return view('event.index')->with(compact('events', 'user', 'assignments'));
         }
 
-        $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->get()->sortBy('event_date');
+        // Shows all the events 
+        if($user->role_id == 1)
+        {
+            $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->get()->sortBy('event_date');
+        }
+
+        // Shows only the events with a bar event linked
+        if($user->role_id == 13)
+        {
+            $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->where('bar','=',1)->get()->sortBy('event_date');
+        }
 
         return view('event.index')->with(compact('events'));
     }
@@ -494,11 +612,19 @@ class EventController extends Controller
             $assignment = Assignment::find($request->$id);
 
             $start_time = $assignment->id.'-start-time';
-            $hours = $assignment->id.'-hours';
+            
+            $hour_id = $assignment->id.'-hour';
+            $minute_id = $assignment->id.'-minute';
+
+            $hour = $request->$hour_id;
+            $minute = $request->$minute_id;
+
+            $hours = $hour.'.'.$minute;
+        
             $break = $assignment->id.'-break';
 
             $assignment->start_time = $request->$start_time;
-            $assignment->hours = $request->$hours;
+            $assignment->hours = $hours;
             $assignment->break = str_replace(':','.',$request->$break);
             $assignment->save();
         }
@@ -722,5 +848,44 @@ class EventController extends Controller
                 }
             }
         }
+    }
+
+    public function outStockBarItems($item,$request,$eventId)
+    {
+        if($request->input($item) == 'on')
+        {
+            for($i=0; $i < $request->input($item.'counter'); $i++)
+            {
+                if(!empty($request->input($item.'Name'.$i)))
+                {
+                    $outStock = OutStock::where('event_id','=',$eventId)->where('name','=',$request->input($item.'Name'.$i))->first();
+                    
+                    if(empty($outStock))
+                    {
+                        OutStock::create([
+                            'event_id'      =>  $eventId,
+                            'name'          =>  $request->input($item.'Name'.$i),
+                            'category'      =>  $item,
+                            'quantity'      =>  $request->input($item.'Number'.$i),
+                            'brand'         =>  $request->input($item.'List'.$i),
+                        ]);
+                    }
+                    else
+                    {
+                        $outStock->name = $request->input($item.'Name'.$i);
+                        $outStock->category = $item;
+                        $outStock->quantity = $request->input($item.'Number'.$i);
+                        $outStock->brand = $request->input($item.'List'.$i);
+                        $outStock->save();
+                    }
+                }
+            }
+        }
+    }
+
+    public function fetchItems($itemName, $eventId)
+    {
+        $item = OutStock::where('event_id','=',$eventId)->where('category','=',$itemName)->get();
+        return $item;
     }
 }

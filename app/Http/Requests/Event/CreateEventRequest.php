@@ -11,15 +11,7 @@ class CreateEventRequest extends FormRequest
             'client'                => 'required',
             'booking_date'          => 'required',
             'event_date'            => 'required',
-            'start_times.0.time'    => 'required',
-            'number_staff'          => 'required',
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'start_times.0.time.required' => 'The start time is required.',
+            'guest_arrival_time'         => 'required',
         ];
     }
 

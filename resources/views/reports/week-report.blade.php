@@ -7,7 +7,7 @@
 			</div>
 			<div class="panel-body">
 			<table class="col-xs-12">
-				<tr><th>Event Date</th><th>Event Name</th><th>Staff</th><th>Level</th><th>Start Time</th><th>Finish Time</th><th>< 4 hours</th><th>Break</th><th>7am - 7pm</th><th>7pm - 00am</th><th>00am - 7am</th><th>Saturday Hours</th><th>Sunday Hours</th><th>Public Holiday Hours</th><th>Total</th></tr>
+				<tr><th>Event Date</th><th>Event Name</th><th>Staff</th><th>Level</th><th>Start Time</th><th>Finish Time</th><th>< 4 hours</th><th>Break</th><th>7am - 7pm</th><th>7pm - 00am</th><th>00am - 7am</th><th>Saturday Hours</th><th>Sunday Hours</th><th>Public Holiday Hours</th><th>Bonus</th><th>Total</th></tr>
 				<?php $total_cost = 0; ?>
 				@foreach($assignments as $assignment)
 						@if(!isset($event_date))
@@ -36,17 +36,18 @@
 						@endif
 						<td><a href="{{url('user/'.$assignment->user_id.'/edit')}}">{{ $assignment->first_name }} {{ $assignment->last_name }}</a></td>
 						<td>{{ $assignment->level }}</td>
-						<td>{{ $start_time = str_replace('["','',str_replace('"]','',$assignment->start_time)) }}</td>
-						<td>{{ $finish_time = $assignment->hours }}</td>
-						<td>{{ $hours[$assignment->event_id.'-'.$assignment->user_id]['bonus_time'] > 0 ? 'Yes' : ''  }}</td>
+						<td>{{str_replace('["','',str_replace('"]','',$assignment->start_time)) }}</td>
+						<td>{{ $assignment->hours }}</td>
+						<td>{{ $hours[$assignment->event_id.'-'.$assignment->user_id]['bonus'] > 0 ? 'Yes' : ''  }}</td>
 						<td>{{ $assignment->break }}</td>
-						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours']}}</td>
-						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours']}}</td>
-						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['very_high_hours']}}</td>
-						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['saturday_hours']}}</td>
-						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['sunday_hours']}}</td>
-						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['public_holiday_hours']}}</td>
-						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['low_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['high_cost_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['very_high_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['saturday_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['sunday_hours'] + $hours[$assignment->event_id.'-'.$assignment->user_id]['public_holiday_hours']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['low']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['mid']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['hight']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['saturday']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['sunday']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['publicHoliday']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['bonus']}}</td>
+						<td>{{$hours[$assignment->event_id.'-'.$assignment->user_id]['total']}}</td>
 					</tr>
 				@endforeach
 			</table>

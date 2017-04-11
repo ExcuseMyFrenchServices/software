@@ -1,5 +1,15 @@
 @extends('layouts.main')
 
+@section('styles')
+    <style type="text/css">
+        h3
+        {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+    </style>
+@stop
+
 @section('content')
     <div id="page" class="container">
         <div class="row">
@@ -16,6 +26,7 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-xs-12">
+                                <h3><b>Basic Informations</b></h3>
                                 <p><b>Client:</b> {{ $event->client->name }}</p>
                                 <br>
 
@@ -38,6 +49,14 @@
                                         <a class="col-xs-8 col-sm-4 btn btn-primary" href="{{ asset('files/'.$event->id.'.jpg') }}" style="border: 1px solid rgba(100,100,100,0.2);border-radius:5px;padding: 15px;text-align: center;text-decoration: none;color: white"><span class="glyphicon glyphicon-file"> </span> Attached File</a>
                                     </div>
                                 @endif
+
+                                @if(!empty($event->notes))
+                                    <p><b>Notes:</b> {{ $event->notes }}</p>
+                                    <br>
+                                @endif
+
+                                <hr>
+                                <h3><b>Staff Function</b></h3>
 
                                 @if(!empty($uniform))
                                     <p>
@@ -78,81 +97,6 @@
                                         </ul>
                                     </p>
                                     <br>
-                                @endif
-  
-
-                                @if(count($softs) != 0 || count($glasses) != 0 || count($accessories) != 0 || count($alcohols) != 0)
-                                    <p>
-                                        <b>Extras:</b>
-                                        <ul class="list-group">
-                                            @if(count($glasses) != 0)
-                                                <li class="list-group-item"><b>Glasses</b></li>
-                                                <li class="list-group-item">
-                                                    <ul>
-                                                    @foreach($glasses as $glass)
-                                                        <li style="min-height: 40px">
-                                                        {{ $glass->quantity.' '.$glass->name }}
-                                                        <a href="{{ url('/outstocks/'.$glass->id.'/destroy/'.$event->id) }}" class='pull-right btn btn-danger btn-sm'>X</a>
-                                                        </li>
-                                                    @endforeach
-                                                    </ul>
-                                                </li>
-                                            @endif
-                                            @if(count($softs) != 0)
-                                                <li class="list-group-item"><b>Soft drinks</b></li>
-                                                <li class="list-group-item">
-                                                    <ul>
-                                                    @foreach($softs as $soft)
-                                                        <li style="min-height: 40px">
-                                                        {{ $soft->quantity.' '.$soft->name }}
-                                                        <a href="{{ url('/outstocks/'.$soft->id.'/destroy/'.$event->id) }}" class='pull-right btn btn-danger btn-sm'>X</a>
-                                                        </li>
-                                                    @endforeach
-                                                    </ul>
-                                                </li>
-                                            @endif
-                                            @if(count($alcohols) != 0)
-                                                <li class="list-group-item"><b>Alcohols</b></li>
-                                                <li class="list-group-item">
-                                                    <ul>
-                                                    @foreach($alcohols as $alcohol)
-                                                        <li style="min-height: 40px">
-                                                        {{ $alcohol->quantity.' '.$alcohol->name }}
-                                                        <a href="{{ url('/outstocks/'.$alcohol->id.'/destroy/'.$event->id) }}" class='pull-right btn btn-danger btn-sm'>X</a>
-                                                        </li>
-                                                    @endforeach
-                                                    </ul>
-                                                </li>
-                                            @endif
-                                            @if(count($accessories) != 0)
-                                                <li class="list-group-item"><b>Accessories</b></li>
-                                                <li class="list-group-item">
-                                                    <ul>
-                                                    @foreach($accessories as $accessory)
-                                                        <li style="min-height: 40px">
-                                                        {{ $accessory->quantity.' '.$accessory->name }}
-                                                        <a href="{{ url('/outstocks/'.$accessory->id.'/destroy/'.$event->id) }}" class='pull-right btn btn-danger btn-sm'>X</a>
-                                                        </li>
-                                                    @endforeach
-                                                    </ul>
-                                                </li>
-                                            @endif
-                                        </ul>
-                                    </p>
-                                    <br>
-                                @endif
-
-                                @if(!empty($event->notes))
-                                    <p><b>Notes:</b> {{ $event->notes }}</p>
-                                    <br>
-                                @endif
-
-                                @if(!empty($event->outStock))
-                                    <ul>
-                                        @foreach($event->outStock as $item)
-                                        <li>{{ $item->category }} | {{ $item->name }} - {{ $item->quantity }}</li>
-                                        @endforeach
-                                    </ul>
                                 @endif
 
                                 @foreach($event->start_time as $time)
@@ -213,6 +157,119 @@
                                     @endif
                                 @endif
 
+                                @if($event->bar != 0 && $event->barEvent !== null && Auth::user()->role_id == 1)
+                                    <hr>
+                                    <h3><b>Bar Function</b></h3>
+                                    <p><b>Bar Staff</b></p>
+                                    <ul class="list-group list-unstyled">
+                                        
+                                        @if($event->barEvent->private != 0)
+                                        <li  class="list-group-item">Private ({{ $event->barEvent->private }})</li>
+                                        @endif
+
+                                        @if($event->barEvent->bar_back != 0)
+                                        <li  class="list-group-item">Bar Back ({{ $event->barEvent->bar_back }})</li>
+                                        @endif 
+
+                                        @if($event->barEvent->bar_runner != 0)
+                                        <li  class="list-group-item">Bar Runner ({{ $event->barEvent->bar_runner }})</li>
+                                        @endif  
+
+                                        @if($event->barEvent->classic_bartender != 0)
+                                        <li  class="list-group-item">Classic Bartender ({{ $event->barEvent->classic_bartender }})</li>
+                                        @endif       
+
+                                        @if($event->barEvent->cocktail_bartender != 0)
+                                        <li  class="list-group-item">Cocktail Bartender ({{ $event->barEvent->cocktail_bartender }})</li>
+                                        @endif     
+
+                                        @if($event->barEvent->flair_bartender != 0)
+                                        <li  class="list-group-item">Flair Bartender ({{ $event->barEvent->flair_bartender }})</li>
+                                        @endif 
+
+                                        @if($event->barEvent->mixologist != 0)
+                                        <li  class="list-group-item">Mixologist ({{ $event->barEvent->mixologist }})</li>
+                                        @endif 
+
+                                    </ul>
+
+                                    <p><b>Drinks</b></p>
+
+                                    @if(count($beers)>=1)
+                                    <p>Beers</p>    
+                                        <ul class="list-group list-unstyled">
+                                            @foreach($beers as $beer)
+                                            <li class="list-group-item">{{ $beer->name }} ({{ $beer->quantity }})</li>
+                                            @endforeach    
+                                        </ul>
+                                    @endif
+
+                                    @if(count($whines)>=1)
+                                    <p>Whines</p>    
+                                        <ul class="list-group list-unstyled">
+                                            @foreach($whines as $whine)
+                                            <li class="list-group-item">{{ $whine->name }} ({{ $whine->quantity }})</li>
+                                            @endforeach    
+                                        </ul>
+                                    @endif
+
+                                    @if(count($cocktails)>=1)
+                                    <p>Cocktails</p>    
+                                        <ul class="list-group list-unstyled">
+                                            @foreach($cocktails as $cocktail)
+                                            <li  class="list-group-item">{{ $cocktail->name }} ({{ $cocktail->quantity }})</li>
+                                            @endforeach    
+                                        </ul>
+                                    @endif
+
+                                    @if(count($shots)>=1)
+                                    <p>Shots</p>    
+                                        <ul class="list-group list-unstyled">
+                                            @foreach($shots as $shot)
+                                            <li class="list-group-item">{{ $shot->name }} ({{ $shot->quantity }})</li>
+                                            @endforeach    
+                                        </ul>
+                                    @endif
+
+                                    <p><b>Supplies</b></p>
+
+                                    <p>Ice : {{ $event->barEvent->ice == 0 ? 'No':'Yes' }}</p>
+
+                                    @if(count($softs)>=1)
+                                    <p>Softs</p>
+                                        <ul class="list-group list-unstyled">
+                                            @foreach($softs as $soft)
+                                            <li  class="list-group-item">{{ $soft->name }} ({{ $soft->quantity}})</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
+                                    @if(count($ingredients)>=1)
+                                    <p>Ingredients</p>
+                                        <ul class="list-group list-unstyled">
+                                            @foreach($ingredients as $ingredient)
+                                            <li  class="list-group-item">{{ $ingredient->name }} ({{ $ingredient->quantity}})</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
+                                    <p><b>Equipment</b></p>
+
+                                    @if($event->barEvent->bar_number != 0)
+                                    <p>Bars : {{ $event->barEvent->bar_number }}</p>
+                                    @endif
+
+                                    @if(count($furnitures)>=1)
+                                    <p>Furnitures</p>
+                                        <ul class="list-group list-unstyled">
+                                            @foreach($furnitures as $furniture)
+                                            <li  class="list-group-item">{{ $furniture->name }} ({{ $furniture->quantity}})</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
+                                @endif
+
                                 @if ($event->event_date >= date('Y-m-d'))
                                     <a class="col-xs-1 btn btn-info btn-sm back_btn" href="{{ url('events/' . Auth::user()->id) }}">Back</a>
                                 @else
@@ -232,6 +289,43 @@
                     </div>
                 </div>
             </div>
+            
+            @if(Auth::user()->role_id == 1)
+            <div class="col-xs-12 col-md-2">
+                <div class="panel panel-default event_detail">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Admin Info</h3>
+                    </div>
+                    <div class="panel-body">
+                        
+                    </div>
+                </div>
+                <div id="buttons-shortcut" class="panel panel-default">
+                    <div class="panel-heading">
+                    @if($event->bar != 0)
+                        <h4 class="panel-title" style="text-align: center">Bar Function Status</h4>
+                    @else
+                        <h4 class="panel-title" style="text-align: center">Actions</h4>
+                    @endif
+                    </div>
+                    <div class="panel-body">
+                    @if($event->bar != 0 && $event->barEvent !== null)
+                        @if($event->barEvent->status == 1)
+                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-warning btn-xs">pending</a>
+                        @elseif($event->barEvent->status == 2)
+                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-success btn-xs">confirmed</a>
+                        @else
+                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-default btn-xs">new function</a>
+                        @endif
+                        <hr>
+                    @endif
+                        <a href="/event/{{ $event->id }}/edit" class="btn btn-info btn-xs" role="button">Update</a>
+                        <a href="/event/{{ $event->id }}/copy" class="btn btn-primary btn-xs" role="button">Copy</a>
+                    </div>
+                </div>
+            </div>
+            @endif
+
         </div>
     </div>
     <!-- Hidden content -->

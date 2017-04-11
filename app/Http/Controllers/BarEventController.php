@@ -95,7 +95,7 @@ class BarEventController extends Controller
     	}
     	$barEvent->save();
 
-    	return redirect()->back();
+    	return redirect('event');
     }
 
     public function confirm($barEventId)

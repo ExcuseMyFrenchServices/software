@@ -100,8 +100,10 @@
 								<li><b>Email :</b> {{ $event->client->email }}</li>
 								<li><b>Event Date :</b> {{ date_format(date_create($event->event_date), 'l jS F') }}</li>
 								<li><b>Start Time :</b> {{ $event->start_time[0] }}</li>
+								<li><b>Finish Time :</b> {{ $event->finish_time }} </li>
 								<li><b>Staff Required:</b> {{ $event->number_staff }}</li>
-								<li><b>Number of Guests :</b></li>
+								<li><b>Number of Guests : {{ $event->guest_number }}</b></li>
+								<li><b>Notes :</b> {{ $event->notes }}</li>
 							</ul>
 						</div>
 					</div>
@@ -122,7 +124,7 @@
 									<input type="checkbox" name="supplies" id="supplies" {{ count($softs)>=1 || count($ingredients)>=1 || $barEvent->ice == 1? 'checked':''}}>
 									<label for="supplies">Supplies</label>
 
-									<input type="checkbox" name="glasses" id="glasses" {{ $barEvent->glass_type !== null && $barEvent->glass_type != 'none' ? 'checked':''}}>
+									<input type="checkbox" name="glasses" id="glasses" {{ $barEvent->glass_type != '' && $barEvent->glass_type != 'none' ? 'checked':''}}>
 									<label for="glasses">Glasses</label>
 
 									<input type="checkbox" name="equipment" id="equipment" {{ count($bars)>=1 || count($furnitures)>=1 || $barEvent->bar_number != 0 ? 'checked':''}}>
@@ -477,9 +479,9 @@
 										</div>
 									</div>
 
-									<a id="showglasses" class="showButton col-xs-12"><span id="glassesarrow" class="glyphicon glyphicon-triangle-{{ $barEvent->glass_type !== null && $barEvent->glass_type != 'none' ? 'bottom':'right'}}"> Glasses </span></a>
+									<a id="showglasses" class="showButton col-xs-12"><span id="glassesarrow" class="glyphicon glyphicon-triangle-{{ $barEvent->glass_type != '' && $barEvent->glass_type != 'none' ? 'bottom':'right'}}"> Glasses </span></a>
 
-									<div id="glassesNeeds" class="{{ $barEvent->glass_type !== null && $barEvent->glass_type != 'none' ? '':'hidden' }}">
+									<div id="glassesNeeds" class="{{ $barEvent->glass_type != '' && $barEvent->glass_type != 'none' ? '':'hidden' }}">
 										<div class="row">
 										<hr>
 											<div class="col-xs-10 col-xs-offset-1">
@@ -585,9 +587,7 @@
 
 							<div id="noteNeeds" style="margin-bottom: 50px" class="col-xs-12">
 								<label for="notes">Specific Requirements</label>
-								<textarea id="notes" name="notes" class="col-xs-12">
-									{{ $barEvent->notes }}
-								</textarea>
+								<textarea rows="5" id="notes" name="notes" class="form-control">{{ $barEvent->notes or old('barNotes')}}</textarea>
 							</div>
 
 							<div class="col-xs-12">

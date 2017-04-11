@@ -5,6 +5,7 @@ use App\Event;
 use App\User;
 use App\Uniform;
 use App\Services\FinancialReportCalculation;
+use App\Services\weekReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -152,8 +153,6 @@ class AssignmentController extends Controller
         $week_start = date('Y-m-d', strtotime('-'.($day-1).' days'));
         $week_end = date('Y-m-d', strtotime($week_start.'-7 days'));
 
-        $calculator = new FinancialReportCalculation;
-
         $assignments = DB::table('assignments')
                         ->select('events.id as event_id','events.event_date','events.event_name','users.id as user_id','profiles.last_name','profiles.first_name','users.level', 'assignments.start_time', 'assignments.hours', 'assignments.break')
                         ->join('events','events.id','=','assignments.event_id')
@@ -168,7 +167,9 @@ class AssignmentController extends Controller
         $public_holiday = [];               
         foreach ($assignments as $assignment) 
         {
-            if($calculator->is_public_holiday($assignment->event_date))
+            $weekReport = new weekReport($assignment->event_date,$assignment->start_time,$assignment->hours,$assignment->break);
+
+            if($weekReport->is_public_holiday($assignment->event_date))
             {
                 $public_holiday[$assignment->event_id] = "PH";
             }
@@ -176,10 +177,9 @@ class AssignmentController extends Controller
             {
                 $public_holiday[$assignment->event_id] = ""; 
             }
-            $hours[$assignment->event_id.'-'.$assignment->user_id] = $calculator->hourSpent($assignment->start_time,$assignment->hours,$assignment->event_date, $assignment->break);
-            $cost[$assignment->event_id.'-'.$assignment->user_id] = $calculator->staffCost($assignment->start_time,$assignment->hours,$assignment->event_date,$assignment->level,$assignment->break);
+            $hours[$assignment->event_id.'-'.$assignment->user_id] = $weekReport->get_hours();
         }
 
-        return view('reports.week-report')->with(compact('assignments','week_start','week_end','hours','cost','public_holiday'));
+        return view('reports.week-report')->with(compact('assignments','week_start','week_end','hours','public_holiday'));
     }
 }

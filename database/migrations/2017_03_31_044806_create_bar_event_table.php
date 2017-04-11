@@ -22,7 +22,7 @@ class CreateBarEventTable extends Migration
             $table->integer('cocktail_bartender')->unsigned();
             $table->integer('flair_bartender')->unsigned();
             $table->integer('mixologist')->unsigned();
-            $table->string('glass_type',25);
+            $table->string('glass_type',25)->nullable();
             $table->integer('bar_number')->unsigned();
             $table->integer('ice')->unsigned();
             $table->text('notes');

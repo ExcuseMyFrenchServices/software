@@ -33,7 +33,31 @@
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <label>Finish time</label>
-                                                    <input type="text" name="{{ $assignment->id }}-hours" class="form-control" value="{{ $assignment->hours }}">
+                                                    <div class="col-xs-12">
+                                                        <select name="{{ $assignment->id }}-hour">
+                                                        @if(empty($assignment->hours))
+                                                            <option></option>
+                                                        @else
+                                                            <option value="{{ explode('.',$assignment->hours)[0] }}">{{ explode('.',$assignment->hours)[0] }}</option>
+                                                        @endif    
+                                                            @for($h=0;$h < 24;$h++)
+                                                            <option value="{{ $h }}">{{ $h }}</option>
+                                                            @endfor
+                                                        </select>
+                                                        :
+                                                        <select name="{{ $assignment->id }}-minute">
+                                                        @if(!empty($assignment->hours) && strpos($assignment->hours,'.'))
+                                                            <option value="{{ explode('.',$assignment->hours)[1] }}">{{ explode('.',$assignment->hours)[1] }}</option>
+                                                        @elseif(!empty($assignment->hours) && !strpos($assignment->hours,':'))
+                                                            <option value="00">00</option>
+                                                        @else
+                                                            <option></option>
+                                                        @endif 
+                                                            @for($m=0;$m < 60;$m++)
+                                                            <option value="{{ $m }}">{{ $m }}</option>
+                                                            @endfor
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <?php $i++; ?>
                                                 <input type="hidden" name="assignment_number" value="{{$i}}">

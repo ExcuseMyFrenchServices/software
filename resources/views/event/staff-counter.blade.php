@@ -4,7 +4,7 @@
     $confirmed  = $event->assignments->where('status', 'confirmed')->count();
 ?>
 
-@if(Auth::user()->role_id == 1)
+@if(Auth::user()->role_id == 1 || Auth::user()->role_id == 13)
 	@if (!$assigned)
 	    <span class="label label-danger">{{ $confirmed .' / '. $assigned .' / '. $needed }}</span>
 	@else

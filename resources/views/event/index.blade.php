@@ -40,7 +40,7 @@
                             @if (!$pastEvents)
                                 <th>Start time</th>
                             @endif
-                            @if(Auth::user()->role_id == 1) 
+                            @if(Auth::user()->role_id == 1 ||Auth::user()->role_id ==13) 
                                 <th>Staff</th>                           
                                 @if($pastEvents)
                                     <th>Feedback</th>
@@ -61,37 +61,41 @@
                         @foreach($events as $event)
                             <tr>
                                 <td> <a href="{{ url('event/' . $event->id) }}">{{ $event->client->name }}</a></td>
-                                <td>{{ date_format(date_create($event->event_date), 'F d, Y') }}</td>
+                                <td>{{ date_format(date_create($event->event_date), 'l F d, Y') }}</td>
                                 @if (!$pastEvents)
                                     @if(isset($user))
                                         <td>{{ $assignments->where('event_id', $event->id)->first()->time }}</td>
                                     @else
-                                        <td>{{ $event->start_time[0] }}</td>
+                                        @if(count($event->start_time)>0)
+                                            <td>{{ $event->start_time[0] }}</td>
+                                        @else
+                                            <td>Unknown</td>
+                                        @endif
                                     @endif
                                 @endif
                                 
                                     <td>@include('event.staff-counter', ['event' => $event])</td>
-                                @if(Auth::user()->role_id == 1)
+                                @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 13)
                                     @if ($pastEvents)
                                         <td>@include('event.feedback-status', ['event' => $event])</td>
                                     @else
                                         <td>@include('event.notifications-status', ['event' => $event])</td>
                                     @endif
 
-                                    @if($event->bar == 1)
+                                    @if($event->bar != 0 && $event->barEvent !== null)
                                     <td>
                                         @if($event->barEvent->status == 1)
-                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-warning btn-xs">Bar Function - Client Called</a>
+                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-warning btn-xs">pending</a>
                                         @elseif($event->barEvent->status == 2)
-                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-success btn-xs">Bar Function Ready</a>
+                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-success btn-xs">confirmed</a>
                                         @else
-                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-default btn-xs">New Bar Function</a>
+                                            <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-default btn-xs">new function</a>
                                         @endif
                                     </td>
+                                    @else
+                                    <td></td>
                                     @endif     
 
-                                    <td><a href="/event/{{ $event->id }}/edit" class="btn btn-info btn-xs" role="button">Update</a></td>
-                                    <td><a href="/event/{{ $event->id }}/copy" class="btn btn-primary btn-xs" role="button">Copy</a></td>
                                     <td>
                                         <button class="btn btn-danger e_delete_btn btn-xs" data-toggle="modal" data-target="#event_delete">Delete</button>
                                         <div class="hidden event_id" >{{ $event->id }}</div>
