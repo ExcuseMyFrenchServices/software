@@ -40,6 +40,6 @@
         </div>
     @endif
     @if($event->finish_time)
-        <p><b>Expected finish time :</b> {{ $event->finish_time }}</p>
+        <p><b>Approximated finish time :</b> {{ $event->finish_time }}</p>
     @endif
 </div>
