@@ -116,3 +116,9 @@ Route::get('stocks/{id}/delete', 'StockController@destroy');
 //OUTSTOCKS
 
 Route::get('outstocks/{outstock}/destroy/{eventId}', 'OutStockController@destroy');
+
+
+// Google calendar
+
+Route::get('/oauth/{event_id}', 'GoogleCalendarController@oauth');
+Route::get('/create_calendar_event/{hash}', 'GoogleCalendarController@create_calendar_event');

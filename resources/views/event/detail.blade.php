@@ -26,6 +26,11 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-xs-12">
+                                @if(Session::has('calendar'))
+                                    <div class="alert alert-success" role="alert">
+                                        {{ Session::get('calendar') }}
+                                    </div>
+                                @endif
                                 <h3><b>Basic Informations</b></h3>
                                 <p><b>Client:</b> {{ $event->client->name }}</p>
                                 <br>
