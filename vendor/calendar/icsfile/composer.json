@@ -1,0 +1,22 @@
+{
+    "name": "calendar/icsfile",
+    "description": "This simple class generate a .ics file.",
+    "keywords": ["outlook", ".ics","calendar"],
+    "type": "library",
+    "license": "LGPL-3.0",
+    "authors": [
+        {
+            "name": "luc sanchez",
+            "email": "sanchezluc+composer@gmail.com"
+        }
+    ],
+    "require": {
+         "php"  : ">=5.4.2"
+    },
+    
+    "autoload": {
+        "psr-4" : {
+            "Ical\\" : "src"
+        }
+    } 
+}

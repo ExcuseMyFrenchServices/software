@@ -319,6 +319,13 @@ class weekReport {
 					$this->low = $this->end - 7;
 				}
 			}
+		} elseif($this->startStatus == 'hight')
+		{
+			if($this->endStatus == 'low')
+			{
+				$this->hight = 7 - $this->start;
+				$this->low = $this->end - 7;
+			}
 		}
 	}
 
@@ -335,8 +342,7 @@ class weekReport {
 				}
 				elseif($this->day == 'Sunday')
 				{
-					$this->sunday = 24 - $this->start;
-					$this->low = $this->end;
+					$this->sunday = (24 - $this->start) + $this->end;
 				}
 			}
 			else

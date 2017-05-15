@@ -4238,5 +4238,48 @@
         "keywords": [
             "google"
         ]
+    },
+    {
+        "name": "calendar/icsfile",
+        "version": "3.2.1",
+        "version_normalized": "3.2.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://bitbucket.org/colonelMoutarde/icalendar-generator.git",
+            "reference": "bf83bf8788b0750053ff34db08046720083d9c5c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://bitbucket.org/colonelMoutarde/icalendar-generator/get/bf83bf8788b0750053ff34db08046720083d9c5c.zip",
+            "reference": "bf83bf8788b0750053ff34db08046720083d9c5c",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.2"
+        },
+        "time": "2017-01-24 15:28:38",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Ical\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "luc sanchez",
+                "email": "sanchezluc+composer@gmail.com"
+            }
+        ],
+        "description": "This simple class generate a .ics file.",
+        "keywords": [
+            ".ics",
+            "calendar",
+            "outlook"
+        ]
     }
 ]

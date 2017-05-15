@@ -29,6 +29,9 @@
                 @else
                     <div class="empty_event">
                         <h3>No availabilities</h3>
+                        @if(Session::has('notAvailable'))
+                            <p class="alert alert-danger">{{ Session::get('notAvailable') }}</p>
+                        @endif
                     </div>
                 @endif
 

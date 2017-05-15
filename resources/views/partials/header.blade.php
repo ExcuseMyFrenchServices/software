@@ -63,6 +63,7 @@
                         <li><a href="{{ url('timesheets/') }}">Timesheets</a></li>
                         <li><a href="{{ url('events/' . Auth::user()->id) }}">Events</a></li>
                         <li><a href="{{ url('availability') }}">Availability</a></li>
+                        <li><a href="{{ url('user/' . Auth::user()->id . '/edit') }}">Profile</a></li>
                         <li><a href="{{ url('user/' . Auth::user()->id . '/password') }}">Password</a></li>
                         <li><a href="{{ url('logout') }}">Logout</a></li>
                     @endif

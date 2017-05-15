@@ -1,19 +1,23 @@
 <?php namespace App\Http\Controllers;
 
 use App\Assignment;
+use App\Availability;
 use App\Client;
 use App\Event;
 use App\Uniform;
 use App\Stock;
 use App\OutStock;
 use App\BarEvent;
+use App\Modification;
 use App\Http\Requests\Event\CreateEventRequest;
 use App\Http\Requests\Event\TimesheetRequest;
 use App\Http\Requests\Event\UpdateEventRequest;
+use App\Http\Controllers\ModificationsController;
 use App\Role;
 use App\Services\AvailableUsers;
 use App\Services\UsersMissions;
 use App\Services\stockItems;
+use App\Services\Modifications;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -39,7 +43,6 @@ class EventController extends Controller
     public function index()
     {
             $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->get()->sortBy('event_date');
-            $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->where('bar','=','1')->get()->sortBy('event_date');
 
         return view('event.index')->with(compact('events'));
     }
@@ -74,6 +77,26 @@ class EventController extends Controller
         return view('event.create')->with(compact('clients', 'roles', 'uniforms','beers','whines','spirits','cocktails','shots','ingredients','softs','bars','furnitures','event'));
     }
 
+    public function preBooking(Request $request)
+    {
+        $start_time = [];
+        $start_time[] = $request->input('start_time');
+
+        $event = Event::create([
+            'client_id'     =>  21,
+            'event_name'    =>  "pre-booking event",
+            'event_type'    =>  "pre-booking event",
+            'number_staff'  =>  $request->input('staffNeeded'),
+            'event_date'    =>  $request->input('event_date'),
+            'start_time'    =>  $start_time,
+            'finish_time'   =>  $request->input('finish_time')
+        ]);
+
+        $event->save();
+
+        return redirect(url('event/'.$event->id));
+    }
+
     public function store(CreateEventRequest $request)
     {
         $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
@@ -88,9 +111,6 @@ class EventController extends Controller
             $hour = $request->input('guest_arrival');
         }
 
-        echo($hour);
-
-        /*
         $event = Event::create([
             'event_name'        => $request->input('event_name'),
             'event_type'        => $request->input('event_type'),
@@ -154,14 +174,20 @@ class EventController extends Controller
             $file->move('files/',$event->id.'.'.$ext);
         }
 
-        //return redirect('event/' . $event->id);
-        */
+        return redirect('event/' . $event->id);
     }
 
     public function show($eventId)
     {
         $event = Event::find($eventId);
+
+        $previous_event = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->where('event_date','<',$event->event_date)->orderBy("event_date","DESC")->limit(1)->first();
+        $next_event = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->where('event_date','>',$event->event_date)->orderBy('event_date','ASC')->limit(1)->first();
+
         $uniform = Uniform::find($event->uniform);
+
+        $modificationService = new Modifications($event);
+        $modifications = $modificationService->getLast($event);
 
         if($event->bar != 0)
         {
@@ -179,9 +205,32 @@ class EventController extends Controller
             $ingredients = getBarItems('ingredients',$event);
             $furnitures = getBarItems('furnitures',$event);
         
-            return view('event.detail')->with(compact('event','uniform','beers','whines','spirits','cocktails','shots','softs','ingredients','furnitures'));
+            return view('event.detail')->with(compact('event','previous_event','next_event','uniform','beers','whines','spirits','cocktails','shots','softs','ingredients','furnitures','modifications'));
         }
-        return view('event.detail')->with(compact('event','uniform'));
+       return view('event.detail')->with(compact('event','previous_event','next_event','uniform','modifications'));
+    }
+
+    public function showModifications($eventId)
+    {
+        $event = Event::find($eventId);
+
+        $modificationService = new Modifications($event);
+        $modifications = $modificationService->get($event);
+
+        return view('event.modifications')->with(compact('event','modifications'));
+    }
+
+    public function backUp($eventId, $modificationId)
+    {
+        $event = Event::find($eventId);
+        
+        $modification = Modification::find($modificationId);
+        if($modification->old_value != "")
+        {
+            $modificationService = new Modifications($event);
+            $modifications = $modificationService->backUp($event,$modificationId);
+        }
+        return redirect()->back();
     }
 
     public function edit($eventId)
@@ -209,35 +258,18 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
         $uniform = Uniform::find((int)$request->input('uniform'));
-
-        // Check if an Bar Event object exists, needs to be created or deleted
-        if($request->input('bar') === 'on')
+        if($event->bar == 0 && $request->input('bar') == 'on' && $event->barEvent === null)
         {
-            $bar_event = $event->barEvent;
-            if(empty($bar_empty))
-            {
-                $bar_event = BarEvent::create([
-                    'event_id'  => $event->id,
-                ]);
-            }
+            $bar_event = BarEvent::create([
+                'event_id'          => $event->id,
+            ]);
+            $event->bar = 1;
+            $event->save();
         }
-        else
-        {
-            $bar_event = $event->barEvent;
-            if(!empty($bar_event))
-            {
-                $bar_event->delete();
-            }
-        }
+        $modification = new Modifications($event);
 
         $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
-        // Keep track of old values to know exactly what have been updated
-        $old_start_time = $event->start_time;
-        $old_finish_time = $event->finish_time;
-        $old_address = $event->address;
-        $old_details = $event->details;
-        $old_uniform = $event->uniform;
-        $old_notes = $event->notes;
+        // Keep track of old values to know exactly what have been updated after with checkUpdates
 
         $event->event_name          = $request->input('event_name');
         $event->event_type          = $request->input('event_type');
@@ -254,14 +286,10 @@ class EventController extends Controller
         $event->booking_date        = new DateTime($request->input('booking_date'));
         $event->event_date          = new DateTime($request->input('event_date').$start_time[0]);
 
-        $event->save();
-
-        $barEvent = BarEvent::where('event_id','=',$event->id)->first();
-        $barEvent->notes             = $request->input('barNotes');
-
+        $barEvent = $event->barEvent;
         // BAR EVENT HANDLER
         if($request->input('bar') == 'on')
-        {   
+        {
             // Drinks creation
             EventController::outStockBarItems('beers',$request,$event->id);
             EventController::outStockBarItems('whine',$request,$event->id);
@@ -276,20 +304,28 @@ class EventController extends Controller
             // Equipment
             EventController::outStockBarItems('bars',$request,$event->id);
             EventController::outStockBarItems('furnitures',$request,$event->id);
-
-            $barEvent->private           = $request->input('privateNumber');
-            $barEvent->bar_back          = $request->input('barBackNumber');
-            $barEvent->bar_runner        = $request->input('barRunnerNumber');
-            $barEvent->classic_bartender = $request->input('classicBartenderNumber');
-            $barEvent->cocktail_bartender = $request->input('cocktailBartenderNumber');
-            $barEvent->flair_bartender   = $request->input('falirBartenderNumber');
-            $barEvent->mixologist        = $request->input('mixologistNumber');
-            $barEvent->glass_type        = $request->input('glassChoice');
-            $barEvent->ice               = $request->input('ice') == 'on';
-            $barEvent->bar_number        = $request->input('barNumber');
-            $barEvent->notes             = $request->input('barNotes');
+            if($event->bar && $barEvent !== null)
+            {
+                $barEvent->private           = $request->input('privateNumber');
+                $barEvent->bar_back          = $request->input('barBackNumber');
+                $barEvent->bar_runner        = $request->input('barRunnerNumber');
+                $barEvent->classic_bartender = $request->input('classicBartenderNumber');
+                $barEvent->cocktail_bartender = $request->input('cocktailBartenderNumber');
+                $barEvent->flair_bartender   = $request->input('falirBartenderNumber');
+                $barEvent->mixologist        = $request->input('mixologistNumber');
+                $barEvent->glass_type        = $request->input('glassChoice');
+                $barEvent->ice               = $request->input('ice') == 'on';
+                $barEvent->bar_number        = $request->input('barNumber');
+                $barEvent->notes             = $request->input('barNotes');
+                $barEvent->save();
+            }
         }
-        $barEvent->save();
+
+        $event->save();
+        $event = Event::find($eventId);
+        // Create a new Modification object in case something has changed
+        $modification->checkUpdates($event);
+
 
         // FILE HANDLER
         if(file_exists('files/'.$event->id.'.jpg'))
@@ -308,11 +344,10 @@ class EventController extends Controller
         $updated = $request->input('notify-all');
 
         // Update assignments for removed hours
-        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$old_start_time,$uniform,$old_finish_time,$old_address,$old_details,$old_notes,$old_uniform, $updated) 
+        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$uniform,$updated) 
         {
             if (!in_array($assignment->time, $event->start_time)) 
             {
-                $time_diff = array_diff_assoc($event->start_time, $old_start_time);
                 for ($i=0; $i < count($event->start_time); $i++) 
                 { 
                     if($assignment->time == $old_start_time[$i])
@@ -329,24 +364,7 @@ class EventController extends Controller
             }
             elseif($updated == 'on')
             {
-                $subject = 'Important : Event Updated';
-                // Change the email subject depending on what have been updated
-                if($old_finish_time != $event->finish_time)
-                {
-                    $subject = 'Important : Event End Time updated';
-                }
-                elseif ($old_address != $event->address) 
-                {
-                    $subject = "Important : Event's Address Changed";
-                }
-                elseif($old_uniform != $event->uniform)
-                {
-                    $subject = "Important : Event's Uniform Changed";
-                }
-                elseif($old_details != $event->details)
-                {
-                    $subject = "Important : Event's Details Changed";
-                }
+                $subject = $modification->emailSubject();
 
                 Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment,$subject) {
                     $message->to($assignment->user->profile->email)->subject($subject);
@@ -382,6 +400,7 @@ class EventController extends Controller
 
         $clients = Client::all()->sortBy('name');
         $uniforms = Uniform::all();
+
 
         return view('event.create')->with(compact('event', 'clients', 'uniforms','beers','whines','spirits','cocktails','shots','ingredients','softs','bars','furnitures'));
     }
@@ -421,8 +440,10 @@ class EventController extends Controller
     public function assign(Request $request, $eventId)
     {
         $event = Event::find($eventId);
+        $modification = new Modifications($event);
 
         foreach($request->except(['_token', 'time']) as $key => $value) {
+            $user = User::find($key);
             Assignment::create([
                 'event_id'  => $event->id,
                 'time'      => $request->input('time'),
@@ -430,6 +451,7 @@ class EventController extends Controller
                 'status'    => 'pending',
                 'hash'      =>  str_random(15)
             ]);
+            $modification->create($event->id,'added','staff','',$user->username);
         }
 
         return redirect('event/' . $event->id);
@@ -489,7 +511,18 @@ class EventController extends Controller
                 return $event->event_date >= date('Y-m-d 05:00:00', strtotime('+11 hour'));
             })->sortBy('event_date');
 
-            return view('event.index')->with(compact('events', 'user', 'assignments'));
+            $availabilities = Availability::where('user_id', '=', Auth::user()->id)
+            ->where('date', '>=', date('Y-m-d'))
+            ->get()
+            ->sortBy('date');
+
+            if(count($availabilities) == 0)
+            {
+                Session::flash('notAvailable','Please update your availabilities to be sure to have a job.');
+                return view('availability.index')->with(compact('availabilities'));
+            }
+
+            return view('event.index')->with(compact('events', 'user', 'assignments','availabilities'));
         }
 
         // Shows all the events 
@@ -612,19 +645,11 @@ class EventController extends Controller
             $assignment = Assignment::find($request->$id);
 
             $start_time = $assignment->id.'-start-time';
-            
-            $hour_id = $assignment->id.'-hour';
-            $minute_id = $assignment->id.'-minute';
-
-            $hour = $request->$hour_id;
-            $minute = $request->$minute_id;
-
-            $hours = $hour.'.'.$minute;
-        
             $break = $assignment->id.'-break';
+            $hours = $assignment->id.'-hours';
 
             $assignment->start_time = $request->$start_time;
-            $assignment->hours = $hours;
+            $assignment->hours = $request->$hours;
             $assignment->break = str_replace(':','.',$request->$break);
             $assignment->save();
         }
@@ -887,5 +912,26 @@ class EventController extends Controller
     {
         $item = OutStock::where('event_id','=',$eventId)->where('category','=',$itemName)->get();
         return $item;
+    }
+
+    public function createIcs($eventId)
+    {
+        $event = Event::find($eventId);
+        $startDate = date_format(date_create($event->event_date),'U');
+        $date = date_format(date_create($event->event_date),'Y-m-d');
+        $finishTime = date_format(date_create($event->finish_time),'H:i:s');
+        $endDate = date_format(date_create($date."".$finish_time),'U');
+
+        $ics = new ICS('//Company//Product//EN');
+
+        $ics->startDate($startDate)
+            ->endDate($endDate)
+            ->address($event->address." ".$event->details)
+            ->summary($event->event_name)
+            ->uri(url('/event/'.$event->id))
+            ->description("Notes : ".$event->notes." Uniform : ".$event->uniform()->set_name);
+
+        return $ics;
+
     }
 }

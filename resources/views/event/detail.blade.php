@@ -11,6 +11,22 @@
 @stop
 
 @section('content')
+    @if(Auth::user()->role_id == 1 && !empty($previous_event))
+    <div id="arrow-left" class="col-xs-2" style="position: fixed; font-size: 2em">
+        <a href="{{ url('/event/'.$previous_event->id) }}">
+            <span class="glyphicon glyphicon-arrow-left"></span>
+        </a>
+    </div>
+    @endif
+
+    @if(Auth::user()->role_id == 1 && !empty($next_event))
+    <div id="arrow-right" class="col-xs-2 col-xs-offset-10" style="position: fixed; font-size: 2em">
+        <a href="{{ url('/event/'.$next_event->id) }}" class="pull-right">
+            <span class="glyphicon glyphicon-arrow-right"></span>
+        </a>
+    </div>
+    @endif
+
     <div id="page" class="container">
         <div class="row">
             <div class="col-xs-12 col-md-8 col-md-offset-2">
@@ -31,6 +47,14 @@
                                         {{ Session::get('calendar') }}
                                     </div>
                                 @endif
+                                @if($event->event_type == "pre-booking event")
+                                    <div class="alert alert-info" role="alert">
+                                        <h3>Pre Booking Event</h3>
+                                        @if(Auth::user()->role_id == 1)
+                                            <p style="text-align: center">Please remember to change client and event type to make it a regular event !</p>
+                                        @endif
+                                    </div>
+                                @endif
                                 <h3><b>Basic Informations</b></h3>
                                 <p><b>Client:</b> {{ $event->client->name }}</p>
                                 <br>
@@ -43,6 +67,15 @@
                                 @if(!empty($event->details))
                                     <p><b>Address Details:</b> {{ $event->details }}</p>
                                     <br>
+                                @endif
+
+                                @if(!empty($event->guest_number))
+                                    <p><b>Guest Number:</b> {{ $event->guest_number }} </p>
+                                    <br>
+                                @endif
+
+                                @if(!empty($event->guest_arrival_time))
+                                    <p><b>Guest Arrival Time:</b> {{ $event->guest_arrival_time }} </p>
                                 @endif
 
                                 @if(file_exists('files/'.$event->id.'.pdf'))
@@ -104,6 +137,7 @@
                                     <br>
                                 @endif
 
+                                @if(!empty($event->start_time))
                                 @foreach($event->start_time as $time)
                                     <p><b>Team starting at {{ $time }}</b></p>
                                     <div class="row">
@@ -113,15 +147,10 @@
                                                 @foreach($event->assignments->where('time', $time) as $assignment)
                                                     @include('event.staff-row', ['$assignment' => $assignment])
                                                 @endforeach
-                                                @if(Auth::user()->role_id == 1)
-                                                    <li class="list-group-item">
-                                                        <a href="{{ url('event/notify-all/'.$event->id) }}" class="btn btn-success btn-sm">Notify all</a>
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        <b>Admin Report</b>:<br>
-                                                        {{ $event->report }}
-                                                    </li>
-                                                @endif
+                                                <li class="list-group-item">
+                                                    <b>Admin Report</b>:<br>
+                                                    {{ $event->report }}
+                                                </li>
                                                 </ul>
                                             @endif
 
@@ -135,32 +164,21 @@
                                         </div>
                                     </div>
                                 @endforeach
+                                @else
+                                    <p>Please define a start time</p>
+                                @endif
 
                                 @if(!empty($event->finish_time))
                                     <p><b>Approximate finish time:</b> {{ $event->finish_time }}</p>
                                     <br>
                                 @endif
 
-                                @if(Auth::user()->role_id == 1)
-                                    @if(!$event->assignments->where('status','pending')->isEmpty())
-                                    <div class="row">
-                                        <p><b>Force confirmation :</b></p>
-                                        <form action="{{ url('event/' . $event->id . '/confirm') }}" method="POST" class="form">
-                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <div class="form-group col-xs-12">
-                                                <select name="user_id" data-live-search="true" data-size="8" data-width="100%">
-                                                    @foreach($event->assignments->where('status','pending') as $assignment)
-                                                        <option value="{{ $assignment->user_id }}">{{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="form-group col-xs-4">
-                                                <button role="submit" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-warning-sign"> </span> Force confirmation for this staff</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    @endif
+                                @if(Auth::user()->role_id == 1 && !empty($event->start_time))
+                                    <a href="{{ url('event/notify-all/'.$event->id) }}" class="btn btn-success btn-sm">Notify all</a>
                                 @endif
+
+                                <br>
+                                <br>
 
                                 @if($event->bar != 0 && $event->barEvent !== null && Auth::user()->role_id == 1)
                                     <hr>
@@ -276,13 +294,13 @@
                                 @endif
 
                                 @if ($event->event_date >= date('Y-m-d'))
-                                    <a class="col-xs-1 btn btn-info btn-sm back_btn" href="{{ url('events/' . Auth::user()->id) }}">Back</a>
+                                    <a class="col-md-1 btn btn-info btn-sm back_btn" href="{{ url('events/' . Auth::user()->id) }}">Back</a>
                                 @else
-                                    <a class="col-xs-1 btn btn-info btn-sm back_btn" href="{{ url('past/events/') }}">Back</a>
+                                    <a class="col-md-1 btn btn-info btn-sm back_btn" href="{{ url('past/events/') }}">Back</a>
                                 @endif
 
                                 @if(!$event->assignments->where('user_id', Auth::user()->id)->where('status', 'pending')->isEmpty())
-                                    <a class="col-xs-2 btn btn-success btn-sm back_btn" href="{{ url('event/' . $event->id . '/confirm') }}">
+                                    <a class="col-md-2 btn btn-success btn-sm back_btn" href="{{ url('event/' . $event->id . '/confirm') }}">
                                         <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
                                         Confirm
                                     </a>
@@ -296,25 +314,24 @@
             </div>
             
             @if(Auth::user()->role_id == 1)
-            <div class="col-xs-12 col-md-2">
-                <div class="panel panel-default event_detail">
+            <div id="admin-notification" class="col-xs-12 col-md-2">
+
+                <div id="buttons-shortcut" class="panel panel-default event_detail">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Admin Info</h3>
+                        <h4 class="panel-title" style="text-align: center">Actions</h4>
                     </div>
                     <div class="panel-body">
-                        
+                        <a href="/event/{{ $event->id }}/edit" class="btn btn-info btn-xs" role="button">Update</a>
+                        <a href="/event/{{ $event->id }}/copy" class="btn btn-primary btn-xs" role="button">Copy</a>
                     </div>
                 </div>
-                <div id="buttons-shortcut" class="panel panel-default">
+
+                @if($event->bar != 0 && $event->barEvent !== null)
+                <div id="bar-event-function" class="panel panel-default">
                     <div class="panel-heading">
-                    @if($event->bar != 0)
                         <h4 class="panel-title" style="text-align: center">Bar Function Status</h4>
-                    @else
-                        <h4 class="panel-title" style="text-align: center">Actions</h4>
-                    @endif
                     </div>
                     <div class="panel-body">
-                    @if($event->bar != 0 && $event->barEvent !== null)
                         @if($event->barEvent->status == 1)
                             <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-warning btn-xs">pending</a>
                         @elseif($event->barEvent->status == 2)
@@ -322,12 +339,51 @@
                         @else
                             <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-default btn-xs">new function</a>
                         @endif
-                        <hr>
-                    @endif
-                        <a href="/event/{{ $event->id }}/edit" class="btn btn-info btn-xs" role="button">Update</a>
-                        <a href="/event/{{ $event->id }}/copy" class="btn btn-primary btn-xs" role="button">Copy</a>
                     </div>
                 </div>
+                @endif
+
+                @if(!$event->assignments->where('status','pending')->isEmpty())
+                <div id="force-confirm" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title" style="text-align: center">Force Confirmation</h4>
+                    </div>
+                    <div class="panel-body">
+                        <form action="{{ url('event/' . $event->id . '/confirm') }}" method="POST" class="form">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <div class="form-group">
+                                <select name="user_id" data-live-search="true" data-size="8" data-width="100%">
+                                    @foreach($event->assignments->where('status','pending') as $assignment)
+                                        <option value="{{ $assignment->user_id }}">{{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button role="submit" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-warning-sign"> </span> Force confirmation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                @endif
+
+                @if(count($modifications) > 0)
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Last Modification</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            <li class="list-group-item" style="margin-bottom: 5px">
+                                <b>{{ date_format(date_add($modifications->created_at,date_interval_create_from_date_string('10hours')),'d/m/Y H:i')}}:</b>
+                                <br>
+                                {{ $modifications->role." ".$modifications->name." changed ".str_replace('_',' ',$modifications->modifications) }}
+                            </li>
+                            <a href="{{ url('event/modifications/'.$event->id) }}" class="btn btn-info btn-sm">Check all</a>
+                        </ul>
+                    </div>
+                </div>
+                @endif
+
             </div>
             @endif
 

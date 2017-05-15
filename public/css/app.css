@@ -6,11 +6,6 @@ body {
     margin-top: 60px;
 }
 
-.panel {
-    margin-bottom: 100px;
-}
-
-
 #login-form > button[type="submit"] {
    margin-top: 20px;
 }
@@ -181,3 +176,13 @@ ul > li > span  {
     margin-bottom: 10px;
 }
 
+@media print {
+  a[href]:after
+  {
+    content: "" !important;
+  }
+  #admin-notification
+  {
+    display: none;
+  }
+}

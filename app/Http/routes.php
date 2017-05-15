@@ -32,6 +32,8 @@ Route::post('user/search', 'UserController@search');
 
 Route::resource('event', 'EventController');
 
+Route::post('/preBooking', 'EventController@preBooking');
+
 Route::post('event/changeUserRole', 'EventController@changeUserRole');
 
 Route::get('events/{user}', 'EventController@events');
@@ -54,6 +56,9 @@ Route::get('event/notify/{assignment}', 'AssignmentController@notify');
 Route::get('event/{event}/confirm', 'AssignmentController@confirm');
 Route::post('event/{event}/confirm', 'AssignmentController@forceConfirm');
 Route::get('assignment/delete/{assignment}', 'AssignmentController@destroy');
+
+Route::get('event/modifications/{eventId}', 'EventController@showModifications');
+Route::get('event/back-up/{eventId}/{modificationId}', 'EventController@backUp');
 
 // EVENT FEEDBACK
 
@@ -120,5 +125,10 @@ Route::get('outstocks/{outstock}/destroy/{eventId}', 'OutStockController@destroy
 
 // Google calendar
 
-Route::get('/oauth/{event_id}', 'GoogleCalendarController@oauth');
+Route::get('/oauth', 'GoogleCalendarController@oauth');
 Route::get('/create_calendar_event/{hash}', 'GoogleCalendarController@create_calendar_event');
+
+// MODIFICATIONS
+
+Route::get('/modification/{{message}}', 'ModificationsController@create');
+Route::get('/modification/{{eventId}}/get', 'ModificationsController@get');

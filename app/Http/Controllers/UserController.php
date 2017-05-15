@@ -27,7 +27,7 @@ class UserController extends Controller
         ]);
 
         $this->middleware('admin', [
-            'except' => ['passwordEdit', 'passwordEditForm', 'passwordUpdate']
+            'except' => ['passwordEdit', 'passwordEditForm', 'passwordUpdate', 'edit','update']
         ]);
     }
 
@@ -50,6 +50,7 @@ class UserController extends Controller
 
     public function create()
     {
+
         $roles = Role::all();
 
         return view('user.create')->with(compact('roles'));
@@ -98,6 +99,11 @@ class UserController extends Controller
 
     public function edit($userId)
     {
+        
+        if (Auth::user()->role_id != 1 && Auth::user()->id != $userId) {
+            return redirect('/events/'.$userId);
+        }
+        
         $roles = Role::all();
 
         $user = User::find($userId);
@@ -116,12 +122,20 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, $userId)
     {
+
+        if (Auth::user()->role_id != 1 && Auth::user()->id != $userId) {
+            return redirect('/events/'.$userId);
+        }
+        
         $user = User::find($userId);
         $profile = $user->profile;
 
-        $user->role_id = $request->input('role');
-        $user->level = $request->input('level');
-        $user->save();
+        if(Auth::user()->role_id == 1)
+        {    
+            $user->role_id = $request->input('role');
+            $user->level = $request->input('level');
+            $user->save();
+        }
 
         $profile->email             = $request->input('email');
         $profile->phone_number      = $request->input('phone_number');

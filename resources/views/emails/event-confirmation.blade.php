@@ -57,7 +57,7 @@
         <p><b>Notes:</b> {{ $event['notes'] }}</p>
     @endif
     <h4>Add this event in :</h4>
-    <a href="http://staff.excusemyfrenchservices.com/create_calendar_event/{{ $assignment['hash'] }}" style="height: 200px">
+    <a href="http://staff.excusemyfrenchservices.com/create_calendar_event/{{ $assignment['hash'] }}">
         <img src="{{ asset('img/google-calendar-api.png') }}">
     </a>
     <h4>To confirm your assistance, please click the link below:</h4>

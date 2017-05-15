@@ -138,7 +138,7 @@
                             </div>
 
                             <div class="col-xs-12 form-group">
-                                <label for="address">Address Details</label>
+                                <label for="details">Address Details</label>
                                 <textarea rows="2"  name="details" id="details" class="form-control">{{ $event->details or old('details')}}</textarea>
                             </div>
 
@@ -161,7 +161,7 @@
                                 <label class="">Bar Service</label>
                                 <div class="checkbox">
                                     <label>
-                                        @if(isset($event))
+                                        @if(isset($event) && $event->id != null)
                                             <input type="checkbox" name="bar" id="glasses" {{ $event->bar ? 'checked' : '' }}> Bar Service required
                                         @else
                                             <input type="checkbox" name="bar" id="glasses"> Bar Service required
@@ -178,8 +178,8 @@
 
                             <div id="barFunctionNeeds" class="hidden">
                                 <a id="showstaff" class="showButton col-xs-12">
-                                    @if(isset($event))
-                                    <span id="staffarrow" class="glyphicon glyphicon-triangle-{{ isset($event) && $event->barEvent->private > 0 || $event->barEvent->bar_back > 0 || $event->barEvent->bar_runner > 0 || $event->barEvent->classic_bartender > 0 || $event->barEvent->cocktail_bartender > 0 || $event->barEvent->flair_bartender > 0 || $event->barEvent->mixologist > 0 ? 'bottom':'right'}}"> 
+                                    @if(isset($event) && $event->barEvent !== null)
+                                    <span id="staffarrow" class="glyphicon glyphicon-triangle-{{ isset($event) && $event->barEvent !== null && $event->barEvent->private > 0 || $event->barEvent->bar_back > 0 || $event->barEvent->bar_runner > 0 || $event->barEvent->classic_bartender > 0 || $event->barEvent->cocktail_bartender > 0 || $event->barEvent->flair_bartender > 0 || $event->barEvent->mixologist > 0 ? 'bottom':'right'}}"> 
                                         Bar Staff 
                                     </span>
                                     @else
@@ -189,7 +189,7 @@
                                     @endif
                                 </a>
 
-                                @if(isset($event))
+                                @if(isset($event) && $event->barEvent !== null )
                                 <div id="staffNeeds" class="{{ $event->barEvent->private > 0 || $event->barEvent->bar_back > 0 || $event->barEvent->bar_runner > 0 || $event->barEvent->classic_bartender > 0 || $event->barEvent->cocktail_bartender > 0 || $event->barEvent->flair_bartender > 0 || $event->barEvent->mixologist > 0 ? '':'hidden'}}">
                                 @else
                                 <div id="staffNeeds" class="hidden">
@@ -448,15 +448,15 @@
                                     </div>
                                 </div>
 
-                                <a id="showsupplies" class="showButton col-xs-12"><span id="suppliesarrow" class="glyphicon glyphicon-triangle-{{ count($softs)>=1 || count($ingredients)>=1 || isset($event) && $event->barEvent->ice == 1? 'bottom':'right'}}"> Supplies</span></a>
+                                <a id="showsupplies" class="showButton col-xs-12"><span id="suppliesarrow" class="glyphicon glyphicon-triangle-{{ count($softs)>=1 || count($ingredients)>=1 || isset($event) &&  $event->barEvent !== null && $event->barEvent->ice == 1? 'bottom':'right'}}"> Supplies</span></a>
 
-                                <div id="suppliesNeeds" class="{{ count($softs)>=1 || count($ingredients)>=1 || isset($event) && $event->barEvent->ice == 1? '':'hidden'}}">
+                                <div id="suppliesNeeds" class="{{ count($softs)>=1 || count($ingredients)>=1 || isset($event) && $event->barEvent !== null && $event->barEvent->ice == 1? '':'hidden'}}">
                                     <div class="row">
                                         <hr>
                                         <div class="col-xs-10 col-xs-offset-1">
 
                                             <div class="col-xs-12">
-                                                <input type="checkbox" name="ice" id="ice" {{ isset($event) && $event->barEvent->ice == 1 ? 'checked':'' }}>
+                                                <input type="checkbox" name="ice" id="ice" {{ isset($event) && $event->barEvent !== null && $event->barEvent->ice == 1 ? 'checked':'' }}>
                                                 <label for="ice">Ice</label>
                                             </div>
 
@@ -534,43 +534,43 @@
                                     </div>
                                 </div>
 
-                                <a id="showglasses" class="showButton col-xs-12"><span id="glassesarrow" class="glyphicon glyphicon-triangle-{{ isset($event) && $event->barEvent->glass_type != '' && $event->barEvent->glass_type != 'none' ? 'bottom':'right'}}"> Glasses </span></a>
+                                <a id="showglasses" class="showButton col-xs-12"><span id="glassesarrow" class="glyphicon glyphicon-triangle-{{ isset($event) && $event->barEvent !== null  && $event->barEvent->glass_type != '' && $event->barEvent->glass_type != 'none' ? 'bottom':'right'}}"> Glasses </span></a>
 
-                                <div id="glassesNeeds" class="{{ isset($event) && $event->barEvent->glass_type != '' && $event->barEvent->glass_type != 'none' ? '':'hidden' }}">
+                                <div id="glassesNeeds" class="{{ isset($event) && $event->barEvent !== null && $event->barEvent->glass_type != '' && $event->barEvent->glass_type != 'none' ? '':'hidden' }}">
                                     <div class="row">
                                     <hr>
                                         <div class="col-xs-10 col-xs-offset-1">
                                             
-                                            <input type="radio" name="glassChoice" value="none" id="noGlasses" {{ isset($event) && $event->barEvent->glass_type !== null && $event->barEvent->glass_type == 'none' ? 'checked':'' }}>
+                                            <input type="radio" name="glassChoice" value="none" id="noGlasses" {{ isset($event) && $event->barEvent !== null && $event->barEvent->glass_type !== null && $event->barEvent->glass_type == 'none' ? 'checked':'' }}>
                                             <label for="noGlasses">None</label>                                     
-                                            <input type="radio" name="glassChoice" value="glass" id="glassGlasses" {{ isset($event) && $event->barEvent->glass_type !== null && $event->barEvent->glass_type == 'glass' ? 'checked':'' }}>
+                                            <input type="radio" name="glassChoice" value="glass" id="glassGlasses" {{ isset($event) && $event->barEvent !== null  && $event->barEvent->glass_type !== null && $event->barEvent->glass_type == 'glass' ? 'checked':'' }}>
                                             <label for="glassGlasses">Glass</label>
                                             
-                                            <input type="radio" name="glassChoice" value="plastic" id="plasticGlasses" {{ isset($event) && $event->barEvent->glass_type !== null && $event->barEvent->glass_type == 'plastic' ? 'checked':'' }}>
+                                            <input type="radio" name="glassChoice" value="plastic" id="plasticGlasses" {{ isset($event) && $event->barEvent !== null  && $event->barEvent->glass_type !== null && $event->barEvent->glass_type == 'plastic' ? 'checked':'' }}>
                                             <label for="plasticGlasses">Plastic</label>
 
                                         </div>
                                     </div>
                                 </div>
 
-                                <a id="showequipment" class="showButton col-xs-12"><span id="equipmentarrow" class="glyphicon glyphicon-triangle-{{ count($bars)>=1 || count($furnitures)>=1 || isset($event) && $event->barEvent->bar_number != 0 ? 'bottom':'right'}}"> Equipment </span></a>
+                                <a id="showequipment" class="showButton col-xs-12"><span id="equipmentarrow" class="glyphicon glyphicon-triangle-{{ count($bars)>=1 || count($furnitures)>=1 || isset($event) && $event->barEvent !== null && $event->barEvent->bar_number != 0 ? 'bottom':'right'}}"> Equipment </span></a>
 
-                                <div id="equipmentNeeds" class="{{ count($bars)>=1 || count($furnitures)>=1 || isset($event) && $event->barEvent->bar_number != 0 ? '':'hidden' }}">
+                                <div id="equipmentNeeds" class="{{ count($bars)>=1 || count($furnitures)>=1 || isset($event) && $event->barEvent !== null && $event->barEvent->bar_number != 0 ? '':'hidden' }}">
                                     <div class="row">
                                     <hr>
                                         <div class="col-xs-10 col-xs-offset-1">
                                             
                                             <div class="col-xs-12">
-                                                <input type="checkbox" name="bars" id="bars" {{ isset($event) && $event->barEvent->bar_number >= 1 ? 'checked':'' }}>
+                                                <input type="checkbox" name="bars" id="bars" {{ isset($event) && $event->barEvent !== null  && $event->barEvent->bar_number >= 1 ? 'checked':'' }}>
                                                 <label for="bars">Bar</label>
                                             </div>
 
-                                            <div id="barsNeeds" class="{{ isset($event) && $event->barEvent->bar_number >= 1 ? '':'hidden' }}">
+                                            <div id="barsNeeds" class="{{ isset($event) && $event->barEvent !== null && $event->barEvent->bar_number >= 1 ? '':'hidden' }}">
                                                 <div class="row">
 
                                                     <div class="col-xs-12">
                                                         <label for="barNumber">Bar number</label>
-                                                        <input type="number" name="barNumber" id="barNumber" value="{{ isset($event) && $event->barEvent->bar_number >0 ? $event->barEvent->bar_number : '' }}">
+                                                        <input type="number" name="barNumber" id="barNumber" value="{{ isset($event) && $event->barEvent !== null  && $event->barEvent->bar_number >0 ? $event->barEvent->bar_number : '' }}">
                                                     </div>
 
                                                     <div class="col-xs-12">
@@ -651,7 +651,7 @@
                                     <div class="row">
                                         <div class="col-xs-12 col-md-6 start-time-repeater">
                                             <div data-repeater-list="start_times">
-                                            @if(isset($event) && !is_null($event->id))
+                                            @if(isset($event) && !is_null($event->id) && !empty($event->start_time))
                                                 @foreach($event->start_time as $key => $time)
                                                     <div data-repeater-item>
                                                         <div class="input-group date" id="time">
@@ -763,7 +763,7 @@
 
                             <div class="col-xs-12">
                                 <button class="create-event btn btn-primary btn-sm" type="submit">{{ isset($event) && !is_null($event->id) ? 'Update' : 'Create' }}</button>
-                                <a href="/event" class="btn btn-info btn-sm" role="button">Back</a>
+                                <a href="{{ url('/event/') }}" class="btn btn-info btn-sm" role="button">Back</a>
                             </div>
                         </form>
                     </div>

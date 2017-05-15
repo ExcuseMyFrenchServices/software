@@ -44,9 +44,10 @@
 
                             @include('user.documents')
 
+                        <div class="{{ Auth::user()->role_id != 1 ? 'hidden':'' }}">
                             <div class="col-xs-12 col-sm-6 col-md-6 form-group">
                                 <label for="role">User Role</label>
-                                <select name="role">
+                                <select name="role" {{ Auth::user()->role_id != 1 ? 'disabled':'' }}>
                                     @foreach($roles as $role)
                                         @if(isset($user))
                                             <option {{ $user->role_id == $role->id ? 'selected' : '' }} value="{{ $role->id }}">{{ ucfirst($role->name) }}</option>
@@ -60,11 +61,12 @@
                             <div class="col-xs-12 col-sm-6 col-md-6 form-group">
                                 <label for="role">User Level</label>
                                 @if(isset($user))
-                                    <input type="number" name="level" value="{{ $user->level }}" class="form-control">
+                                    <input type="number" name="level" value="{{ $user->level }}" class="form-control" {{ Auth::user()->role_id != 1 ? 'disabled':'' }}>
                                 @else
                                     <input type="number" name="level" class="form-control">                           
                                 @endif
                             </div>
+                        </div>
                             
                             <div class="col-xs-12">
                                 <br>

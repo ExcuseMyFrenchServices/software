@@ -33,6 +33,7 @@
 
             <div class="col-xs-12 col-md-10 col-md-offset-1">
                 @if(count($events) >= 1)
+                
                     <table id="events_list" class="table table-striped">
                         <thead>
                             <th>Client Name</th>
@@ -75,9 +76,16 @@
                                 @endif
                                 
                                     <td>@include('event.staff-counter', ['event' => $event])</td>
+                                    @if(Auth::user()->role_id != 1 && $event->event_type == "pre-booking event")
+                                    <td><span class="label label-info">Pre Booking Event</span></td>
+                                    @elseif(Auth::user()->role_id != 1 && $event->event_type != "pre-booking event")
+                                    <td></td>
+                                    @endif
                                 @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 13)
                                     @if ($pastEvents)
                                         <td>@include('event.feedback-status', ['event' => $event])</td>
+                                    @elseif($event->event_type == "pre-booking event")
+                                        <td><span class="label label-info">Pre Booking Event</span></td>
                                     @else
                                         <td>@include('event.notifications-status', ['event' => $event])</td>
                                     @endif
@@ -126,6 +134,7 @@
                 @endif
                 @if(Auth::user()->role_id == 1 && !$pastEvents)
                     <a class="btn btn-primary btn-sm" href="{{ url('event/create') }}">Create Event</a>
+                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#preBookingModal">Create Prebooking</button>
                 @else
                     &nbsp;
                 @endif
@@ -163,6 +172,63 @@
                         </div><!-- /.modal-content -->
                     </div><!-- /.modal-dialog -->
                 </div><!-- /.modal -->
+
+                <!-- PreBooking Modal -->
+                <div id="preBookingModal" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Prebooking Event</h4>
+                      </div>
+                      <div class="modal-body">
+                        <div class="container-fluid">
+                            <form action="{{url('/preBooking')}}" method="post" id="preBookForm">
+                                <div class="col-xs-4 col-xs-offset-4">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <label>Event Date</label>
+                                    <div class="input-group date" id="event_date">
+                                        <input type='text' class="form-control" name="event_date"/>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="staff-needed">Staff Needed</label>
+                                        <input id="staff-needed" type="number" name="staffNeeded" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="start_time">Start Time</label>
+                                        <div class="input-group date" id="time">
+                                            <input type="text" class="form-control" name="start_time">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-time"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="finish_time">Finish Time</label>
+                                        <div class="input-group date" id="time">
+                                            <input type="text" class="form-control" name="finish_time">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-time"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" form="preBookForm" class="btn btn-success">Pre Book an Event</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
             </div>
         </div>
     </div>

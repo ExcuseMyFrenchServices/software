@@ -4,9 +4,50 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a72a0a343c523a9d4c62ce2ff18b3d34",
-    "content-hash": "479de22af60be37be08eee67f5004a73",
+    "hash": "5efa71a483d6105acc1e1b8cc2950fad",
+    "content-hash": "ff726750b4e970f52fff0c80a966413f",
     "packages": [
+        {
+            "name": "calendar/icsfile",
+            "version": "3.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/colonelMoutarde/icalendar-generator.git",
+                "reference": "bf83bf8788b0750053ff34db08046720083d9c5c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/colonelMoutarde/icalendar-generator/get/bf83bf8788b0750053ff34db08046720083d9c5c.zip",
+                "reference": "bf83bf8788b0750053ff34db08046720083d9c5c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ical\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "luc sanchez",
+                    "email": "sanchezluc+composer@gmail.com"
+                }
+            ],
+            "description": "This simple class generate a .ics file.",
+            "keywords": [
+                ".ics",
+                "calendar",
+                "outlook"
+            ],
+            "time": "2017-01-24 15:28:38"
+        },
         {
             "name": "classpreloader/classpreloader",
             "version": "3.0.0",
@@ -2887,12 +2928,12 @@
             "version": "0.9.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/padraic/mockery.git",
+                "url": "https://github.com/mockery/mockery.git",
                 "reference": "4db079511a283e5aba1b3c2fb19037c645e70fc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/4db079511a283e5aba1b3c2fb19037c645e70fc2",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/4db079511a283e5aba1b3c2fb19037c645e70fc2",
                 "reference": "4db079511a283e5aba1b3c2fb19037c645e70fc2",
                 "shasum": ""
             },

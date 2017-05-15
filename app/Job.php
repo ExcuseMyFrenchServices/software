@@ -4,21 +4,21 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BarEvent extends Model
+class Job extends Model
 {
-   /**
+    /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'bar_event';
+    protected $table = 'jobs';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['event_id','private','bar_back','bar_runner','classic_bartender','cocktail_bartender','flair_bartender','mixologist','glass_type', 'bar_number', 'notes','status'];
+    protected $fillable = ['job'];
 
     /**
      * The attributes that should be cast to native types.
@@ -27,7 +27,6 @@ class BarEvent extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'event_id' => 'integer',
     ];
 
     /**
@@ -37,13 +36,8 @@ class BarEvent extends Model
      */
     protected $hidden = [];
 
-    public function event()
+    public function user()
     {
-        return $this->belongsTo('App\Event');
-    }
-
-    public function outStock()
-    {
-    	return $this->hasMany('App\outStock');
+        return $this->belongsToOne('App\User');
     }
 }

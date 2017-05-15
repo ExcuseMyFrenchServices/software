@@ -4,6 +4,7 @@ use App\Assignment;
 use App\Event;
 use App\User;
 use App\Uniform;
+use Ical\Ical;
 use App\Services\FinancialReportCalculation;
 use App\Services\weekReport;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Filesystem\Filesystem;
+
 
 class AssignmentController extends Controller
 {
@@ -114,28 +117,31 @@ class AssignmentController extends Controller
 
         $uniform = Uniform::find($assignment->event->uniform);
 
+        $ics = AssignmentController::createIcs($assignment->event->id);
+
+
         if(file_exists('files/'.$assignment->event->id.'.jpg'))
         {
             $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.jpg');
 
-            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
-            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
+            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment,$file,$ics) {
+            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file)->attach($ics);
             });
         }
         elseif(file_exists('files/'.$assignment->event->id.'.pdf'))
         {
             $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.pdf');
 
-            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment, $file) {
-            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
+            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment, $file,$ics) {
+            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file)->attach($ics);
             });
         }
         else
         {
             $file = "";
-            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
+            Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment,$ics) {
             $message->to($assignment->user->profile->email)->subject('Event Confirmation');
-            });
+            })->attach($ics);
         }
 
 
@@ -181,5 +187,32 @@ class AssignmentController extends Controller
         }
 
         return view('reports.week-report')->with(compact('assignments','week_start','week_end','hours','public_holiday'));
+    }
+
+    public function createIcs($eventId)
+    {
+        $event = Event::find($eventId);
+        $startDate = date_create_from_format('Y-m-d H:i:s', $event->event_date);
+        $date = date_format(date_create($event->event_date),'Y-m-d');
+        $finishTime = date_format(date_create($event->finish_time),'H:i:s');
+        $endDate = date_create_from_format('Y-m-d H:i:s', $date."".$finishTime);
+
+        try {
+
+        $ical = (new Ical())->setAddress($event->address." ".$event->details)
+                ->setDateStart($startDate)
+                ->setDateEnd($endDate)
+                ->setDescription("Notes : ".$event->notes)
+                ->setSummary($event->event_name)
+                ->setFilename(uniqid());
+
+        $ical->getICAL();          
+
+        return $ical;
+
+        } catch (\Exception $exc) {
+            echo $exc->getMessage();
+
+        }
     }
 }
