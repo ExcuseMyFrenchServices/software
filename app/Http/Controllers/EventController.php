@@ -108,7 +108,14 @@ class EventController extends Controller
         }
         else
         {
-            $hour = $request->input('guest_arrival');
+            if($request->input('guest_arrival') === null)
+            {
+                $hour = "00:00";
+            }
+            else
+            {
+                $hour = $request->input('guest_arrival');
+            }
         }
 
         $event = Event::create([
@@ -548,13 +555,6 @@ class EventController extends Controller
             return redirect('/');
         }
 
-        Auth::loginUsingId($assignment->user_id);
-
-        $assignment->status = 'confirmed';
-        $assignment->hash = '';
-
-        $assignment->save();
-
         return redirect('event/' . $assignment->event_id);
     }
 
@@ -691,21 +691,28 @@ class EventController extends Controller
 
     public function changeUserRole()
     {
-        if(Auth::user()->role_id == 1)
+        if(Auth::user())
         {
-            $user = User::find(Auth::user()->id);
-            $user->role_id = 11;
-            $user->save();
-            return redirect('/events/101');
-            
-        }
+            if(Auth::user()->role_id == 1)
+            {
+                $user = User::find(Auth::user()->id);
+                $user->role_id = 11;
+                $user->save();
+                return redirect('/events/101');
+                
+            }
 
-        if(Auth::user()->role_id == 11)
+            if(Auth::user()->role_id == 11)
+            {
+                $user = User::find(Auth::user()->id);
+                $user->role_id = 1;
+                $user->save();
+                return redirect('/event/');
+            }
+        }
+        else
         {
-            $user = User::find(Auth::user()->id);
-            $user->role_id = 1;
-            $user->save();
-            return redirect('/event/');
+            return redirect('/');
         }
     }
 

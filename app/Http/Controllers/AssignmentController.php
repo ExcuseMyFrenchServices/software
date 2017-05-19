@@ -125,7 +125,7 @@ class AssignmentController extends Controller
             $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.jpg');
 
             Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment,$file,$ics) {
-            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file)->attach($ics);
+            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file); //Attach ICS
             });
         }
         elseif(file_exists('files/'.$assignment->event->id.'.pdf'))
@@ -133,7 +133,7 @@ class AssignmentController extends Controller
             $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.pdf');
 
             Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment, $file,$ics) {
-            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file)->attach($ics);
+            $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file); //Attach ICS
             });
         }
         else
@@ -141,7 +141,7 @@ class AssignmentController extends Controller
             $file = "";
             Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment,$ics) {
             $message->to($assignment->user->profile->email)->subject('Event Confirmation');
-            })->attach($ics);
+            }); //Attach ICS
         }
 
 

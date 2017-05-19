@@ -23,7 +23,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <input type="hidden" name="id-{{$i}}" value="{{ $assignment->id }}">
-                                                <div class="col-sm-4">
+                                                <div class="col-sm-4 container">
                                                     <label>Start Time</label>
                                                     <div class="col-xs-12">
                                                         <div class="form-group">
@@ -36,7 +36,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-4">
+                                                <div class="col-sm-4 container">
                                                     <label>Break</label>
                                                     <div class="col-xs-12">
                                                         <div class="form-group">
@@ -46,7 +46,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-4">
+                                                <div class="col-sm-4 container">
                                                     <label>Finish time</label>
                                                     <div class="col-xs-12">
                                                         <div class="form-group">

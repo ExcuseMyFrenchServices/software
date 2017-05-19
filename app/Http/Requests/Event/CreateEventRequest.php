@@ -10,8 +10,7 @@ class CreateEventRequest extends FormRequest
         return [
             'client'                => 'required',
             'booking_date'          => 'required',
-            'event_date'            => 'required',
-            'guest_arrival_time'         => 'required',
+            'event_date'            => 'required'
         ];
     }
 

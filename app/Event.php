@@ -66,9 +66,4 @@ class Event extends Model
     {
         return $this->hasMany('App\OutStock');
     }
-
-    public function modifications()
-    {
-        return $this->hasMany('App\Modification');
-    }
 }

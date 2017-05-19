@@ -54,6 +54,11 @@
     @if($event['notes'])
         <p><b>Notes:</b> {{ $event['notes'] }}</p>
     @endif
-    <h4>To confirm your assistance, please click the link below:</h4>
+    <h4>Add this event in :</h4>
+    <a href="http://staff.excusemyfrenchservices.com/create_calendar_event/{{ $assignment['hash'] }}">
+        <img src="{{ asset('img/google-calendar-api.png') }}">
+    </a>
+    <h4>Access to the function on this link:</h4>
     <p>http://staff.excusemyfrenchservices.com/confirm/{{ $assignment['hash'] }}</p>
+    <p style="color:red">Please confirm your assistance by clicking on the "confirm" button once your logged in and on the function details.</p>
 </div>

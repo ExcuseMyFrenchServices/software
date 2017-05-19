@@ -98,12 +98,6 @@
                                     </ul>
                                 </div>
                             @endif
-
-                            @if(Session::has('success'))
-                                <div class="alert alert-success" role="alert">
-                                    {{ Session::get('success') }}
-                                </div>
-                            @endif
                         </div>
                         <div class="col-xs-12">
                         <table class="col-xs-12">
