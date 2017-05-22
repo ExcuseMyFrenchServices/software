@@ -291,6 +291,18 @@
                                         </ul>
                                     @endif
 
+                                    @if($event->barEvent->glass_type != 0)
+                                    <p>Glasses</p>
+                                        <ul class="list-group list-unstyled">
+                                            <li class="list-group-item">{{ $event->barEvent->glass_type }}</li>
+                                        </ul>
+                                    @endif
+
+                                    @if($event->barEvent->notes != "")
+                                    <p>Notes</p>
+                                        <p>{{ $event->barEvent->notes }}</p>
+                                    @endif
+
                                 @endif
 
                                 @if ($event->event_date >= date('Y-m-d'))
