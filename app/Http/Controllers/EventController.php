@@ -81,13 +81,16 @@ class EventController extends Controller
     {
         $start_time = [];
         $start_time[] = $request->input('start_time');
+        $date = date_format(date_create($request->input('event_date')),'Y-m-d');
+        $start = date_format(date_create($request->input('start_time')),'H:i:s');
+        $event_date = $date." ".$start;
 
         $event = Event::create([
             'client_id'     =>  21,
             'event_name'    =>  "pre-booking event",
             'event_type'    =>  "pre-booking event",
             'number_staff'  =>  $request->input('staffNeeded'),
-            'event_date'    =>  $request->input('event_date'),
+            'event_date'    =>  $event_date,
             'start_time'    =>  $start_time,
             'finish_time'   =>  $request->input('finish_time')
         ]);
