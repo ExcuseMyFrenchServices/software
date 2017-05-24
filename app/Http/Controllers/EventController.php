@@ -461,7 +461,7 @@ class EventController extends Controller
                 'status'    => 'pending',
                 'hash'      =>  str_random(15)
             ]);
-            $modification->create($event->id,'added','staff','',$user->username);
+            $modification->create($event->id,'added staff: '.$user->profile->first_name." ".$user->profile->last_name,'',$user->id);
         }
 
         return redirect('event/' . $event->id);

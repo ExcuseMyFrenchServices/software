@@ -56,7 +56,7 @@ class Modifications
         {
             if(is_array($this->event->$key))
             {
-                $value = str_replace('["','',$value);
+                $value = str_replace('["','',$value); 
                 $value = str_replace('"]','',$value);
 
                 foreach ($this->event->$key as $old) 
@@ -75,7 +75,8 @@ class Modifications
                 {
                     if(!is_array($this->event->$key) && !is_array($value) && !is_object($this->event->$key) && !is_object($value))
                     {  
-                        $this->create($event->id,$key,$this->event->$key,$value);
+                        //$this->create($event->id,$key,$this->event->$key,$value);
+                        echo "Key ".$key." => value ".$value." old value ".$this->event->$key;
                     }
                 }
                 $this->last_change = $key;
