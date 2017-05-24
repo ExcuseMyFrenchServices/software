@@ -803,6 +803,11 @@
                 if(document.getElementById(element+"Needs").className == 'hidden'){
                     arrow.className = "glyphicon glyphicon-triangle-bottom";
                     document.getElementById(element+"Needs").className = '';
+                    if(document.getElementById(element+"Needs").id == "barFunctionNeeds"){
+                        var barservice = document.getElementById('glasses');
+                        var checked = document.createAttribute('checked');
+                        barservice.setAttributeNode(checked);
+                    }
                 }
                 else if(document.getElementById(element+"Needs").className == '') {
                     arrow.className = "glyphicon glyphicon-triangle-right";
