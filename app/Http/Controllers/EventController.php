@@ -360,7 +360,7 @@ class EventController extends Controller
             {
                 for ($i=0; $i < count($event->start_time); $i++) 
                 { 
-                    if($assignment->time == $old_start_time[$i])
+                    if($assignment->time == $start_time[$i])
                     {
                         $assignment->time = $event->start_time[$i];
                         $assignment->save();
