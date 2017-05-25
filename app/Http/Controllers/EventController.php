@@ -354,7 +354,7 @@ class EventController extends Controller
         $updated = $request->input('notify-all');
 
         // Update assignments for removed hours
-        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$uniform,$updated) 
+        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$uniform,$updated,$modification) 
         {
             if (!in_array($assignment->time, $event->start_time)) 
             {
