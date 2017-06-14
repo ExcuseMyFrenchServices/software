@@ -13,7 +13,7 @@ use App\Assignment;
 
 class Modifications 
 {
-
+    private $id;
     private $event;
     private $barEvent;
     private $outStocks;
@@ -22,6 +22,7 @@ class Modifications
 
     public function __construct(Event $event)
     {
+        $this->id = $event->id;
         $this->event = $event->replicate();
         if($event->bar && $event->barEvent !== null)
         {
@@ -117,6 +118,20 @@ class Modifications
         }
     }
 
+    public  function confirmCheck()
+    {
+        $role = Role::find(Auth::user()->role_id)->first();
+
+        Modification::create([
+                'name'          =>  Auth::user()->username,
+                'role'          =>  $role->name,
+                'modifications' =>  "confirmed assignment",
+                'event_id'      =>  $this->id,
+                'old_value'     =>  "",
+                'new_value'     =>  "",
+            ]);
+    }
+
     public function create($eventId,$key,$old_value,$new_value)
     {
     	$role = Role::find(Auth::user()->role_id)->first();
@@ -124,7 +139,7 @@ class Modifications
     	Modification::create([
                 'name'          =>  Auth::user()->username,
                 'role'          =>  $role->name,
-                'modifications' =>  $key,
+                'modifications' =>  'changed '.$key,
                 'event_id'      =>  $eventId,
                 'old_value'     =>  $old_value,
                 'new_value'     =>  $new_value

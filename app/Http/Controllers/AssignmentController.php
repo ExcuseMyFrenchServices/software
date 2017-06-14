@@ -7,6 +7,7 @@ use App\Uniform;
 use Ical\Ical;
 use App\Services\FinancialReportCalculation;
 use App\Services\weekReport;
+use App\Services\Modifications;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -33,6 +34,10 @@ class AssignmentController extends Controller
 
     public function confirm($eventId)
     {
+        $event = Event::find($eventId);
+        $modificationService = new Modifications($event);
+        $modificationService->confirmCheck();   
+
         Assignment::where(['event_id' => $eventId, 'user_id' => Auth::user()->id])->each(function ($assignment) {
             $assignment->status = 'confirmed';
 

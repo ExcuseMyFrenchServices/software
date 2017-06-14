@@ -18,6 +18,7 @@ use App\Services\AvailableUsers;
 use App\Services\UsersMissions;
 use App\Services\stockItems;
 use App\Services\Modifications;
+use App\Services\UserChecker;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -354,7 +355,7 @@ class EventController extends Controller
         $updated = $request->input('notify-all');
 
         // Update assignments for removed hours
-        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$uniform,$updated,$modification) 
+        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$uniform,$updated,$modification,$start_time) 
         {
             if (!in_array($assignment->time, $event->start_time)) 
             {
@@ -454,6 +455,9 @@ class EventController extends Controller
 
         foreach($request->except(['_token', 'time']) as $key => $value) {
             $user = User::find($key);
+            $userChecker = new UserChecker();
+            $userChecker->checkUserMission($user->id);
+
             Assignment::create([
                 'event_id'  => $event->id,
                 'time'      => $request->input('time'),
@@ -461,6 +465,7 @@ class EventController extends Controller
                 'status'    => 'pending',
                 'hash'      =>  str_random(15)
             ]);
+
             $modification->create($event->id,'added staff: '.$user->profile->first_name." ".$user->profile->last_name,'',$user->id);
         }
 

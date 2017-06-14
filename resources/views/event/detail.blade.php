@@ -56,7 +56,7 @@
                                     </div>
                                 @endif
                                 <h3><b>Basic Informations</b></h3>
-                                <p><b>Client:</b> {{ $event->client->name }}</p>
+                                <p><b>Client:</b> <a href="{{ url('/client/'.$event->client->id.'/edit') }}">{{ $event->client->name }}</a></p>
                                 <br>
 
                                 @if(!empty($event->address))
@@ -388,7 +388,7 @@
                             <li class="list-group-item" style="margin-bottom: 5px">
                                 <b>{{ date_format(date_add($modifications->created_at,date_interval_create_from_date_string('10hours')),'d/m/Y H:i')}}:</b>
                                 <br>
-                                {{ $modifications->role." ".$modifications->name." changed ".str_replace('_',' ',$modifications->modifications) }}
+                                {{ $modifications->role." ".$modifications->name." ".str_replace('_',' ',$modifications->modifications) }}
                             </li>
                             <a href="{{ url('event/modifications/'.$event->id) }}" class="btn btn-info btn-sm">Check all</a>
                         </ul>

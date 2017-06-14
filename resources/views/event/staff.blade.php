@@ -1,5 +1,5 @@
 @extends('layouts.main')
-
+ 
 @section('content')
 
     <div class="container">
@@ -20,7 +20,12 @@
                                         <li class="list-group-item">
                                             <div class="checkbox" style="margin: 0;">
                                                 <label>
-                                                    <input type="checkbox" id="user-{{ $user->id }}" name={{ $user->id }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name . ' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)' }}{{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
+                                                    <input type="checkbox" id="user-{{ $user->id }}" name={{ $user->id }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name . ' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)' }}
+
+                                                    {{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
+                                                    @if($user->level_alert > 0) 
+                                                        <i class="label label-info">Ready for level {{ $user->level_alert }}</i>
+                                                    @endif
                                                 </label>
                                             </div>
                                         </li>
@@ -51,6 +56,9 @@
                                             <div class="checkbox" style="margin: 0;">
                                                 <label>
                                                     <input type="checkbox" name={{ $user->id }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name .' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)'}}{{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
+                                                    @if($user->level_alert > 0) 
+                                                        <i class="label label-info">Ready for level {{ $user->level_alert }}</i>
+                                                    @endif
                                                 </label>
                                             </div>
                                         </li>

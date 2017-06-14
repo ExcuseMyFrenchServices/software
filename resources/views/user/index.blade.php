@@ -34,7 +34,13 @@
                             <td>{{ $user->profile->first_name }}</td>
                             <td>{{ $user->profile->last_name }}</td>
                             <td>{{ $user->profile->email }}</td>
-                            <td>{{ $user->level }}</td>
+                            <td>
+                                @if($user->level_alert > $user->level)
+                                    <span class="label label-info">{{ $user->level }} --> {{ $user->level_alert }} </span>
+                                @else
+                                    {{ $user->level }}
+                                @endif
+                            </td>
                             <td><a href="/user/{{ $user->id }}/edit" class="btn btn-info btn-xs" role="button">Profile</a> </td>
                             <td><a href="/user/{{ $user->id }}/credentials/edit" class="btn btn-primary btn-xs" role="button">Credentials</a> </td>
                             <td>

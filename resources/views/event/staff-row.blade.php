@@ -15,8 +15,10 @@
     @elseif($assignment->event->admin_id == $assignment->user->id)
         <span class="label label-success }} assign_delete">Admin</span>
     @endif
-
-    {{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name  }}
+    
+    <a href="{{ url('/user/'.$assignment->user->id.'/edit') }}">
+        {{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name  }}
+    </a>
 
     @if(Auth::user()->role_id == 1 && !empty($assignment->start_time) && $assignment->time != $assignment->start_time && $assignment->event->event_date >= date('Y-m-d'))
         <span style="color:red">late : {{ $assignment->start_time}}</span>
