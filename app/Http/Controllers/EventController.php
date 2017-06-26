@@ -43,17 +43,19 @@ class EventController extends Controller
 
     public function index()
     {
-            $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->get()->sortBy('event_date');
+            $time = strtotime("05:00:00");
+            $events = Event::where('event_date', '>=', date('Y-m-d H:m:s', strtotime('+0 hour',$time)))->get()->sortBy('event_date');
 
         return view('event.index')->with(compact('events'));
     }
 
     public function indexPast(Request $request)
     {
+        $time = strtotime("05:00:00");
         $range = $request->input('date-range') ?: date('Y-m');
 
-        $events = Event::all()->filter(function ($event) use ($range) {
-            return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d 05:00:00', strtotime('+11 hour'));
+        $events = Event::all()->filter(function ($event) use ($range,$time) {
+            return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d H:m:s', strtotime('+0 hour',$time));
         })->sortByDesc('event_date');
 
         return view('event.index')->with(compact('events', 'range'));

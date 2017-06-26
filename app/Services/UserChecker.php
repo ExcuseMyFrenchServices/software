@@ -12,7 +12,7 @@ class UserChecker
 		$user = User::find($userId);
 
 		//Set the number of mission that needed to be done before creating a job alert
-		$jobMissionLever = $this->levelRecommandation($userId);
+		$jobMissionLever = $this->levelRecommandation($user);
 		$missionNumber = count($user->assignments);
 		
 		for ($i=0; $i < count($jobMissionLever); $i++) { 
@@ -26,7 +26,7 @@ class UserChecker
 		}
 	}
 
-	private function getConfidenceRatio($userId)
+	private function getConfidenceRatio($user)
 	{
 		$adminTimes = count( Event::where('admin_id',"=","user_id"));
 		$missionNumber = count($user->assignments);
@@ -34,9 +34,9 @@ class UserChecker
 		return $confidenceRatio = $adminTimes / $missionNumber;
 	}
 
-	private function levelRecommandation($userId)
+	private function levelRecommandation($user)
 	{
-		$confidenceRatio = $this->getConfidenceRatio($userId);
+		$confidenceRatio = $this->getConfidenceRatio($user);
 		$jobMissionLever = [10,40,100];
 
 		foreach ($jobMissionLever as $key => $value) 
