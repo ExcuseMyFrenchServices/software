@@ -78,13 +78,13 @@
                                     <p><b>Guest Arrival Time:</b> {{ $event->guest_arrival_time }} </p>
                                 @endif
 
-                                @if(file_exists('files/'.$event->id.'.pdf'))
+                                @if(file_exists(public_path().'/storage/events/'.$event->id.'.pdf'))
                                     <div id="file" class="col-xs-12" style="margin-bottom: 25px">
-                                        <a class="col-xs-8 col-sm-4 btn btn-primary" href="{{ asset('files/'.$event->id.'.pdf') }}" style="border: 1px solid rgba(100,100,100,0.2);border-radius:5px;padding: 15px;text-align: center;text-decoration: none;color: white"><span class="glyphicon glyphicon-file"> </span> Attached File</a>
+                                        <a class="col-xs-8 col-sm-4 btn btn-primary" href=" download/{{ $event->id }}.pdf" style="border: 1px solid rgba(100,100,100,0.2);border-radius:5px;padding: 15px;text-align: center;text-decoration: none;color: white"><span class="glyphicon glyphicon-file"> </span> Attached File</a>
                                     </div>
-                                @elseif(file_exists('files/'.$event->id.'.jpg'))
+                                @elseif(file_exists(public_path().'/storage/events/'.$event->id.'.jpeg'))
                                     <div id="file" style="margin-bottom: 25px">
-                                        <a class="col-xs-8 col-sm-4 btn btn-primary" href="{{ asset('files/'.$event->id.'.jpg') }}" style="border: 1px solid rgba(100,100,100,0.2);border-radius:5px;padding: 15px;text-align: center;text-decoration: none;color: white"><span class="glyphicon glyphicon-file"> </span> Attached File</a>
+                                        <img class="col-xs-12" src="{{ asset('/storage/events/'.$event->id.'.jpeg') }}" style="border: 1px solid rgba(100,100,100,0.2);border-radius:5px;padding: 15px;">
                                     </div>
                                 @endif
 

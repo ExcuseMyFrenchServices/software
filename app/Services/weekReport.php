@@ -161,7 +161,7 @@ class weekReport {
 		$hours_spend['sunday'] = $this->sunday;
 		$hours_spend['publicHoliday'] = $this->publicHoliday;
 		$hours_spend['bonus'] = $this->bonus;
-		$this->total = $this->low + $this->mid + $this->hight + $this->saturday + $this->sunday + $this->publicHoliday;
+		$this->total = ($this->low + $this->mid + $this->hight + $this->saturday + $this->sunday + $this->publicHoliday) - $this->convertStringToHour($this->break);
 		$hours_spend['total'] = $this->total;
 
 		return $hours_spend;

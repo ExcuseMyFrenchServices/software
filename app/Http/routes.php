@@ -60,6 +60,20 @@ Route::get('assignment/delete/{assignment}', 'AssignmentController@destroy');
 Route::get('event/modifications/{eventId}', 'EventController@showModifications');
 Route::get('event/back-up/{eventId}/{modificationId}', 'EventController@backUp');
 
+	//Download link for files
+
+	Route::get('event/download/{filename}', function($filename){
+		$file = public_path().'/storage/events/'.$filename;
+		if(file_exists($file))
+		{
+			return Response::download($file, $filename, ['Content-Length: '.filesize($file)]);
+		}
+		else
+		{
+			exit('This file does not exist any more');
+		}
+	});
+
 // EVENT FEEDBACK
 
 Route::get('feedback/{hash}', 'FeedbackController@form');

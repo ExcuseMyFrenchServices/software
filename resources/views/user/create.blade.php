@@ -58,7 +58,7 @@
                                 </select>
                             </div>
                             
-                            <div class="col-xs-12 col-sm-6 col-md-6 form-group {{ $user->level_alert > $user->level ? 'has-warning' : '' }}">
+                            <div class="col-xs-12 col-sm-6 col-md-6 form-group {{ isset($user) && $user->level_alert > $user->level ? 'has-warning' : '' }}">
                                 <label for="level" class="control-label">User Level</label>
                                 @if(isset($user))
                                     <input type="number" name="level" value="{{ $user->level }}" class="form-control" aria-describedby="helpBlock" {{ Auth::user()->role_id != 1 ? 'disabled':'' }}>
@@ -66,7 +66,7 @@
                                     <input type="number" name="level" class="form-control">                           
                                 @endif
 
-                                @if($user->level_alert > $user->level)
+                                @if(isset($user) && $user->level_alert > $user->level)
                                     <span id="helpBlock" class="help-block">User level below experience.</span>
                                 @endif
                             </div>

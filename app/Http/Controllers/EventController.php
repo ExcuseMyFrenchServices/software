@@ -281,7 +281,7 @@ class EventController extends Controller
         }
         $modification = new Modifications($event);
 
-        $start_time = array_values(array_filter(array_flatten($request->input('start_times'))));
+        $start_time = $event->start_time;
         // Keep track of old values to know exactly what have been updated after with checkUpdates
 
         $event->event_name          = $request->input('event_name');
@@ -339,20 +339,22 @@ class EventController extends Controller
         // Create a new Modification object in case something has changed
         $modification->checkUpdates($event);
 
+        $file = request()->file('event_file');
+        if(!empty($file))
+        {
+            if(file_exists(public_path().'/storage/events/'.$event->id.'.jpeg'))
+            {
+                unlink(public_path().'/storage/events/'.$event->id.'.jpeg');
+            }
+            elseif(file_exists(public_path().'/storage/events/'.$event->id.'.pdf'))
+            {
+                unlink(public_path().'/storage/events/'.$event->id.'.pdf');
+            }
 
-        // FILE HANDLER
-        if(file_exists('files/'.$event->id.'.jpg'))
-        {
-            $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.jpg');
+            $ext = $file->guessClientExtension();
+            $file->move(public_path().'/storage/events/',$event->id.'.'.$ext); 
         }
-        elseif(file_exists('files/'.$event->id.'.pdf'))
-        {
-            $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.pdf');
-        }
-        else
-        {
-            $file = "";
-        }
+        
 
         $updated = $request->input('notify-all');
 
@@ -488,13 +490,13 @@ class EventController extends Controller
 
         $uniform = Uniform::find($event->uniform);
 
-        if(file_exists('files/'.$event->id.'.jpg'))
+        if(file_exists(public_path().'/storage/events/'.$event->id.'.jpg'))
         {
-            $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.jpg');
+            $file = public_path().'/storage/events/'.$event->id.'.jpg';
         }
-        elseif(file_exists('files/'.$event->id.'.pdf'))
+        elseif(file_exists(public_path().'/storage/events/'.$event->id.'.pdf'))
         {
-            $file = Illuminate\Support\Facades\File::get('files/'.$event->id.'.pdf');
+            $file = public_path().'/storage/events/'.$event->id.'.pdf';
         }
         else
         {
