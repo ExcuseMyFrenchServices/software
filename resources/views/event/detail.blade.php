@@ -7,6 +7,10 @@
             text-align: center;
             margin-bottom: 25px;
         }
+        #page 
+        {
+            margin-top: 50px;
+        }
     </style>
 @stop
 

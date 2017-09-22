@@ -233,8 +233,17 @@ class weekReport {
         }
     }
 
+
 	private function convertStringToHour($hour)
 	{
+		if(strpos($hour,'min') || strpos($hour,' min'))
+		{
+			$hour = str_replace('min','',$hour);
+		}
+		if(strpos($hour,'"'))
+		{
+			$hour = str_replace('"','',$hour);
+		}
 		if(strpos($hour,'.'))
 		{
 			$part = explode('.', $hour);
@@ -245,7 +254,6 @@ class weekReport {
             $time = $part[0] + floor(($part[1]/60)*100) / 100;
             return $time;
 		}
-
 		if(strpos($hour,':'))
 		{
 			$part = explode(':', $hour);
@@ -256,8 +264,7 @@ class weekReport {
             $time = $part[0] + floor(($part[1]/60)*100) / 100;
             return $time;
 		}
-
-		return floatval($hour);
+		return floatval($hour/60);
 	}
 
 	private function week_case()

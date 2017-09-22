@@ -110,7 +110,8 @@ Route::get('reports', function(){
 Route::get('reports/month-report', 'EventController@briefMonthReport');
 Route::get('reports/month-report/{year}/{month}/{order}', 'EventController@monthReport');
 
-Route::get('reports/week-report', 'AssignmentController@weekReport');
+Route::get('reports/week-report/', 'AssignmentController@weekReport');
+Route::get('reports/week-report/{day}', 'AssignmentController@WeekReport');
 
 // PUBLIC HOLIDAYS
 

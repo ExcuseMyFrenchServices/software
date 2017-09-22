@@ -9,7 +9,8 @@
         "laravel/framework": "5.2.*",
         "doctrine/dbal": "^2.5",
         "google/apiclient": "^2.0",
-        "calendar/icsfile": "3.2.1"
+        "calendar/icsfile": "3.2.1",
+        "jenssegers/agent": "^2.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

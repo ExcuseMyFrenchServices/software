@@ -61,7 +61,7 @@ class AvailableUsers {
      */
     public function eventsOverlap($eventA, $eventB)
     {
-        if ($eventA->event_date != $eventB->event_date) {
+        if (date_format(date_create($eventA->event_date),'Y-m-d') != date_format(date_create($eventB->event_date),'Y-m-d')) {
             return false;
         }
 
@@ -117,5 +117,20 @@ class AvailableUsers {
         }
 
         return $event_hours;
+    }
+
+    public function busyOn($eventId,$userId,$time)
+    {
+        $mainEvent = Event::find($eventId);
+        
+        $userAssignments = Assignment::where('user_id','=',$userId)->get();
+
+        foreach ($userAssignments as $assignment) {
+            if(date_format(date_create($assignment->event->event_date),'Y-m-d') == date_format(date_create($mainEvent->event_date),'Y-m-d') && $assignment->event->event_date != $mainEvent->event_date){
+                if($this->eventsOverlap($assignment->event,$mainEvent)){
+                    return $assignment;
+                }
+            }
+        }
     }
 }

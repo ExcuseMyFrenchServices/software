@@ -444,12 +444,13 @@ class EventController extends Controller
 
         $unavailable = User::all()->diff($available);
 
+
         $temp_user = User::where('username','smember')->first();
 
         $roles = Role::all();
 
 
-        return view('event.staff')->with(compact('event','time', 'available', 'unavailable', 'roles', 'client', 'userMissions','temp_user'));
+        return view('event.staff')->with(compact('availableService','event','time', 'available', 'unavailable', 'roles', 'client', 'userMissions','temp_user'));
     }
 
     public function assign(Request $request, $eventId)

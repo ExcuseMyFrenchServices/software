@@ -30,8 +30,10 @@
 @endif
 
 @if((Auth::user()->role_id == 1 || $event->admin_id == Auth::user()->id))
-    <a class="btn btn-primary btn-sm back_btn" href="{{ url('event/'.$event->id.'/timesheet') }}">
-        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-        Timesheet
-    </a>
+    <div class="col-xs-12">
+        <a class="btn btn-primary btn-sm back_btn" href="{{ url('event/'.$event->id.'/timesheet') }}">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            Timesheet
+        </a>
+    </div>
 @endif

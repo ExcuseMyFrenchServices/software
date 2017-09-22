@@ -15,6 +15,101 @@
                 </a>
             </div>
 
+        @if($agent->isMobile())
+            <div class="collapse navbar-collapse" id="menu">
+                @if(Auth::user()->role_id == 1)
+                    <div class="row">
+                        <div class="col-xs-4 col-xs-offset-4">
+                            <form action="/event/changeUserRole" method="post">
+                                {{ csrf_field() }}   
+                                <button type="submit" class="btn btn-success btn-block" style="margin-top: 8px"><span class="glyphicon glyphicon-eye-close"></span></button>
+                            </form>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a class="btn btn-info btn-block" href="{{ url('event') }}">Events</a>
+                        </div>
+                        <div class="col-xs-6">
+                            <a class="btn btn-warning btn-block" href="{{ url('past/events/') }}">Past Events</a>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-6 col-xs-offset-3">
+                            <a class="btn btn-primary btn-block" href="{{ url('reports')}}">Reports</a>
+                        </div>
+                    </div>
+                    <br>
+                    <hr>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a class="btn btn-default btn-block" href="{{ url('stocks') }}">Stocks</a>
+                        </div>
+                        <div class="col-xs-6">
+                            <a class="btn btn-default btn-block" href="{{ url('uniforms') }}">Uniforms</a>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a class="btn btn-default btn-block" href="{{ url('client') }}">Clients</a>
+                        </div>
+                        <div class="col-xs-6">
+                            <a class="btn btn-default btn-block" href="{{ url('user') }}">Users</a>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a class="btn btn-default btn-block" href="{{ url('archive')}}">Archived Users</a>
+                        </div>
+                        <div class="col-xs-6">
+                            <a class="btn btn-default btn-block" href="{{ url('public-holidays') }}">Public Holidays</a>
+                        </div>
+                    </div>
+                @else
+                    @if(Auth::user()->role_id == 11)
+                    <div class="col-xs-4 col-xs-offset-4">
+                        <form action="/event/changeUserRole" method="post">
+                            {{ csrf_field() }}
+                            <button type="submit" class="btn btn-info" style="margin-top: 8px"><span class="glyphicon glyphicon-eye-open"></span></button>
+                        </form>
+                    </div>
+                    <br>
+                    @endif
+                    <br>
+                    <div class="row" style='text-align: center'>
+                        <div class="col-xs-6 col-xs-offset-3">
+                            <a class="btn btn-primary btn-block" href="{{ url('timesheets/') }}"><span class="glyphicon glyphicon-time"> </span> Timesheets</a>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row" style='text-align: center'>
+                        <div class="col-xs-6 col-xs-offset-3">
+                            <a class="btn btn-success bnt-block" href="{{ url('availability') }}"><span class="glyphicon glyphicon-calendar"> </span> Availability</a>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row" style='text-align: center'>
+                        <div class="col-xs-6 col-xs-offset-3">
+                            <a class="btn btn-info bnt-block" href="{{ url('user/' . Auth::user()->id . '/edit') }}"><span class="glyphicon glyphicon-user"> </span> Profile</a>
+                        </div>
+                    </div>
+                @endif
+                <br>
+                <hr>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <a class="btn btn-info btn-block" href="{{ url('user/' . Auth::user()->id . '/password') }}"><span class="glyphicon glyphicon-console"> </span> Password</a>
+                    </div>
+                    <div class="col-xs-6">
+                        <a class="btn btn-danger btn-block" href="{{ url('logout') }}"><span class="glyphicon glyphicon-off"> </span> Logout</a>
+                    </div>
+                </div>
+            </div> 
+        @else
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="menu">
                 <ul class="nav navbar-nav navbar-right">
@@ -69,6 +164,7 @@
                     @endif
                 </ul>
             </div>
+        @endif
         </div>
     </nav>
 </header>

@@ -158,12 +158,15 @@ class AssignmentController extends Controller
         return redirect()->back();
     }
 
-    public function weekReport()
-    {
-        $day = date('w');
+    public function weekReport($day = null)
+    {   
+        if($day == null){
+            $day = date('w');
+        }
         $week_start = date('Y-m-d', strtotime('-'.($day-1).' days'));
         $week_end = date('Y-m-d', strtotime($week_start.'-7 days'));
-
+        $next = $day - 7;
+        $previous = $day + 7;
         $assignments = DB::table('assignments')
                         ->select('events.id as event_id','events.event_date','events.event_name','users.id as user_id','profiles.last_name','profiles.first_name','users.level', 'assignments.start_time', 'assignments.hours', 'assignments.break')
                         ->join('events','events.id','=','assignments.event_id')
@@ -179,7 +182,6 @@ class AssignmentController extends Controller
         foreach ($assignments as $assignment) 
         {
             $weekReport = new weekReport($assignment->event_date,$assignment->start_time,$assignment->hours,$assignment->break);
-
             if($weekReport->is_public_holiday($assignment->event_date))
             {
                 $public_holiday[$assignment->event_id] = "PH";
@@ -190,8 +192,7 @@ class AssignmentController extends Controller
             }
             $hours[$assignment->event_id.'-'.$assignment->user_id] = $weekReport->get_hours();
         }
-
-        return view('reports.week-report')->with(compact('assignments','week_start','week_end','hours','public_holiday'));
+        return view('reports.week-report')->with(compact('assignments','day','previous','next','week_start','week_end','hours','public_holiday'));
     }
 
     public function createIcs($eventId)
