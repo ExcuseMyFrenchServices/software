@@ -6,6 +6,13 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h1 style="text-align: center">Events</h1>
+                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 13)
+                    <div class="row">
+                        <div class="col-xs-4 col-xs-offset-4">
+                            <a class="btn btn-success btn-sm" href="{{ url('event/create') }}">Create Event</a>
+                        </div>
+                    </div>
+                    @endif
                 </div>
                 <div class="panel-body">
                     @if(count($events) >= 1)
@@ -32,10 +39,14 @@
                             <div class="panel-body">
                                 <p>
                                     <span class="label label-default">
-                                        @if(count($event->start_time)>0)
-                                            Start at {{ date_format(date_create($event->start_time[0]), 'H:i A') }}
+                                        @if(isset($user))
+                                            <td>Starts at {{ $assignments->where('event_id', $event->id)->first()->time }}</td>
                                         @else
-                                            Unknown
+                                            @if(count($event->start_time)>0)
+                                                <td>Starts at {{ $event->start_time[0] }}</td>
+                                            @else
+                                                <td>Unknown</td>
+                                            @endif
                                         @endif
                                     </span>
 
@@ -56,7 +67,6 @@
                             </div>
                             <div class="panel-footer">
                                 @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 13)
-                                    
                                     @if($event->bar != 0 && $event->barEvent !== null)
                                     <p style="text-align: center">
                                         @if($event->barEvent->status == 1)
@@ -70,7 +80,7 @@
                                     </p>
                                     <br>
                                     @endif 
-
+                                    <a href="/event/create"></a>
                                     <a href="/event/{{ $event->id }}" class="btn btn-info" >More Info</a>
                                     <button class="btn btn-danger e_delete_btn pull-right" data-toggle="modal" data-target="#event_delete"><span class="glyphicon glyphicon-remove"></span></button>
                                     <div class="hidden event_id" >
@@ -80,6 +90,9 @@
                                         {{ $event->client->name}}
                                     </div>
                                 @elseif(isset($user))
+                                <p style="text-align: center">
+                                    <a class="btn btn-info"  href="{{ url('event/'.$event->id)}}">More Info</a>
+                                </p>
                                 <p style="text-align: center">
                                     @if($user->assignments->where('event_id', $event->id)->where('user_id', $user->id)->first()->status == 'confirmed')
                                         <span class="label label-success">Confirmed</span>
@@ -105,7 +118,7 @@
     @else
         <?php $pastEvents = str_contains(Route::getCurrentRoute()->getPath(), 'past/events'); ?>
 
-        <div id="users_container" class="container">
+        <div id="users_container" class="col-sm-8 col-sm-offset-2">
             <div class="row">
 
                 @if ($pastEvents)
@@ -333,6 +346,56 @@
                 </div>
             </div>
         </div>
+        @if(Auth::user()->role_id == 1 && isset($events_of_the_day))
+        <div class="col-sm-2" style="position: fixed; right: 0;">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Busy Staff - {{ date('d/m/Y', strtotime('+11 hour')) }} </h3>
+                </div>
+                <div class="panel-body" style="overflow-y: scroll; height: 90vh;">
+                    <ul class="list-group">
+                        @if(count($events_of_the_day) >= 1)
+                            @foreach($events_of_the_day as $event)
+                                <p>
+                                    <span style="text-decoration: underline;">
+                                        <a href="/event/{{ $event->id }}"> {{ $event->client->name }}</a>
+                                    </span>
+                                    <br>
+                                    ({{ $event->start_time[0] }} to {{ $event->finish_time }})
+                                </p>
+                                @if(count($event->assignments) >= 1)
+                                    @foreach($event->assignments as $assignment)
+                                        <a href="/event/{{ $event->id }}">
+                                            <li class="list-group-item">    
+                                                {{ $assignment->user->profile->first_name }}
+                                                {{ $assignment->user->profile->last_name }}
+                                                - 
+                                                {{ $assignment->time }}
+                                                
+                                                @if(date('H:m', strtotime('+14 hour')) <= $assignment->time)
+                                                    <span style="position:absolute; right: 10px;background-color: green;border: 1px solid black; padding: 3px; border-radius: 100px; width: 3px;height:3px; margin-top: 5px;"></span>
+                                                @else
+                                                    <span style="position:absolute; right: 10px;background-color: red;border: 1px solid black; padding: 3px; border-radius: 100px; width: 3px;height:3px; margin-top: 5px;"></span>
+                                                @endif
+                                            </li>
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <p>
+                                        No staff for <em>{{ $event->client->name }}</em> today's event. 
+                                    </p>
+                                    @foreach($event->start_time as $start)
+                                        <a href="/assignment/add/{{ $event->id }}/{{ $start }}" class="btn btn-primary">Assign for {{ $start }}</a>
+                                    @endforeach
+                                @endif
+                                <hr>
+                            @endforeach
+                        @endif
+                    </ul>
+                </div>
+            </div>
+        </div>
+        @endif
             <!-- Calendar -->
             @if (!$pastEvents)
                 @include('event.calendar')

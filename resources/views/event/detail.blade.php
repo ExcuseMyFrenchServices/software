@@ -33,7 +33,7 @@
 
     <div id="page" class="container">
         <div class="row">
-            <div class="col-xs-12 col-md-8 col-md-offset-2">
+            <div class="col-xs-12 col-md-8 col-md-offset-1">
                 <div class="panel panel-default event_detail">
                     <div class="panel-heading">
                         @if(isset($event))
@@ -95,6 +95,10 @@
                                 @if(!empty($event->notes))
                                     <p><b>Notes:</b> {{ $event->notes }}</p>
                                     <br>
+                                @endif
+
+                                @if($event->travel_paid)
+                                    <p><b>Travel Paid:</b><em> {{ $event->travel_time }}min of travel is paid by client</em></p>
                                 @endif
 
                                 <hr>
@@ -176,13 +180,17 @@
                                     <p><b>Approximate finish time:</b> {{ $event->finish_time }}</p>
                                     <br>
                                 @endif
-
+                                
                                 @if(Auth::user()->role_id == 1 && !empty($event->start_time))
                                     <a href="{{ url('event/notify-all/'.$event->id) }}" class="btn btn-success btn-sm">Notify all</a>
                                 @endif
 
                                 <br>
                                 <br>
+
+                                @if($notification)
+                                    <p><em>{{ $notification->message }}</em></p>
+                                @endif
 
                                 @if($event->bar != 0 && $event->barEvent !== null && Auth::user()->role_id == 1)
                                     <hr>
@@ -321,7 +329,7 @@
                                         Confirm
                                     </a>
                                 @endif
-
+                                
                                 @include('event.actions', ['event' => $event])
                             </div>
                         </div>
@@ -330,13 +338,13 @@
             </div>
             
             @if(Auth::user()->role_id == 1)
-            <div id="admin-notification" class="col-xs-12 col-md-2">
+            <div id="admin-notification" class="col-xs-12 col-md-3">
 
                 <div id="buttons-shortcut" class="panel panel-default event_detail">
                     <div class="panel-heading">
                         <h4 class="panel-title" style="text-align: center">Actions</h4>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" style="text-align: center">
                         <a href="/event/{{ $event->id }}/edit" class="btn btn-info btn-xs" role="button">Update</a>
                         <a href="/event/{{ $event->id }}/copy" class="btn btn-primary btn-xs" role="button">Copy</a>
                     </div>
@@ -347,7 +355,7 @@
                     <div class="panel-heading">
                         <h4 class="panel-title" style="text-align: center">Bar Function Status</h4>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" style="text-align: center">
                         @if($event->barEvent->status == 1)
                             <a href="{{ url('bar-event/create/'.$event->barEvent->id) }}" class="btn btn-warning btn-xs">pending</a>
                         @elseif($event->barEvent->status == 2)
@@ -364,11 +372,11 @@
                     <div class="panel-heading">
                         <h4 class="panel-title" style="text-align: center">Force Confirmation</h4>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" style="text-align: center">
                         <form action="{{ url('event/' . $event->id . '/confirm') }}" method="POST" class="form">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <div class="form-group">
-                                <select name="user_id" data-live-search="true" data-size="8" data-width="100%">
+                                <select name="user_id" data-live-search="true" data-size="8" data-width="100%" class="form-control">
                                     @foreach($event->assignments->where('status','pending') as $assignment)
                                         <option value="{{ $assignment->user_id }}">{{$assignment->user->profile->first_name . " " . $assignment->user->profile->last_name }}</option>
                                     @endforeach
@@ -412,7 +420,7 @@
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <div class="form-group col-xs-10 col-xs-offset-1">
                         <label for="client-email">Choose Client Email</label>
-                        <select name="client-email" id="client-email">
+                        <select name="client-email" id="client-email" class="form-control">
                             
                             <option value="{{$event->client->email}}">
                                 {{ $event->client->email }}

@@ -8,6 +8,7 @@ use Ical\Ical;
 use App\Services\FinancialReportCalculation;
 use App\Services\weekReport;
 use App\Services\Modifications;
+use App\Services\ReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -158,41 +159,17 @@ class AssignmentController extends Controller
         return redirect()->back();
     }
 
-    public function weekReport($day = null)
+    public function weekReport($week = null)
     {   
-        if($day == null){
-            $day = date('w');
-        }
-        $week_start = date('Y-m-d', strtotime('-'.($day-1).' days'));
-        $week_end = date('Y-m-d', strtotime($week_start.'-7 days'));
-        $next = $day - 7;
-        $previous = $day + 7;
-        $assignments = DB::table('assignments')
-                        ->select('events.id as event_id','events.event_date','events.event_name','users.id as user_id','profiles.last_name','profiles.first_name','users.level', 'assignments.start_time', 'assignments.hours', 'assignments.break')
-                        ->join('events','events.id','=','assignments.event_id')
-                        ->join('users','users.id', '=', 'assignments.user_id')
-                        ->join('profiles','profiles.user_id','=','users.id')
-                        ->where('events.event_date', '>=', $week_end)
-                        ->where('events.event_date', '<', $week_start)
-                        ->orderBy('events.event_date','ASC')
-                        ->get();
-        $hours = [];
-        $cost = []; 
-        $public_holiday = [];               
-        foreach ($assignments as $assignment) 
-        {
-            $weekReport = new weekReport($assignment->event_date,$assignment->start_time,$assignment->hours,$assignment->break);
-            if($weekReport->is_public_holiday($assignment->event_date))
-            {
-                $public_holiday[$assignment->event_id] = "PH";
-            }
-            else
-            {
-                $public_holiday[$assignment->event_id] = ""; 
-            }
-            $hours[$assignment->event_id.'-'.$assignment->user_id] = $weekReport->get_hours();
-        }
-        return view('reports.week-report')->with(compact('assignments','day','previous','next','week_start','week_end','hours','public_holiday'));
+
+        $reportService = new ReportService($week);
+        $weekReports = $reportService->getWeekReport();
+        $start = date('d/m/Y', strtotime($reportService->week_start));
+        $end = date('d/m/Y', strtotime($reportService->week_end));
+        $next = $reportService->next_week;
+        $last = $reportService->last_week;
+        
+        return view('reports.week-report')->with(compact('weekReports','start','end','week','next','last'));
     }
 
     public function createIcs($eventId)

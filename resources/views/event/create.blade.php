@@ -151,6 +151,43 @@
                                 <label for="barNotes">Bar Notes</label>
                                 <textarea rows="2" id="barNotes" name="barNotes" class="form-control">{{ $event->barEvent->notes or old('barNotes')}}</textarea>
                             </div>
+                            
+                            <div class='col-xs-12'>
+                                <label for='showtravel_time'>Travel Paid</label>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="travel_paid" id="showtravel_time"
+                                        {{ isset($event) && $event->travel_paid ? 'checked':'' }}
+                                        >
+                                        Is travel Paid ?
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12">
+                                <div class="hidden"><span id="travel_timearrow"></span></div>
+                                <div class="hidden" id="travel_timeNeeds">
+                                    <label for='travel_time'>Travel Time</label>
+                                    <select class="form-control" name="travel_time" id="travel_time">
+                                        <option value="{{ $event->travel_time or old('travel_time') }}"></option>
+                                        @foreach(range(0,3) as $hour)
+                                            @foreach(range(0,55) as $min)
+                                                @if($min%5 == 0)
+                                                    @if($min != 0 || $hour != 0)
+                                                        @if($hour == 0)
+                                                            <option value="{{ $min }}">{{ $min }}min</option>
+                                                        @elseif($min == 0)
+                                                            <option value="{{ $hour*60 }}">{{ $hour }}h</option>
+                                                        @else
+                                                            <option value="{{ ($hour+($min/60))*60 }}">{{ $hour.'h'.$min }}</option>
+                                                        @endif
+                                                    @endif
+                                                @endif
+                                            @endforeach
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="col-xs-12 form-group">
                                 <label for="event_file">Add a file to event</label>
@@ -854,6 +891,8 @@
         showElt('supplies');
         showElt('glasses');
         showElt('equipment');
+
+        showElt('travel_time');
 
         appearElt('beers');
         appearElt('whine');

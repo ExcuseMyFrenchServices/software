@@ -10,7 +10,7 @@
                         <h3 class="panel-title">Select Staff for {{ $client->name }}'s event for {{ $time }}</h3>
                     </div>
                     <div class="panel-body">
-                        <form id="assign_staff" action="{{ url('event/' . $event->id . '/staff') }}" method="POST">
+                        <form id="assign_staff" action="{{ url('event/' . $event->id . '/'. $time .'/staff') }}" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="time" value="{{ $time }}">
                             <h6 class="label label-success">Available</h6>
@@ -20,7 +20,9 @@
                                         <li class="list-group-item">
                                             <div class="checkbox" style="margin: 0;">
                                                 <label>
-                                                    <input type="checkbox" id="user-{{ $user->id }}" name={{ $user->id }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name . ' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)' }}
+                                                    <input type="checkbox" id="user-{{ $user->id }}" name="{{ $user->id }}" {{ in_array($user->id, $taken) ? 'checked' : '' }}> 
+
+                                                    {{ $user->profile->first_name . ' ' . $user->profile->last_name . ' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)' }}
 
                                                     {{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
                                                     @if($user->level_alert > 0) 
@@ -42,7 +44,8 @@
                                     <li class="list-group-item">
                                         <div class="checkbox" style="margin: 0;">
                                             <label>
-                                                <input type="checkbox" name={{ $temp_user->id }}> {{ $temp_user->profile->first_name .' '. $temp_user->profile->last_name  }}
+                                                <input type="checkbox" name={{ $temp_user->id }} {{ in_array($temp_user->id, $taken) ? 'checked' : '' }}> 
+                                                    {{ $temp_user->profile->first_name .' '. $temp_user->profile->last_name  }}
                                             </label>
                                         </div>
                                     </li>
@@ -58,7 +61,8 @@
                                         <li class="list-group-item">
                                             <div class="checkbox" style="margin: 0;">
                                                 <label>
-                                                    <input type="checkbox" name={{ $user->id }} {{count($availableService->busyOn($event->id,$user->id,$time)) > 0 ? 'disabled' : '' }}> {{ $user->profile->first_name . ' ' . $user->profile->last_name .' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)'}}{{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
+                                                    <input type="checkbox" name="{{ $user->id }}" {{count($availableService->busyOn($event->id,$user->id,$time)) > 0 ? 'disabled' : '' }}  {{ in_array($user->id, $taken) ? 'checked' : '' }}> 
+                                                        {{ $user->profile->first_name . ' ' . $user->profile->last_name .' ('. $userMissions->getMissionsForClient($client->name,$user->id)[0]->time_worked_for . ' times)'}}{{--<i style="font-size: 12px; margin-left: 15px">{{ ucwords($roles->where('id', $user->role_id)->first()->name) }} - Updated: {{ !is_null($user->availabilities->first()) ? date_format(date_create($user->availabilities->first()->updated_at), 'F d, Y') : null }}</i>--}}
                                                     @if($user->level_alert > 0) 
                                                         <i class="label label-info">Ready for level {{ $user->level_alert }}</i>
                                                     @endif

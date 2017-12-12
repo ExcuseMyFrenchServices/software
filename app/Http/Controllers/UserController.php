@@ -11,6 +11,7 @@ use App\User;
 use App\Assignment;
 use App\Event;
 use App\Services\UsersMissions;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -27,7 +28,7 @@ class UserController extends Controller
         ]);
 
         $this->middleware('admin', [
-            'except' => ['passwordEdit', 'passwordEditForm', 'passwordUpdate', 'edit','update']
+            'except' => ['passwordEdit', 'passwordEditForm', 'passwordUpdate', 'edit','update','payroll']
         ]);
     }
 
@@ -248,5 +249,28 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->back();
+    }
+
+    public function payroll($userId,$week=null){
+        if(Auth::user()->role_id != 1 && Auth::user()->id != $userId){
+            return redirect('/');
+        }
+
+        $user = User::find($userId);
+        if($user !== null){
+            $userService = new UserService($user);
+            $payrolls = $userService->getPayrolls();
+            if($week == null){
+                $week = date('W');
+            }
+            
+            $year = date('Y');
+            $nextWeek = $week+1;
+            $lastWeek = $week-1;
+
+            return view('reports.payroll')->with(compact('user','payrolls','year','week','nextWeek','lastWeek'));
+        } else {
+            return redirect('/');
+        }
     }
 }

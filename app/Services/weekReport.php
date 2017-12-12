@@ -15,6 +15,7 @@ class weekReport {
 	public $date;
 	public $start;
 	public $end;
+	public $travelPaid;
 	public $break;
 	public $startStatus;
 	public $endStatus;
@@ -28,11 +29,12 @@ class weekReport {
 	public $bonus = 0;
 	public $total = 0;
 
-	public function __construct($date,$start,$end,$break)
+	public function __construct($date,$start,$end,$break,$travelPaid)
 	{
 		$this->date = $date;
 		$this->start = $this->convertStringToHour($start);
 		$this->end = $this->convertStringToHour($end);
+		$this->travelPaid = $travelPaid;
 		$this->break = $break;
 		$this->startStatus = $this->check_hour($this->start);
 		$this->endStatus = $this->check_hour($this->end);
@@ -161,8 +163,8 @@ class weekReport {
 		$hours_spend['sunday'] = $this->sunday;
 		$hours_spend['publicHoliday'] = $this->publicHoliday;
 		$hours_spend['bonus'] = $this->bonus;
-		$this->total = ($this->low + $this->mid + $this->hight + $this->saturday + $this->sunday + $this->publicHoliday) - $this->convertStringToHour($this->break);
-		$hours_spend['total'] = $this->total;
+		$this->total = ($this->low + $this->mid + $this->hight + $this->saturday + $this->sunday + $this->publicHoliday)* 60 - $this->break;
+		$hours_spend['total'] = $this->convertHourToString($this->total);
 
 		return $hours_spend;
 	}
@@ -233,36 +235,34 @@ class weekReport {
         }
     }
 
+    public function convertHourToString($hour)
+    {
+    	if(!strpos('.', $hour)){
+    		$hour = round($hour/60,2);	
+    	}
+    	$part = explode('.',$hour);
+    	if(count($part) > 1){	
+    		$string = $part[0].'h'.floor(($part[1]/100)*60);
+    	} else {
+    		$string = $part[0].'h';
+    	}
+    	return $string;
+    }
 
-	private function convertStringToHour($hour)
+
+	public function convertStringToHour($hour)
 	{
-		if(strpos($hour,'min') || strpos($hour,' min'))
-		{
-			$hour = str_replace('min','',$hour);
-		}
-		if(strpos($hour,'"'))
-		{
-			$hour = str_replace('"','',$hour);
-		}
-		if(strpos($hour,'.'))
-		{
-			$part = explode('.', $hour);
-			if($part[1] == 3)
-			{
-				$part[1] = $part[1]*10;
+		$symbols = [':','.','h'];
+		foreach ($symbols as $symbol) {
+			if(strpos($hour,$symbol)){
+				$part = explode($symbol, $hour);
+				if($part[1] == 3)
+				{
+					$part[1] = $part[1]*10;
+				}
+	            $time = $part[0] + floor(($part[1]/60)*100) / 100;
+	            return $time;
 			}
-            $time = $part[0] + floor(($part[1]/60)*100) / 100;
-            return $time;
-		}
-		if(strpos($hour,':'))
-		{
-			$part = explode(':', $hour);
-			if($part[1] == 3)
-			{
-				$part[1] = $part[1]*10;
-			}
-            $time = $part[0] + floor(($part[1]/60)*100) / 100;
-            return $time;
 		}
 		return floatval($hour/60);
 	}

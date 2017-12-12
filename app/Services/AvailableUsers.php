@@ -133,4 +133,14 @@ class AvailableUsers {
             }
         }
     }
+
+    public function getTakenStaff($eventId, $time)
+    {
+        $event = Event::find($eventId);
+        $takenStaff = [];
+        foreach ($event->assignments as $assignment) {
+            $takenStaff[] = $assignment->user_id;
+        }
+        return $takenStaff;
+    }
 }

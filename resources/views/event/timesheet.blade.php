@@ -41,7 +41,29 @@
                                                     <div class="col-xs-12">
                                                         <div class="form-group">
                                                             <div class="input-group">
-                                                                <input type="text" name="{{$assignment->id}}-break" class="form-control" value="{{ $assignment->break }}">
+                                                                <select name="{{$assignment->id}}-break" class="form-control">
+                                                                    @if($assignment->break != '')
+                                                                        <option value="{{ $assignment->break }}">{{ $assignment->break }}min</option>
+                                                                        <optgroup></optgroup>
+                                                                    @else
+                                                                    <option value=""></option>
+                                                                    @endif
+                                                                    @foreach(range(0,3) as $hour)
+                                                                        @foreach(range(0,55) as $min)
+                                                                            @if($min%5 == 0)
+                                                                                @if($min != 0 || $hour != 0)
+                                                                                    @if($hour == 0)
+                                                                                        <option value="{{ $min }}">{{ $min }}min</option>
+                                                                                    @elseif($min == 0)
+                                                                                        <option value="{{ $hour*60 }}">{{ $hour }}h</option>
+                                                                                    @else
+                                                                                        <option value="{{ ($hour+($min/60))*60 }}">{{ $hour.'h'.$min }}</option>
+                                                                                    @endif
+                                                                                @endif
+                                                                            @endif
+                                                                        @endforeach
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>

@@ -14,6 +14,7 @@
             </form>
             @endif
         @endif
+
     @else
         @if(is_null($event->feedback) || !is_null($event->feedback->hash))
             <a class="btn btn-warning btn-sm back_btn" href="{{ url('feedback/request/'.$event->id) }}">
@@ -30,10 +31,8 @@
 @endif
 
 @if((Auth::user()->role_id == 1 || $event->admin_id == Auth::user()->id))
-    <div class="col-xs-12">
-        <a class="btn btn-primary btn-sm back_btn" href="{{ url('event/'.$event->id.'/timesheet') }}">
-            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-            Timesheet
-        </a>
-    </div>
+    <a class="btn btn-primary btn-sm back_btn" href="{{ url('event/'.$event->id.'/timesheet') }}">
+        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+        Timesheet
+    </a>
 @endif

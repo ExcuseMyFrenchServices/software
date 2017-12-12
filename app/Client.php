@@ -44,4 +44,8 @@ class Client extends Model
     {
         return $this->hasMany('App\Feedback');
     }
+    
+    public function notifications(){
+        return $this->hasMany('App\Notification');
+    }
 }

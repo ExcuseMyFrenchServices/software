@@ -57,4 +57,13 @@ class UsersMissions
                     		->orderBy('time_worked_for', 'DESC')
                     		->first();
     }
+
+    public function getBusyStaff(){
+        $events = 
+        Event::where('event_date', '>=', date('Y-m-d 5:00:s', strtotime('+10 hour')))
+        ->where('event_date', '<', date('Y-m-d 23:59:s',strtotime('+10 hour')))
+        ->get()->sortBy('event_date');
+
+        return $events;
+    }
 }

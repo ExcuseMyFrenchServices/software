@@ -31,6 +31,9 @@ class UserChecker
 		$adminTimes = count( Event::where('admin_id',"=","user_id"));
 		$missionNumber = count($user->assignments);
 
+		if($missionNumber == 0){
+			return $adminTimes;
+		}
 		return $confidenceRatio = $adminTimes / $missionNumber;
 	}
 

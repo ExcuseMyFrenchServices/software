@@ -19,6 +19,8 @@ use App\Services\UsersMissions;
 use App\Services\stockItems;
 use App\Services\Modifications;
 use App\Services\UserChecker;
+use App\Services\weekReport;
+use App\Services\NotificationService;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -43,19 +45,19 @@ class EventController extends Controller
 
     public function index()
     {
-            $time = strtotime("05:00:00");
-            $events = Event::where('event_date', '>=', date('Y-m-d H:m:s', strtotime('+0 hour',$time)))->get()->sortBy('event_date');
+        $events = Event::where('event_date', '>=', date('Y-m-d 5:00:s', strtotime('+11 hour')))->get()->sortBy('event_date');
+        $userMissions = new UsersMissions();
+        $events_of_the_day = $userMissions->getBusyStaff();
 
-        return view('event.index')->with(compact('events'));
+        return view('event.index')->with(compact('events','events_of_the_day'));
     }
 
     public function indexPast(Request $request)
     {
-        $time = strtotime("05:00:00");
         $range = $request->input('date-range') ?: date('Y-m');
 
         $events = Event::all()->filter(function ($event) use ($range,$time) {
-            return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d H:m:s', strtotime('+0 hour',$time));
+            return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d 5:00:s', strtotime('+11 hour'));
         })->sortByDesc('event_date');
 
         return view('event.index')->with(compact('events', 'range'));
@@ -114,13 +116,13 @@ class EventController extends Controller
         }
         else
         {
-            if($request->input('guest_arrival') === null)
+            if($request->input('guest_arrival_time') === null)
             {
-                $hour = "00:00";
+                $hour = "07:00";
             }
             else
             {
-                $hour = $request->input('guest_arrival');
+                $hour = $request->input('guest_arrival_time');
             }
         }
 
@@ -135,6 +137,8 @@ class EventController extends Controller
             'address'           => $request->input('address'),
             'details'           => $request->input('details'),
             'uniform'           => $request->input('uniform'),
+            'travel_paid'       => $request->input('travel_paid') == "on",
+            'travel_time'       => $request->input('travel_time'),
             'bar'               => $request->input('bar') == "on",
             'notes'             => $request->input('notes'),
             'start_time'        => array_values(array_filter(array_flatten($request->input('start_times')))),
@@ -194,6 +198,9 @@ class EventController extends Controller
     {
         $event = Event::find($eventId);
 
+        $notificationService = new NotificationService();
+        $notification = $notificationService->getClientNotification($event);
+
         $previous_event = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->where('event_date','<',$event->event_date)->orderBy("event_date","DESC")->limit(1)->first();
         $next_event = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->where('event_date','>',$event->event_date)->orderBy('event_date','ASC')->limit(1)->first();
 
@@ -218,9 +225,9 @@ class EventController extends Controller
             $ingredients = getBarItems('ingredients',$event);
             $furnitures = getBarItems('furnitures',$event);
         
-            return view('event.detail')->with(compact('event','previous_event','next_event','uniform','beers','whines','spirits','cocktails','shots','softs','ingredients','furnitures','modifications'));
+            return view('event.detail')->with(compact('event','previous_event','next_event','uniform','beers','whines','spirits','cocktails','shots','softs','ingredients','furnitures','modifications','notification'));
         }
-       return view('event.detail')->with(compact('event','previous_event','next_event','uniform','modifications'));
+       return view('event.detail')->with(compact('event','previous_event','next_event','uniform','modifications','notification'));
     }
 
     public function showModifications($eventId)
@@ -282,6 +289,13 @@ class EventController extends Controller
         $modification = new Modifications($event);
 
         $start_time = $event->start_time;
+        if($start_time != null){
+            $eventDate = new DateTime($request->input('event_date').$start_time[0]);
+        } elseif($request->input('guest_arrival_time') != null) {
+            $eventDate = new DateTime($request->input('event_date').$request->input('guest_arrival_time'));
+        } else {
+            $eventDate = new DateTime($request->input('event_date')."07:00");
+        }
         // Keep track of old values to know exactly what have been updated after with checkUpdates
 
         $event->event_name          = $request->input('event_name');
@@ -294,10 +308,12 @@ class EventController extends Controller
         $event->address             = $request->input('address');
         $event->details             = $request->input('details');
         $event->uniform             = $request->input('uniform');
+        $event->travel_paid         = $request->input('travel_paid') == "on";
+        $event->travel_time         = $request->input('travel_time');
         $event->notes               = $request->input('notes');
         $event->start_time          = array_values(array_filter(array_flatten($request->input('start_times'))));
         $event->booking_date        = new DateTime($request->input('booking_date'));
-        $event->event_date          = new DateTime($request->input('event_date').$start_time[0]);
+        $event->event_date          = $eventDate;
 
         $barEvent = $event->barEvent;
         // BAR EVENT HANDLER
@@ -359,7 +375,7 @@ class EventController extends Controller
         $updated = $request->input('notify-all');
 
         // Update assignments for removed hours
-        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$uniform,$updated,$modification,$start_time) 
+        Assignment::where('event_id', $event->id)->each(function ($assignment) use ($event,$uniform,$updated,$modification,$start_time,$file) 
         {
             if (!in_array($assignment->time, $event->start_time)) 
             {
@@ -379,8 +395,16 @@ class EventController extends Controller
             }
             elseif($updated == 'on')
             {
-                $subject = $modification->emailSubject();
 
+                // Specifies the last thing that was updated in the subject 
+                $subject = $modifications->emailSubject();
+
+                Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment,$subject) {
+                    $message->to($assignment->user->profile->email)->subject($subject);
+                }); 
+            }
+            if(!empty($file)){
+                $subject = "A document has been attached to ".$event->name;
                 Mail::send('emails.event-update', ['event' => $assignment->event, 'assignment' => $assignment, 'uniform'=>$uniform], function($message) use ($assignment,$subject) {
                     $message->to($assignment->user->profile->email)->subject($subject);
                 }); 
@@ -441,7 +465,7 @@ class EventController extends Controller
         $availableService = new AvailableUsers;
 
         $available = $availableService->get($event, $time);
-
+        $taken = $availableService->getTakenStaff($eventId, $time);
         $unavailable = User::all()->diff($available);
 
 
@@ -449,11 +473,10 @@ class EventController extends Controller
 
         $roles = Role::all();
 
-
-        return view('event.staff')->with(compact('availableService','event','time', 'available', 'unavailable', 'roles', 'client', 'userMissions','temp_user'));
+        return view('event.staff')->with(compact('availableService','event','time', 'available', 'unavailable', 'roles', 'client', 'userMissions','temp_user','taken'));
     }
 
-    public function assign(Request $request, $eventId)
+    public function assign(Request $request, $eventId, $time)
     {
         $event = Event::find($eventId);
         $modification = new Modifications($event);
@@ -462,16 +485,20 @@ class EventController extends Controller
             $user = User::find($key);
             $userChecker = new UserChecker();
             $userChecker->checkUserMission($user->id);
+            $availableService = new AvailableUsers();
 
-            Assignment::create([
-                'event_id'  => $event->id,
-                'time'      => $request->input('time'),
-                'user_id'   => $key,
-                'status'    => 'pending',
-                'hash'      =>  str_random(15)
-            ]);
+            if(!in_array($user->id,$availableService->getTakenStaff($eventId,$time)) || $user->username == 'smember' ){
 
-            $modification->create($event->id,'added staff: '.$user->profile->first_name." ".$user->profile->last_name,'',$user->id);
+                Assignment::create([
+                    'event_id'  => $event->id,
+                    'time'      => $request->input('time'),
+                    'user_id'   => $key,
+                    'status'    => 'pending',
+                    'hash'      =>  str_random(15)
+                ]);
+
+                $modification->create($event->id,'added staff: '.$user->profile->first_name." ".$user->profile->last_name,'',$user->id);
+            }
         }
 
         return redirect('event/' . $event->id);
@@ -542,7 +569,10 @@ class EventController extends Controller
                 return view('availability.index')->with(compact('availabilities'));
             }
 
-            return view('event.index')->with(compact('events', 'user', 'assignments','availabilities'));
+            $userMissions = new UsersMissions();
+            $events_of_the_day = $userMissions->getBusyStaff();
+
+            return view('event.index')->with(compact('events', 'user', 'assignments','availabilities','events_of_the_day'));
         }
 
         // Shows all the events 
@@ -557,7 +587,9 @@ class EventController extends Controller
             $events = Event::where('event_date', '>=', date('Y-m-d 05:00:00', strtotime('+11 hour')))->where('bar','=',1)->get()->sortBy('event_date');
         }
 
-        return view('event.index')->with(compact('events'));
+        $userMissions = new UsersMissions();
+        $events_of_the_day = $userMissions->getBusyStaff();
+        return view('event.index')->with(compact('events','events_of_the_day'));
     }
 
     public function confirmAssistance($hash)
@@ -573,9 +605,12 @@ class EventController extends Controller
 
     public function notifyClient(Request $request, $eventId)
     {
+        $notificationService = new NotificationService();
         $event = Event::find($eventId);
         $admin = User::find($event->admin_id);
         $email = $request->input('client-email');
+
+        $notificationService->notifyClient("Notification send to ".$email,$event);
 
         if(!empty($email) && $email != "to-all")
         {
@@ -622,6 +657,7 @@ class EventController extends Controller
 
     public function getTimesheet(TimesheetRequest $request, $eventId)
     {
+
         $event = Event::find($eventId);
 
         // Empty the OutStock database to put back the item number in stock after the admin has added the timesheet to the event, which means that the event is over and the glasses should be given back. If the stock item doesn't exist anymore (=0 when event was created), a new object is created.

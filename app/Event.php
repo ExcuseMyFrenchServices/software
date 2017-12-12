@@ -17,7 +17,7 @@ class Event extends Model
      *
      * @var array
      */
-    protected $fillable = ['event_name', 'client_id', 'booking_date', 'event_date','event_type','guest_arrival_time','start_time', 'finish_time','guest_number', 'number_staff', 'address','details','uniform', 'glasses', 'soft_drinks', 'bar', 'notes', 'notification_status'];
+    protected $fillable = ['event_name', 'client_id', 'booking_date', 'event_date','event_type','guest_arrival_time','start_time', 'finish_time','guest_number', 'number_staff', 'address','details','uniform', 'travel_paid','travel_time','glasses', 'soft_drinks', 'bar', 'notes', 'notification_status'];
 
     /**
      * The attributes that should be cast to native types.
@@ -65,5 +65,9 @@ class Event extends Model
     public function outStock()
     {
         return $this->hasMany('App\OutStock');
+    }
+
+    public function notifications(){
+        return $this->hasMany('App\Notification');
     }
 }

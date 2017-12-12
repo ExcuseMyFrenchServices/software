@@ -22,6 +22,8 @@ Route::get('user/unarchive/{user}', 'UserController@unarchive');
 Route::post('user/{user}/credentials/edit', 'UserController@editCredentials');
 Route::post('user/{user}/password', 'UserController@passwordUpdate');
 
+Route::get('payroll/{user}', 'UserController@payroll');
+Route::get('payroll/{user}/{week}', 'UserController@payroll');
 
 Route::get('archive', 'UserController@archiveIndex');
 
@@ -44,7 +46,7 @@ Route::post('event/notify/{event}/client', 'EventController@notifyClient');
 Route::get('event/{event}/copy', 'EventController@copy');
 Route::get('event/{event}/admin/{user}', 'EventController@setAdmin');
 
-Route::post('event/{event}/staff', 'EventController@assign');
+Route::post('event/{event}/{time}/staff', 'EventController@assign');
 
 Route::get('timesheets', 'EventController@timesheetIndex');
 Route::get('event/{event}/timesheet', 'EventController@getTimesheet');
@@ -111,7 +113,7 @@ Route::get('reports/month-report', 'EventController@briefMonthReport');
 Route::get('reports/month-report/{year}/{month}/{order}', 'EventController@monthReport');
 
 Route::get('reports/week-report/', 'AssignmentController@weekReport');
-Route::get('reports/week-report/{day}', 'AssignmentController@WeekReport');
+Route::get('reports/week-report/{week}', 'AssignmentController@WeekReport');
 
 // PUBLIC HOLIDAYS
 
