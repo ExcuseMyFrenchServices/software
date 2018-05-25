@@ -17,6 +17,18 @@
                 <div class="panel-body">
                     @if(count($events) >= 1)
                         @foreach($events as $event)
+                        @if( 
+                            !isset($week) ||
+                            date('W',strtotime($event->event_date)) != $week
+                            )
+                            <br>
+                            <br>
+                            <h3>{{ isset($week) ? 'Next Week' : 'This Week' }}</h3>
+                            <br>
+                            <br>
+                            <br>
+                            @php $week = date('W', strtotime($event->event_date)) @endphp
+                        @endif
                         @if(Auth::user()->role_id == 1 && Auth::user()->role_id == 13)
                             <div class="panel {{ $event->type == 'pre-booking event' ? 'panel-info':'panel-primary' }}">
                         @else
@@ -151,7 +163,6 @@
                         <table id="events_list" class="table table-striped">
                             <thead>
                                 <th>Client Name</th>
-                                <th>Date</th>
                                 @if (!$pastEvents)
                                     <th>Start time</th>
                                 @endif
@@ -174,9 +185,21 @@
 
                             <tbody>
                             @foreach($events as $event)
+                                @if( 
+                                    !isset($date) || 
+                                    date('Y-m-d',strtotime($event->event_date)) != date('Y-m-d',strtotime($date))
+                                    )
+                                    <tr></tr>
+                                    <tr style="background-color: lightsteelblue">
+                                        <td colspan="9">
+                                            {{ date('l F d, Y', strtotime($event->event_date)) }}
+                                        </td>
+
+                                    </tr>
+                                    @php $date = $event->event_date @endphp
+                                @endif
                                 <tr>
                                     <td> <a href="{{ url('event/' . $event->id) }}">{{ $event->client->name }}</a></td>
-                                    <td>{{ date_format(date_create($event->event_date), 'l F d, Y') }}</td>
                                     @if (!$pastEvents)
                                         @if(isset($user))
                                             <td>{{ $assignments->where('event_id', $event->id)->first()->time }}</td>

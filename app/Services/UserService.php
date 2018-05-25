@@ -7,7 +7,7 @@ use App\Event;
 use App\Assignment;
 use App\PublicHoliday;
 
-class HourPay {
+class HourRange {
 	public $low = 0;
 	public $high = 0;
 	public $very_high = 0;
@@ -19,11 +19,13 @@ class HourPay {
 class PayRoll {
 	public $date = '';
 	public $isPublicHoliday = false;
+    public $event_id = 0;
 	public $event_name = '';
 	public $start = '';
 	public $break = 0;
 	public $end = '';
     public $travel_time = 0;
+    public $hours;
 	public $total_hour = 0;
 	public $pay = 0;
 }
@@ -32,10 +34,12 @@ class UserService {
 
 	private $user;
 	public $hourPay;
+    public $hourRange;
 
 	public function __construct(User $user){
 		$this->user = $user;
-		$this->hourPay = new HourPay();
+		$this->hourPay = new HourRange();
+        $this->hourRange = new HourRange();
 		$this->getUserHourPay();
 	}
 
@@ -48,11 +52,13 @@ class UserService {
 			$payroll = new PayRoll();
 			$payroll->date 				= 		$event->event_date;
 			$payroll->isPublicHoliday 	=		$this->is_public_holiday($event->event_date);
+            $payroll->event_id          =       $event->id;
 			$payroll->event_name 		= 		$event->client->name;
 			$payroll->start 			=		$assignment->time;
 			$payroll->break 			=		$assignment->break;
 			$payroll->end 				=		$assignment->hours;
             $payroll->travel_time       =       $assignment->event->travel_paid;
+            $payroll->hours             =       $this->getHoursRange($assignment);
 			$payroll->total_hour		=		$this->getTotalHour($assignment);
 			$payroll->pay 				=		$this->getAssignmentPay($assignment);
 
@@ -75,12 +81,21 @@ class UserService {
 		}
     	$total = $this->removeTime($total,$assignment->break);
         $total = $this->addTime($total,$assignment->event->travel_paid);
-
-        return $total;
+        return $this->checkTotal($total);
 	}
 
-    public function removeTime($time,$minutesTime){
-        $minutesTime = $minutesTime/100;
+    public function checkTotal($time){
+        if($time < 4){
+            return 4;
+        } else {
+            return $time;
+        }
+    }
+
+    public function removeTime($time,$minutesTime,$isMinutes = true){
+        if($isMinutes){    
+            $minutesTime = ($minutesTime/60);
+        }
         $minutes = $time - floor($time);
         $hour = floor($time);
 
@@ -88,22 +103,24 @@ class UserService {
         
         if($minus < 0){
             $hour--;
-            $minus = 0.6 + $minus;
+            $minus = 1 + $minus;
         }
         
         return $hour+$minus;
     }
 
-    public function addTime($time,$minutesTime){
-        $minutesTime = $minutesTime/100;
+    public function addTime($time,$minutesTime,$isMinutes = true){
+        if($isMinutes){    
+            $minutesTime = $minutesTime/60;
+        }
         $minutes = $time - floor($time);
         $hour = floor($time);
 
         $added = $minutes + $minutesTime;
 
-        if($added > 60){
+        if($added > 1){
             $hour++;
-            $added = 0.6 - $added;
+            $added = 1 - $added;
         }
 
         return $hour+$added;
@@ -114,7 +131,7 @@ class UserService {
     	$start = $assignment->time;
     	$end = $assignment->hours;
     	if($end === null){
-    		$end = $this->addHour($start,4);
+    		$end = $assignment->event->finish_time;
     	}
     	
     	$first = intval(date('H',strtotime($start)));
@@ -138,51 +155,48 @@ class UserService {
     }
 
     public function getPay($date,$hour,$workTime){
-    	if(
-    		strtolower($this->getHumanDay($date)) == 'saturday' || 
-    		strtolower($this->getHumanDay($date)) == 'sunday'
-    	){
-    		$range = strtolower($this->getHumanDay($date));
-    		return $workTime * $this->hourPay->$range;
+    	return $workTime * $this->getRatePay($date,$hour);
+    }
 
-    	} elseif($this->is_public_holiday($date)){
-    		return $workTime * $this->hourPay->public_holiday;
+    public function getHoursRange(Assignment $assignment){
+        $hours = $this->getAssignmentHours($assignment);
+        $hourRange = new HourRange();
 
-    	} elseif(strtolower($this->getHumanDay($date)) == 'friday' && $hour >= 0 && $hour < 7){
-    		return $workTime * $this->hourPay->saturday;
-    	} else { 
-    		if($hour >= 7 && $hour < 19){
-    			return $workTime * $this->hourPay->low;
-    		} elseif($hour >= 19 && $hour < 24){
-    			return $workTime * $this->hourPay->high;
-    		} else {
-    			return $workTime * $this->hourPay->very_high;
-    		}
-    	}
+        foreach ($hours as $hour => $workTime) {
+            $range = $this->getRange($assignment->event->event_date,$hour);
+            $hourRange->$range += $workTime;
+        }
+
+        return $hourRange;
+    }
+
+    public function getRange($date,$hour){
+        if(
+            strtolower($this->getHumanDay($date)) == 'saturday' || 
+            strtolower($this->getHumanDay($date)) == 'sunday'
+        ){
+            $range = strtolower($this->getHumanDay($date));
+            return $range;
+
+        } elseif($this->is_public_holiday($date)){
+            return 'public_holiday';
+
+        } elseif(strtolower($this->getHumanDay($date)) == 'friday' && $hour >= 0 && $hour < 7){
+            return 'saturday';
+        } else { 
+            if($hour >= 7 && $hour < 19){
+                return 'low';
+            } elseif($hour >= 19 && $hour < 24){
+                return 'high';
+            } else {
+                return 'very_high';
+            }
+        }
     }
 
     public function getRatePay($date,$hour){
-    	if(
-    		strtolower($this->getHumanDay($date)) == 'saturday' || 
-    		strtolower($this->getHumanDay($date)) == 'sunday'
-    	){
-    		$range = strtolower($this->getHumanDay($date));
-    		return $this->hourPay->$range;
-
-    	} elseif($this->is_public_holiday($date)){
-    		return $this->hourPay->public_holiday;
-
-    	} elseif(strtolower($this->getHumanDay($date)) == 'friday' && $hour >= 0 && $hour < 7){
-    		return $this->hourPay->saturday;
-    	} else { 
-    		if($hour >= 7 && $hour < 19){
-    			return $this->hourPay->low;
-    		} elseif($hour >= 19 && $hour < 24){
-    			return $this->hourPay->high;
-    		} else {
-    			return $this->hourPay->very_high;
-    		}
-    	}
+        $hourRange = $this->getRange($date,$hour);
+        return $this->hourPay->$hourRange;
     }
 
     public function getAssignmentPay(Assignment $assignment){

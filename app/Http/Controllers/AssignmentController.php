@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Filesystem\Filesystem;
 
 
@@ -77,7 +78,7 @@ class AssignmentController extends Controller
 
             if(file_exists('files/'.$assignment->event->id.'.jpg'))
             {
-                $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.jpg');
+                $file = File::get('files/'.$assignment->event->id.'.jpg');
 
                 Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment) {
                 $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
@@ -85,7 +86,7 @@ class AssignmentController extends Controller
             }
             elseif(file_exists('files/'.$assignment->event->id.'.pdf'))
             {
-                $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.pdf');
+                $file = File::get('files/'.$assignment->event->id.'.pdf');
 
                 Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment, $file) {
                 $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file);
@@ -128,7 +129,7 @@ class AssignmentController extends Controller
 
         if(file_exists('files/'.$assignment->event->id.'.jpg'))
         {
-            $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.jpg');
+            $file = File::get('files/'.$assignment->event->id.'.jpg');
 
             Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment,$file,$ics) {
             $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file); //Attach ICS
@@ -136,7 +137,7 @@ class AssignmentController extends Controller
         }
         elseif(file_exists('files/'.$assignment->event->id.'.pdf'))
         {
-            $file = Illuminate\Support\Facades\File::get('files/'.$assignment->event->id.'.pdf');
+            $file = File::get('files/'.$assignment->event->id.'.pdf');
 
             Mail::send('emails.event-confirmation', ['event' => $assignment->event, 'assignment' => $assignment, 'admin' => $admin, 'uniform'=>$uniform], function($message) use ($assignment, $file,$ics) {
             $message->to($assignment->user->profile->email)->subject('Event Confirmation')->attach($file); //Attach ICS
@@ -168,6 +169,7 @@ class AssignmentController extends Controller
         $end = date('d/m/Y', strtotime($reportService->week_end));
         $next = $reportService->next_week;
         $last = $reportService->last_week;
+        $week = $reportService->date;
         
         return view('reports.week-report')->with(compact('weekReports','start','end','week','next','last'));
     }

@@ -20,10 +20,11 @@
 					<table class="table table-hover">
 						<thead>
 							<tr>
-								<th style="width: 625px">Staff</th>
+								<th>Staff</th>
 								<th>Level</th>
 								<th>Start</th>
 								<th>Break</th>
+								<th>Travel Time</th>
 								<th>End</th>
 								<th>Worktime</th>
 							</tr>
@@ -44,14 +45,15 @@
 							@endif
 							@foreach($report->staff as $staff)
 							<tr>
-								<td style="width: 625px">
+								<td>
 									<a href="/payroll/{{ $staff->id }}/{{ $week }}">
 										{{ $staff->first_name }} {{ $staff->last_name }}
 									</a>
 								</td>
 								<td>{{ $staff->level }}</td>
 								<td>{{ $staff->start_time }}</td>
-								<td>{{ $staff->break }} min</td>
+								<td>{{ $staff->break ? $staff->break.' min' : 'No'}}</td>
+								<td>{{ $staff->travel_time ? $staff->travel_time.' min' : 'No'}}</td>
 								<td>{{ $staff->end_time }}</td>
 								<td>{{ $staff->worktime }} hours</td>
 							</tr>

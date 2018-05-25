@@ -268,7 +268,7 @@ class UserController extends Controller
             $nextWeek = $week+1;
             $lastWeek = $week-1;
 
-            return view('reports.payroll')->with(compact('user','payrolls','year','week','nextWeek','lastWeek'));
+            return view('reports.payroll')->with(compact('user','payrolls','year','week','nextWeek','lastWeek','userService'));
         } else {
             return redirect('/');
         }

@@ -86,13 +86,11 @@
                         </div>
                     </div>
                     <br>
-                    @if(Auth::user()->id === 119 || Auth::user()->id === 101)
                     <div class="row" style='text-align: center'>
                         <div class="col-xs-6 col-xs-offset-3">
-                           <a class="btn btn-primary btn-block" href="{{ url('payroll/'.Auth::user()->id) }}">Payroll</a>
+                           <a class="btn btn-primary btn-block" href="{{ url('payroll/'.Auth::user()->id) }}">Past Events</a>
                         </div>
                     </div>
-                    @endif
                     <br>
                     <div class="row" style='text-align: center'>
                         <div class="col-xs-6 col-xs-offset-3">
@@ -169,9 +167,7 @@
                             </form>
                         </li>
                         @endif
-                        @if(Auth::user()->id === 119 || Auth::user()->id === 101)
-                            <li><a href="{{ url('payroll/'.Auth::user()->id) }}">Payroll</a></li>
-                        @endif
+                        <li><a href="{{ url('payroll/'.Auth::user()->id) }}">Past Events</a></li>
                         <li><a href="{{ url('timesheets/') }}">Timesheets</a></li>
                         <li><a href="{{ url('events/' . Auth::user()->id) }}">Events</a></li>
                         <li><a href="{{ url('availability') }}">Availability</a></li>

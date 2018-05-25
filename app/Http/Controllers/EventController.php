@@ -56,7 +56,7 @@ class EventController extends Controller
     {
         $range = $request->input('date-range') ?: date('Y-m');
 
-        $events = Event::all()->filter(function ($event) use ($range,$time) {
+        $events = Event::all()->filter(function ($event) use ($range) {
             return substr($event->event_date, 0, 7) == $range && $event->event_date < date('Y-m-d 5:00:s', strtotime('+11 hour'));
         })->sortByDesc('event_date');
 

@@ -21,6 +21,7 @@ class Staff{
 	public $level 		= 0;
 	public $start_time	= '';
 	public $break		= '';
+	public $travel_time = 0;
 	public $end_time	= '';
 	public $worktime 	= 0;
 }
@@ -56,7 +57,7 @@ class ReportService {
 			$report = new WeekReport();
 			$report->id = $event->id;
 			$report->date = date('l d/m/Y', strtotime($event->event_date));
-			$report->name = $event->event_name;
+			$report->name = $event->client->name;
 			$report->staff = $this->getStaff($event);
 
 			if(count($report->staff) > 0 ){
@@ -81,6 +82,7 @@ class ReportService {
 				$staff->level 		= $assignment->user->level;
 				$staff->start_time 	= $assignment->time;
 				$staff->break 		= $assignment->break;
+				$staff->travel_time = $assignment->event->travel_time;
 				$staff->end_time 	= $assignment->hours;
 				$staff->worktime	= $this->getWorktime($assignment); 
 				
